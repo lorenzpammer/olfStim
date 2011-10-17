@@ -1,0 +1,6 @@
+For every new protocol you want to add. Make a new folder with the title of your protocol and ending with "Stim". Ie if your stimulation is called "manySmells" add a folder called "manySmellsStim" and a wrapper function in your folder with the same name. 
+
+In every protocol define the trial number with the variable trialNum. First trial = 1.
+
+In every new trial you have to call buildSmell('update',trialOdor,trialNum). This will update the smell structure.
+
