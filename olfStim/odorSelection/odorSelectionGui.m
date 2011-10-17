@@ -1,4 +1,3 @@
-
 function varargout = odorSelectionGui(varargin)
 % ODORSELECTIONGUI M-file for odorSelectionGui.fig
 %      ODORSELECTIONGUI, by itself, creates a new ODORSELECTIONGUI or raises the existing
@@ -128,6 +127,9 @@ function varargout = odorSelectionGui_OutputFcn(hObject, eventdata, handles)
     if mixturesUsed
         olfactometerOdors = extractMixtureDataFromGui(hObject,eventdata,handles,olfactometerOdors);
     end
+    for i = 1 : length(olfactometerOdors.sessionOdors) % Hacked! At some point add the field nicely in the subfunctions
+        olfactometerOdors.sessionOdors(i).sessionOdorNumber = i;
+    end
     varargout{1} = olfactometerOdors; % define output of the gui
     
     odorSelectionGui_CloseRequestFcn(hObject, eventdata, handles);
@@ -233,14 +235,17 @@ mixtureTable = get(handles.olfactometerMixtureTable,'Data');
 present = [mixtureTable{:,1}]'; % extract 'Present' column - whether to present odor or not
 mixturesUsed = sum(present) > 0.5; % see whether any mixture is selected as to 'Present', if nothing to present, mixtures are not used
 if mixturesUsed
-olfactometerOdors = extractMixtureDataFromGui(hObject,eventdata,handles,olfactometerOdors);
+    olfactometerOdors = extractMixtureDataFromGui(hObject,eventdata,handles,olfactometerOdors);
+end
+for i = 1 : length(olfactometerOdors.sessionOdors) % Hacked! At some point add the field nicely in the subfunctions
+        olfactometerOdors.sessionOdors(i).sessionOdorNumber = i;
 end
 defaultTitle = [datestr(date,'yyyy.mm.dd') '_olfactometerOdors'];
 [filename,pathname]=uiputfile('.mat','Save olfactometer odors',defaultTitle);
-if ischar(filename) && ischar(pathname) % only if filename and path specified 
-extendedPath = [pathname filename];
-save(extendedPath,'olfactometerOdors')
-else 
+if ischar(filename) && ischar(pathname) % only if filename and path specified
+    extendedPath = [pathname filename];
+    save(extendedPath,'olfactometerOdors')
+else
     disp('To save the olfactometer odors please select a filename and path.')
 end
 
@@ -337,6 +342,8 @@ for i = 1 : length(olfactometerOdors.slave) % write
             olfactometerOdors.slave(i).sessionOdors(j).odorantDilution = odorantDilution(j);
             olfactometerOdors.slave(i).sessionOdors(j).concentrationAtPresentation = concentrationAtPresentation(j);
             olfactometerOdors.slave(i).sessionOdors(j).mixture = logical(0);
+%             olfactometerOdors.slave(i).sessionOdors(j).sessionOdorNumber = [];
+
             clear index;
         end
         
@@ -345,6 +352,7 @@ for i = 1 : length(olfactometerOdors.slave) % write
 end
 try
     olfactometerOdors.sessionOdors = [olfactometerOdors.slave(1).sessionOdors olfactometerOdors.slave(2).sessionOdors];
+    
 catch
     warning('No odors were chosen to be presented.')
     olfactometerOdors.sessionOdors = []
@@ -403,6 +411,7 @@ end
 for i = 1 : length(mixtureIndex) % go through every mixture that was marked to present in table
     fieldNames = fieldnames(odorLibrary);
     olfactometerOdors.mixtures.sessionOdors(i) = cell2struct(cell(1,length(fieldNames)),fieldNames,2); % set up structure
+%     olfactometerOdors.mixtures.sessionOdors(i).sessionOdorNumber = [];
     
     for j = 1 : length(olfactometerOdors.slave) % go through the slaves
         columnNames = get(handles.olfactometerMixtureTable,'ColumnName'); % extract column names, general approach
@@ -468,6 +477,7 @@ end
 try
     
     olfactometerOdors.sessionOdors = [olfactometerOdors.sessionOdors olfactometerOdors.mixtures.sessionOdors];
+    
 catch
     warning('No odors were chosen to be presented.')
 end
