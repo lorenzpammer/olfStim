@@ -25,7 +25,7 @@ global h
 end
 
 function quitPushButton_Callback(source,eventdata)
-    disp('To do: Close Gui function')
+    disp('To do: Quit Session function')
     % Disconnect from olfactometer
     % Round up smell structure
     % save smell structure

@@ -1,6 +1,6 @@
-function sessionNotes(instruction,panelPosition)
+function notes = sessionNotes(instruction,panelPosition)
 % sessionNotes(position) position is an optional input argument that
-% defines the position of the panel for the notes. Expects a 4 elemnt
+% defines the position of the panel for the notes. Expects a 4 element
 % vector (x-position,y-position,width,height)
 % sessionNotes creates a panel and handles, which allow taking notes during
 % an experiment. The notes will be saved to the smell structure for every
@@ -13,7 +13,7 @@ if nargin < 1
     error('You have to define the input "instruction", to set up (setUp) the sessionNotes feature.')
 end
     
-if strmatch(instruction,'setUp')
+if strncmp(instruction,'setUp',5)
     if nargin < 2
         % Define position for notes in respect to other panels in the gui
         stimProtocolPosition = get(h.panelProtocol,'Position');
@@ -61,9 +61,16 @@ if strmatch(instruction,'setUp')
     notesFieldPosition(3) = position(3) - 6;
     notesFieldPosition(4) = position(4) - 6;
     h.sessionNotes.notesFigureField = uicontrol(h.sessionNotes.notesFigure,'Style','edit',...
-        'String','Notes','Units','pixels','Position',notesFieldPosition);
+        'String','','Units','pixels','Position',notesFieldPosition);
+    set(h.sessionNotes.notesFigure,'CloseRequestFcn',@closeFcn)
     
+    notes=[];
 end
+
+if strncmp(instruction,'get',3)
+    notes = get(h.sessionNotes.notesFigureField,'string'); % extract notes which were typed into notes figure.
+end
+
 end
 
 
@@ -78,4 +85,8 @@ elseif strmatch(get(h.sessionNotes.notesFigure,'Visible'),'off')
     set(h.sessionNotes.notesFigure,'Visible','on');
 end
 
+end
+
+function closeFcn(~,~)
+    pushButton_Callback
 end

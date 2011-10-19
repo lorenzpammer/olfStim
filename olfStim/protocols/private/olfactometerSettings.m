@@ -49,7 +49,7 @@ end
 if nargin < 2
     additionalSettings = []; % Set additional settings to empty. Only default settings will be set up and extracted.
     
-    if strmatch(instruction, 'setUp') || strmatch(instruction,'get')
+    if strncmp(instruction, 'setUp',5) || strncmp(instruction,'get',3)
         % Fine
     else 
         error('First input to the function must be a string "setUp" or "get". See the help.')
@@ -67,7 +67,7 @@ end
 
 %% Set up panel and all settings
 
-if strmatch(instruction,'setUp')
+if strncmp(instruction,'setUp',5)
     %% Define panelPosition if it wasn't defined in inputs
     if nargin < 3
         sessionNotesPanel = get(h.sessionNotes.panel,'Position');
@@ -90,19 +90,19 @@ if strmatch(instruction,'setUp')
     %% Define positions for the controls: 
     % Total of 12 possible positions in the panel: 2x6
     
-    positions = cell(2,6); % One cell for each of the 12 positions in the panel
-    width = panelPosition(3) / 6;
+    positions = cell(2,7); % One cell for each of the 12 positions in the panel
+    width = panelPosition(3) / 7;
     height = (panelPosition(4)-15) / 2; % -10 because the text of the panel is included in the height
     
     counter = 0;
-    for i = 1 : 2 : 12
+    for i = 1 : 2 : numel(positions)
         counter = counter+1;
        positions{i} = [panelPosition(1) + (counter-1)*width,...
            panelPosition(2) + height,...
            width, height];
     end
     counter = 0;
-    for i = 2 : 2 : 12
+    for i = 2 : 2 : numel(positions)
         counter = counter+1;
        positions{i} = [panelPosition(1) + (counter-1)*width,...
            panelPosition(2),...
@@ -132,7 +132,7 @@ if strmatch(instruction,'setUp')
     %% Define the options which can be set to control the olfactometer
     
     
-    numberOfUserDefinedSettings = 7 + length(additionalSettings); % default settings + number of additional settings required for the current protocol
+%     numberOfUserDefinedSettings = 7 + length(additionalSettings); % default settings + number of additional settings required for the current protocol
     
     % Which lsq file is used for the paradigm
     settingNumber = 1;
@@ -180,7 +180,8 @@ if strmatch(instruction,'setUp')
     position = [positions{userSettingNumber}(1)+spacing positions{userSettingNumber}(2)+spacing editWidth editHeight];
     h.olfactometerSettings.edit(userSettingNumber) = uicontrol('Parent',h.guiHandle,...
         'Style','edit','String',num2str(olfactometerInstructions(settingNumber).value),'Position', position);
-
+    
+    
     
     
     % Odor concentration settling time (finalValve) in seconds
@@ -200,6 +201,10 @@ if strmatch(instruction,'setUp')
     h.olfactometerSettings.edit(userSettingNumber) = uicontrol('Parent',h.guiHandle,...
         'Style','edit','String',num2str(olfactometerInstructions(settingNumber).value),'Position', position);
     
+    position = [position(1)+position(3)+spacing position(2)+10 15 15];
+    h.olfactometerSettings.check(userSettingNumber) = uicontrol('Parent',h.guiHandle,... % check to define whether the final valve should be used
+        'Style','checkbox','String','','Value',olfactometerInstructions(settingNumber).used,'Position', position);
+    
     
     % Timepoint closing suction valve in seconds
     % Dead volume purge time. Dead volume between final valve and 
@@ -215,6 +220,10 @@ if strmatch(instruction,'setUp')
     position = [positions{userSettingNumber}(1)+spacing positions{userSettingNumber}(2)+spacing editWidth editHeight];
     h.olfactometerSettings.edit(userSettingNumber) = uicontrol('Parent',h.guiHandle,...
         'Style','edit','String',num2str(olfactometerInstructions(settingNumber).value),'Position', position);
+    
+    position = [position(1)+position(3)+spacing position(2)+10 15 15];
+    h.olfactometerSettings.check(userSettingNumber) = uicontrol('Parent',h.guiHandle,...% check to define whether the suction valve should be used
+        'Style','checkbox','String','','Value',olfactometerInstructions(settingNumber).used,'Position', position);
     
     
     % Timepoint opening sniffing valve + optional sniffing valve
@@ -232,7 +241,7 @@ if strmatch(instruction,'setUp')
         'Style','edit','String',num2str(olfactometerInstructions(settingNumber).value),'Position', position);
     
     position = [position(1)+position(3)+spacing position(2)+10 15 15];
-    h.olfactometerSettings.check(userSettingNumber) = uicontrol('Parent',h.guiHandle,...
+    h.olfactometerSettings.check(userSettingNumber) = uicontrol('Parent',h.guiHandle,... % check to define whether the sniffing valve should be used
         'Style','checkbox','String','','Value',olfactometerInstructions(settingNumber).used,'Position', position);
     
     
@@ -333,14 +342,24 @@ if strmatch(instruction,'setUp')
     h.olfactometerSettings.check(userSettingNumber) = uicontrol('Parent',h.guiHandle,...
         'Style','checkbox','String','','Value',olfactometerInstructions(settingNumber).used,'Position', position);
 
+    
+    %%
+    % If additional settings are necessary for the particular protocol this
+    if ~isempty(additionalSettings)
+        for i = 1 : length(additionalSettings)
+            fh = str2func(additionalSettings(i)); % make string of selected additional Setting to function handle
+            fh(instruction,olfactometerInstructions); % evaluate function handle, i.e. call function
+        end
+    end
 end
 
 %% 
 
-if strmatch(instruction,'get')
+if strncmp(instruction,'get',3)
     % Get the information in the Gui prior to sending the commands to the
     % olfactometer.
    disp('To Do: code extract information from gui about olfactometerInstructions') 
+   get(h.olfactometerSettings.edit,'string')
 end
 end
 
