@@ -1,0 +1,3 @@
+;
+UnGate, slaveIndex, finalValveIndex	; Closes the final valve. The index is set in the core lsq file
+;

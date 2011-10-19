@@ -28,14 +28,19 @@ closeGui; %
 % 3. Notes field
 sessionNotes('setUp'); % sessionNotes is a function private to the stimulation protocols. Sets up a panel with possibilities for note taking
 
-% 4. End session button
-endSession; % endSession is a function private to the stimulation protocols. Sets up a functional button to end the session, save the smell structure, disconnect from LASOM etc.
+% % 4. Start session button % not necessary for the manualStim protocol
+% startSession;
 
-% % 5. Pause session button
+% 5. End session button
+quitSession; % endSession is a function private to the stimulation protocols. Sets up a functional button to end the session, save the smell structure, disconnect from LASOM etc.
+
+% % 6. Pause session button
 % pauseSession; % pauseSession is a function private to the stimulation protocols. Sets up a functional button to pause the session
 
-% 6. OlfactometerInstructions
-olfactometerInstructions('setUp');
+% 7. OlfactometerInstructions
+olfactometerSettings('setUp');
+
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -109,6 +114,7 @@ if olfactometerOdors.mixtures.used
     for i = 1 : numberOfMixtures % go through every position of the olfactometer        
         odorCounter = odorCounter+1;
         % Define name for mixture
+        a = cell(1,length(olfactometerOdors.mixtures.sessionOdors(odorCounter).odorName));
         for k = 1 : length(olfactometerOdors.mixtures.sessionOdors(odorCounter).odorName)
             a{k} = olfactometerOdors.mixtures.sessionOdors(odorCounter).odorName{k};
             a{k}(4:end)=[];
@@ -131,7 +137,7 @@ clear pushButtonWidth; clear pushButtonHeight;clear i
 clear position;clear pushButtonPosition; clear spacing; clear usedVials;
 clear mixtures;clear activeSlaves;clear j
 
-% uiwait
+% uiwait(h.guiHandle)
 
 
 
@@ -139,7 +145,7 @@ clear mixtures;clear activeSlaves;clear j
 end
 
 
-function triggerOdorCallback(source,eventdata,trialOdor,stimProtocol)
+function triggerOdorCallback(~,~,trialOdor,stimProtocol)
 global trialNum
 
 trialNum = round(trialNum+1); % every time a odor is triggered a new trial is counted
@@ -148,10 +154,10 @@ progressPanel('update',trialOdor,trialNum)
 
 end
 
-function triggerEmptyOdorCallback(source,eventdata)
-    warning('No odor present in this position of the olfactometer. If you want to use this vial restart olfStim and change the information in the odorSelectionGui.')
+function triggerEmptyOdorCallback(~,~)
+warning('No odor present in this position of the olfactometer. If you want to use this vial restart olfStim and change the information in the odorSelectionGui.')
 end
 
 function closeGuiCallback
-uiresume
+uiresume(h.guiHandle)
 end

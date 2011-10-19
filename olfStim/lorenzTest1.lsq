@@ -16,7 +16,7 @@ Param, odorValveIndex, 1 		; odorValveIndex specifies two odor valves to be open
 ; They are usually overridden at the start of a session.
 ; ------------------------------------------------------
 ;
-Param, finalValveBeforeSniffing, 1	; 
+Param, finalValveBeforeSniffing, 1  ; 
 Param, debug, 0				; in the debug mode the program will output several control signals.
 ;
 ; ------------------------------------------------------

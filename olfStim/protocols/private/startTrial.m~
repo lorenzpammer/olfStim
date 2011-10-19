@@ -1,6 +1,0 @@
-function startTrial(olfactometerInstructions)
-    % You don't have to define in the olfactometerInstructions: opening of
-    % the two odor gating valves & empty vial gating valves, always at
-    % timepoint 0. 
-    % 
-end

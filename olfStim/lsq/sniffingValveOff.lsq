@@ -1,0 +1,3 @@
+;
+UnGate, slaveIndex, sniffingValveIndex     ; Closes the sniffing valve. The index is set in the core lsq file
+;

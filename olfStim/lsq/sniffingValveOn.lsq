@@ -1,0 +1,3 @@
+;
+Gate, slaveIndex, sniffingValveIndex     ; Opens the sniffing valve. The index is set in the core lsq file
+;
