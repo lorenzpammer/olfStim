@@ -6,7 +6,7 @@ function selectedProtocol = protocolChooserSubGui
 global h
 global selectedProtocol
 
-guiHandle = figure('Visible','on','Position',[360,500,800,360]);
+guiHandle = figure('Visible','on','Position',[360,500,800,360],'Name','OlfStim');
 h.guiHandle = guiHandle;
 
 % Construct the components of the gui.

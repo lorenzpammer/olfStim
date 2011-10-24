@@ -78,7 +78,6 @@ if strncmp(instruction,'setUp',5)
         panelPosition(2) = spacing;
         panelPosition(3) = figurePosition(3) - sessionNotesPanel(1) - sessionNotesPanel(3) - quitSessionPosition(3) - spacing*3;
         panelPosition(4) = sessionNotesPanel(2) + sessionNotesPanel(4);
-        
     end
     clear sessionNotesPanel;clear figurePosition;clear quitSessionPosition; 
     
@@ -110,9 +109,6 @@ if strncmp(instruction,'setUp',5)
     end
     clear counter; clear width; clear height
 
-    %% Define the size of the edit field ('edit') and its descriptor ('text')
-    textHeight = 30; textWidth = 70;
-    editHeight = 25; editWidth = 50;
     
     %% Set up olfactometerInstructions structure
     olfactometerInstructions = struct('name',{'lsq #' 'mfcTotalFlow' 'powerGatingValve' 'powerFinalValve' 'closeSuctionValve',...
@@ -126,8 +122,38 @@ if strncmp(instruction,'setUp',5)
         % Default: closeSniffingValveTime, openSuctionValveTime,
         % unpowerFinalValveTime, unpowerGatingValveTime, purgeTime are all
         % at the same time after "odorPresentationTime"
+    
+        %% Define the size of the edit field ('edit') and its descriptor ('text')
+    textHeight = 30; textWidth = 70;
+    editHeight = 25; editWidth = 50;
         
-        
+    %% Graphical depiction of a sequence of events in a trial
+    
+    % First create a button which allows one to open and close the
+    % graphical depiction of the sequence of events, but also checks
+    % whether the sequence makes sense (eg when one valve is opened it must
+    % be closed as well)
+    position = [panelPosition(1)+panelPosition(3)-53 panelPosition(2)+spacing 50 25];
+    h.olfactometerSettings.trialSeqButton = uicontrol('Position',position,'String','Trial Seq',...
+        'Callback',@trialSeqButton);
+    
+    position = get(h.guiHandle,'Position');
+    position = [(position(1:3) - [0 160 0]) 130]
+    h.olfactometerSettings.trialSeqFig = figure('Position',position,'menubar','none','CloseRequestFcn',@close_trialSeqFig,...
+        'Visible','off');
+    
+    h.olfactometerSettings.trialSeqGraph = axes('Units','Pixels');
+    position(1) = 5; % x
+    position(2) = 35; % y
+    position(3) = position(3)-10; % 
+    position(4) = position(4)-40;
+    set(h.olfactometerSettings.trialSeqGraph,'Ytick',[],'Position',position)
+    xlabel(h.olfactometerSettings.trialSeqGraph,'Seconds');
+    ylim([0 10])
+    
+    position = [position(3)-35 5 33 20];
+    h.olfactometerSettings.help = uicontrol('Position',position,'String','Help',...
+        'Callback',@helpButton_Callback);
     
     %% Define the options which can be set to control the olfactometer
     
@@ -361,6 +387,42 @@ if strncmp(instruction,'get',3)
    disp('To Do: code extract information from gui about olfactometerInstructions') 
    get(h.olfactometerSettings.edit,'string')
 end
+end
+
+
+% 
+function trialSeqButton(~,~)
+
+if strncmp(get(h.olfactometerSettings.trialSeqFig,'Visible'),'on',2)
+    set(h.olfactometerSettings.trialSeqFig,'Visible','off');
+elseif strncmp(get(h.olfactometerSettings.trialSeqFig,'Visible'),'off',3)
+    set(h.olfactometerSettings.trialSeqFig,'Visible','on');
+    
+    % Add here checking of the parameters
+    
+end
+
+end
+
+function close_trialSeqFig(~,~)
+    set(h.olfactometerSettings.trialSeqFig,'Visible','off'); 
+end
+
+function helpButton_Callback(~,~)
+callingFunctionName = 'initOlfStim.m'; % Define the name of the initalizing function in the highest
+path = which(callingFunctionName);
+path(length(path)-length(callingFunctionName):length(path))=[];
+path=[path '/Documentation/Olfactometer_Schematic.tif'];
+helpImage = imread(path);
+h.olfactometerSettings.helpSchematicWindow = figure;%('CloseRequestFcn',@close_helpSchematicWindow)
+imshow(helpImage,'Border','tight')
+clear callingFunctionName; clear path;
+end
+% 
+
+function close_helpSchematicWindow(~,~)
+% set(h.olfactometerSettings.helpSchematicWindow,'Visible','off'
+% close(gcf)
 end
 
 % Add functions to add additional settings
