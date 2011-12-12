@@ -17,6 +17,7 @@ function smell = buildSmell(instruction,trialOdor,trialNum,stimProtocol,protocol
 
 
 global olfactometerOdors
+global smell
 global h
 
 %% Check whether inputs are correct
@@ -78,13 +79,19 @@ end
 %% Update smell structure for every trial
 
 if ~isempty(strmatch(instruction,'update'))
+    smell.trial(trialNum).odorName = []; % to set up a new struct array (1xtrialNum)
     % Find out how to extract information which function called buildSmell
-    smell.trial(trialNum) = trialOdor;
+    trialOdorFields = fields(trialOdor); % get name of fields in trialOdor (also present in smell
+    % update first couple of fields (same as in trialOdor) with the data for the current trial.
+    for i = 1 : length(trialOdorFields)
+        smell.trial(trialNum) = setfield(smell.trial(trialNum),trialOdorFields{i},getfield(trialOdor,trialOdorFields{i})); 
+    end
     smell.trial(trialNum).trialNum = trialNum;
     smell.trial(trialNum).stimProtocol = stimProtocol;
     smell.trial(trialNum).time = clock; % This only gives an approximate time, as the odor might be presented to the animal multiple seconds later.
     smell.trial(trialNum).protocolSpecificInfo = protocolSpecificInfo;
     smell.trial(trialNum).notes = get(h.sessionNotes.notesFigureField,'String'); % Extract text in the notes field.
+    
     
 end
 
