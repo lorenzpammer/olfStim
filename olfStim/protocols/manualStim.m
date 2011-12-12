@@ -37,7 +37,7 @@ quitSession; % endSession is a function private to the stimulation protocols. Se
 % % 6. Pause session button
 % pauseSession; % pauseSession is a function private to the stimulation protocols. Sets up a functional button to pause the session
 
-% 7. OlfactometerInstructions
+% 7. OlfactometerInstructionsi
 olfactometerSettings('setUp');
 
 

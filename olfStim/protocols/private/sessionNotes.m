@@ -62,7 +62,7 @@ if strncmp(instruction,'setUp',5)
     notesFieldPosition(4) = position(4) - 6;
     h.sessionNotes.notesFigureField = uicontrol(h.sessionNotes.notesFigure,'Style','edit',...
         'String','','Units','pixels','Position',notesFieldPosition);
-    set(h.sessionNotes.notesFigure,'CloseRequestFcn',@closeFcn)
+%     set(h.sessionNotes.notesFigure,'CloseRequestFcn',@closeFcn)
     
     notes=[];
 end
@@ -86,7 +86,7 @@ elseif strmatch(get(h.sessionNotes.notesFigure,'Visible'),'off')
 end
 
 end
-
-function closeFcn(~,~)
-    pushButton_Callback
-end
+% 
+% function closeFcn(~,~)
+%     pushButton_Callback
+% end
