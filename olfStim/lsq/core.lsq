@@ -1,7 +1,8 @@
 ; This is the core program for the LASOM2 controlled Olfactometer
-; This is the same for all 
+; This is the same for all subsequently assembled on top of the lines
+; of this file.
 ;
-; lpammer October, 18th 2011
+; lorenzpammer October, 18th 2011
 ;
 ;
 ; ------------------------------------------------------
@@ -10,7 +11,7 @@
 ; They are usually overridden with external definitions.
 ; ------------------------------------------------------
 ;
-Param, odorValveIndex, 1 		; odorValveIndex specifies two odor valves to be opened (N & air stream). Specified for each valve from host computer. range 1:9
+Param, odorValveIndex, 1 		; odorValveIndex specifies two gating odor valves to be opened (N & air stream). Specified for each valve from host computer. range 1:9
 Param, numberComponents, 1     ; number of components in the presented odorant. If only a single odor then equals 1.
 ;
 ; ------------------------------------------------------
@@ -19,7 +20,6 @@ Param, numberComponents, 1     ; number of components in the presented odorant. 
 ; They are usually overridden at the start of a session.
 ; ------------------------------------------------------
 ;
-Param, finalValveBeforeSniffing, 1  ; 
 Param, debug, 0				; in the debug mode the program will output several control signals.
 Param, odorValveFinalValveDelay, 3000	; 
 ;
@@ -31,8 +31,8 @@ Param, odorValveFinalValveDelay, 3000	;
 ;
 Param, finalValveIndex, 31              ; the final valve is the valve in front of the animal switching between the clean air & the odor.
 Param, sniffingValveIndex, 32			; the sniffing valve is the valve which gates the suction of air through the nose
-Param, exhaustValveIndex, 28			; the exhaust valve gates the suction around the delivery tube
-Param, humidityValveIndex, 27			; the humidity valve gates the delivery of humid air to the nose
+Param, suctionValveIndex, 28			; the suction valve gates the suction around the delivery tube
+Param, humidAirValveIndex, 27			; the humidity valve gates the delivery of humid air to the nose
 Param, startTrialTrigger, $DigIn1 		; defines line which when, will start the trial
 Param, slave, 1                         ; defines from which slave module the valves are driven
 ;

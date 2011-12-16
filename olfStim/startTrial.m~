@@ -1,0 +1,8 @@
+function startTrial
+% startTrial(smell)
+% This function creates a 
+
+global smell
+
+
+end

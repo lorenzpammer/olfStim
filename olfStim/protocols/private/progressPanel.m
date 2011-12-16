@@ -16,22 +16,24 @@ global h
 % When setting up the gui the following lines are called
 if strmatch(instruction,'setUp')
     if nargin<3
-        position = get(h.guiHandle,'Position');
-        panelWidth=position(3)-10; panelHeight = 100;
-        panelPosition =[5 position(4)-panelHeight panelWidth panelHeight];
+        position = get(h.guiHandle,'Position'); % get position of main gui window
+        panelWidth=position(3)-10; panelHeight = 100; % set the width and height of the progress panel
+        panelPosition =[5 position(4)-panelHeight panelWidth panelHeight]; % set the position vector for the progress panel
         
     end
     
-    
+    % Set up the progress panel
     h.progressPanel = uipanel('Parent',h.guiHandle,'Title','Presented Odors',...
         'FontSize',12,'TitlePosition','centertop',...
-        'Units','pixels','Position',panelPosition); % 'Position',[x y width height]
+        'Units','pixels','Position',panelPosition); % 'Position',[x y width height] 
+    
     
     h.progressFigure = axes('Units','Pixels');
-    figurePosition(1) = panelPosition(1)+5; % x
-    figurePosition(2) = panelPosition(2)+15; % y
-    figurePosition(3) = panelPosition(3)-10; % 
-    figurePosition(4) = panelPosition(4)-30;
+    figurePosition(1) = panelPosition(1)+5; % Set the x position of the progress figure
+    figurePosition(2) = panelPosition(2)+15; % Set the y position of the progress figure
+    figurePosition(3) = panelPosition(3)-10; % Set the width of the progress figure
+    figurePosition(4) = panelPosition(4)-30; % Set the height of the progress figure
+    % Set up the figure where progress gets plotted
     set(h.progressFigure,'Ytick',[],'Xtick',(0:10000))
     set(h.progressFigure,'Position',figurePosition)
     xlim([0.5 10.5]); ylim([0 1])

@@ -111,7 +111,7 @@ if olfactometerOdors.mixtures.used
     pushButtonPosition(3) = pushButtonWidth;
     odorCounter=0;
     j=3;
-    for i = 1 : numberOfMixtures % go through every position of the olfactometer        
+    for i = 1 : numberOfMixtures % go through every position of the olfactometer
         odorCounter = odorCounter+1;
         % Define name for mixture
         a = cell(1,length(olfactometerOdors.mixtures.sessionOdors(odorCounter).odorName));
@@ -138,9 +138,6 @@ clear position;clear pushButtonPosition; clear spacing; clear usedVials;
 clear mixtures;clear activeSlaves;clear j
 
 % uiwait(h.guiHandle)
-
-
-
 
 end
 

@@ -1,4 +1,4 @@
-function  buildSmell(instruction,trialOdor,trialNum,stimProtocol,protocolSpecificInfo)
+function smell = buildSmell(instruction,trialOdor,trialNum,stimProtocol,protocolSpecificInfo)
 % buildSmell(instruction,trialOdor,trialNum,stimProtocol) creates or
 % updates the smell structure.
 % The smell structure contains the relevant information about every trial
@@ -17,7 +17,7 @@ function  buildSmell(instruction,trialOdor,trialNum,stimProtocol,protocolSpecifi
 
 
 global olfactometerOdors
-global smell 
+ global smell 
 global h
 
 %% Check whether inputs are correct
