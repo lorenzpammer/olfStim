@@ -261,7 +261,7 @@ for i = 1 : length(smell.trial)
         ' in slave #' num2str(smell.trial(i).slave) '\n']);
     disp(message)
     
-    
+    startTrial(i);
     
     
     
