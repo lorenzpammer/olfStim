@@ -7,7 +7,8 @@ function olfactometerSettings(instruction,additionalSettings,panelPosition)
 % instruction is either 'setUp' - when building the gui at the beginning of
 % a session this option will add the panel and all the user defineable
 % settings to the gui. 
-% or 'get' - which is called at the beginning of every trial before
+% or 'get' - which is called at the beginning of every trial from the
+% stimulation protocol functions, before calling buildSmell('update') and
 % commands are sent to the LASOM. The instruction 'get' will cause the
 % function to extract all values from the user defineable settings and give
 % them as a output in the olfactometerInstructions structure.
@@ -15,7 +16,8 @@ function olfactometerSettings(instruction,additionalSettings,panelPosition)
 % olfactometerInstructions(instruction, additionalSettings)
 % If you want to allow the user to define further settings, you have to
 % specify a cell array of strings with the name of each new settings per
-% cell. Then add a new subfunction which can set 'setUp' or extract 'get' 
+% cell. Then add a new subfunction which can set 'setUp' or extract 'get'
+% these settings.
 % 
 % olfactometerInstructions(instruction, additionalSettings, panelPosition)
 % If you do not want to use the default position for the panel - at the
@@ -33,13 +35,12 @@ function olfactometerSettings(instruction,additionalSettings,panelPosition)
 % 
 % Resolve: 
 % - the variable olfactometerInstructions is 
-% - 
+% 
 %
-
 % lorenzpammer 2011/09
 
 global h
-% global smell
+global smell
 global olfactometerInstructions
 
 %% Check inputs
@@ -450,6 +451,7 @@ if strncmp(instruction,'get',3)
     % olfactometer.
    disp('To Do: code extract information from gui about olfactometerInstructions') 
    get(h.olfactometerSettings.edit,'string')
+   
 end
 end
 

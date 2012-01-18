@@ -267,7 +267,6 @@ for i = 1 : length(smell.trial)
     
     
 end
-a=2
 
 
 

@@ -143,13 +143,32 @@ end
 
 
 function triggerOdorCallback(~,~,trialOdor,stimProtocol)
+% This trial triggering function should be used in all stimulation
+% protocols.
+
 global trialNum
 
 trialNum = round(trialNum+1); % every time a odor is triggered a new trial is counted
-smell = buildSmell('update',trialOdor,trialNum,stimProtocol); % update smell structure
+
+% 1. extract the current olfactometerSettings. 
+%   This will update the global olfactometerSettings structure to the
+%   current instructions from the gui.
+olfactometerSettings('get')
+
+% 2. update the smell structure
+%   
+buildSmell('update',trialOdor,trialNum,stimProtocol); % update smell structure
+
+% 3. update the progress panel on the gui
 progressPanel('update',trialOdor,trialNum)
 
+% 4. star the new trial
+%   This will build the lsq file for the current trial, send the
+%   instructions to the olfactometer and trigger the trial.
+startTrial(trialNum);
+
 end
+
 
 function triggerEmptyOdorCallback(~,~)
 warning('No odor present in this position of the olfactometer. If you want to use this vial restart olfStim and change the information in the odorSelectionGui.')
