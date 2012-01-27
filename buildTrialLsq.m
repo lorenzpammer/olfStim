@@ -22,36 +22,73 @@ lsqPath(length(lsqPath)-length(callingFunctionName):length(lsqPath))=[];
 lsqPath=[lsqPath '/lsq/'];
 clear callingFunctionName
 
-coreLsq = fileread([lsqPath 'core.lsq']); % read in the core
-trialLsq = coreLsq;
+coreLsq = fileread([lsqPath 'core.lsq']); % read in the core lsq file (a text file)
+trialLsq = coreLsq; % Use trial Lsq for creating the trial specific Lsq
 
-if smell.trial(trialNum).mixture == 0  %
+% Check whether the odor presented in this trial is a pure odor or whether
+% odors from different slaves have to be mixed:
+if smell.trial(trialNum).mixture == 0  
     
-    %
-    replaceString1 = 'Param, odorValveIndex, 1';
-    replaceString2 = 'Label, @startTrial';
-    replaceLocation1 = strfind(trialLsq,replaceString1);
-    replaceLocation2 = strfind(trialLsq,replaceString2);
-    
-    
+    % 1. change parameter from which vial the odor is drawn:
+    replaceString = 'Param, odorValveIndex, 1';
+    replaceLocation = strfind(trialLsq,replaceString);
     if isempty(replaceLocation)
         error([replaceString ' not found in lsq file. No updating possible.'])
     end
-    if ~isempty(smell.trial(trialNum).vial) % if the odor gating valves are specified
-        replaceString1(end) = num2str(smell.trial(trialNum).vial);
-        trialLsq(replaceLocation1:replaceLocation1+length(replaceString1)-1) = replaceString1;
+    if ~isempty(smell.trial(trialNum).vial)
+        replaceString(end) = num2str(smell.trial(trialNum).vial);
+        trialLsq(replaceLocation:replaceLocation+length(replaceString)-1) = replaceString;
+    
+    % if no odor gating valves have to be opened (air is presented)
+    else 
+        replaceString(end) = num2str(0);
+        trialLsq(replaceLocation:replaceLocation+length(replaceString)-1) = replaceString;
+    end
+    
+    % 2. change parameter in which slave the vial is located. The slave
+    % parameter only applies to odor gating valves, as all other valves
+    % (final, sniffing, etc.) are on slave 1
+    replaceString = 'Param, slave, 1';
+    replaceLocation = strfind(trialLsq,replaceString);
+    if isempty(replaceLocation)
+        error([replaceString ' not found in lsq file. No updating possible.'])
+    end
+    
+    % If an odor is presented
+    if ~isempty(smell.trial(trialNum).vial)
+        replaceString(end) = num2str(smell.trial(trialNum).slave);
+        trialLsq(replaceLocation:replaceLocation+length(replaceString)-1) = replaceString;
+    
+    % if no odor gating valves have to be opened (air is presented)
+    else 
+        replaceString(end) = num2str(0);
+        trialLsq(replaceLocation:replaceLocation+length(replaceString)-1) = replaceString;
+    end
+    
+    
+    % 3. Add the command to trigger the odor gating valves
+    replaceString2 = 'Label, @startTrial';
+    replaceLocation2 = strfind(trialLsq,replaceString2);
+    
+    % if the odor gating valves are specified:
+    if ~isempty(smell.trial(trialNum).vial)
+        
         odorValveLsq = fileread([lsqPath 'odorValve.lsq']); % read in the core
         
         trialLsq(replaceLocation2+length(replaceString2)+1 : replaceLocation2+length(replaceString2)+length([odorValveLsq trialLsq(replaceLocation2+length(replaceString2) : end)])) = ...
             [odorValveLsq trialLsq(replaceLocation2+length(replaceString2) : end)];
-        
-    else
-        replaceString1(end) = num2str(0);
-        trialLsq(replaceLocation:replaceLocation+length(replaceString1)-1) = replaceString1;
     end
     
+    % 4. Send trial start timestamp via digital 
     
     
+    
+    
+    disp(trialLsq)
+    
+    
+    
+   
     
 elseif smell.trial(trialNum).mixture == 1
     error('Not programmed yet.')

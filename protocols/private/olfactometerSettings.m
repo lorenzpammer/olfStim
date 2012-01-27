@@ -33,9 +33,9 @@ function olfactometerSettings(instruction,additionalSettings,panelPosition)
 % open sniffing valve time - default 0.25 s
 % odor presentation time - default 1s
 % 
-% Resolve: 
+% To do: 
 % - the variable olfactometerInstructions is 
-% 
+% - add a 'use' option to purge 
 %
 % lorenzpammer 2011/09
 
@@ -450,7 +450,7 @@ if strncmp(instruction,'get',3)
     % Get the information in the Gui prior to sending the commands to the
     % olfactometer.
    disp('To Do: code extract information from gui about olfactometerInstructions') 
-   get(h.olfactometerSettings.edit,'string')
+   get(h.olfactometerSettings.edit,'string');
    
 end
 end
@@ -624,9 +624,9 @@ elseif strncmp(get(h.olfactometerSettings.trialSeqFig,'Visible'),'off',3)
     i=6;
     index = strcmp('cleanNose',settingsName);
     color = get(h.olfactometerSettings.edit(index),'BackgroundColor');
-    plot(axisHandle,[0 olfactometerInstructions(cn).value olfactometerInstructions(cn).value olfactometerInstructions(cn).value+3 olfactometerInstructions(cn).value+3 100],...
+    plot(axisHandle,[0 olfactometerInstructions(cn).value olfactometerInstructions(cn).value olfactometerInstructions(cn).value+2 olfactometerInstructions(cn).value+2 100],...
         [i i i+0.5 i+0.5 i i],'-k','Linewidth',1.5,'Color',color)
-    value{i} = olfactometerInstructions(cn).value+3;
+    value{i} = olfactometerInstructions(cn).value+2;
     
     
     ylim([0 i+1])

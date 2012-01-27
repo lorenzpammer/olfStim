@@ -8,7 +8,13 @@ function odorLibrary=odorLibraryGenerator
 % A) and add a new field for the odor in C), following the conventions of
 % the other odors.
 %
-% Lorenz Pammer, March/2011
+% http://www.thegoodscentscompany.com
+%  
+%
+% Left to do:
+% Add vapor pressure to the odors.
+%
+% lorenzpamemr, March/2011
 %
 
 %% A) List odors in the library:
@@ -45,6 +51,7 @@ for i = 1 : length(odorLibrary)
         odorLibrary(i).dilutedIn = []; % in which solution the odor was diluted: 'Water' 'Paraffin oil' 'Mineral oil' or [] if no dilution
         odorLibrary(i).concentrationAtPresentation = 0.005; % concentration as volume fraction (v/v) of saturated headspace, which is presented to the animal: 0-1
         odorLibrary(i).inflectionPointResponseCurve = []; % concentration (v/v, of saturated head space) of presented odorant at which the response curve as measured in olfactory nerve has its inflection point.
+        odorLibrary(i).vaporPressure = [12.53 25]; % vapor pressure in Pascal @ 25?C. For mixtures use Raoult's law. To convert mmHg into Pascal multiply by 133.322
     end
 end
 
@@ -61,6 +68,7 @@ for i = 1 : length(odorLibrary)
         odorLibrary(i).dilutedIn = []; % in which solution the odor was diluted: 'Water' 'Paraffin oil' 'Mineral oil' or [] if no dilution
         odorLibrary(i).concentrationAtPresentation = 0.005; % concentration as volume fraction (v/v) of saturated headspace, which is presented to the animal: 0-1
         odorLibrary(i).inflectionPointResponseCurve = []; % concentration (v/v, of saturated head space) of presented odorant at which the response curve as measured in olfactory nerve has its inflection point.
+        odorLibrary(i).vaporPressure = [15267.811 25]; % vapor pressure in Pascal @ 25?C. For mixtures use Raoult's law. To convert mmHg into Pascal multiply by 133.322
     end
 end
 
@@ -77,6 +85,7 @@ for i = 1 : length(odorLibrary)
         odorLibrary(i).dilutedIn = []; % in which solution the odor was diluted: 'Water' 'Paraffin oil' 'Mineral oil' or [] if no dilution
         odorLibrary(i).concentrationAtPresentation = 0.005; % concentration as volume fraction (v/v) of saturated headspace, which is presented to the animal: 0-1
         odorLibrary(i).inflectionPointResponseCurve = []; % concentration (v/v, of saturated head space) of presented odorant at which the response curve as measured in olfactory nerve has its inflection point.
+        odorLibrary(i).vaporPressure = [86.66 25]; % vapor pressure in Pascal @ 25?C. For mixtures use Raoult's law. To convert mmHg into Pascal multiply by 133.322
     end
 end
 
@@ -94,6 +103,7 @@ for i = 1 : length(odorLibrary)
         odorLibrary(i).dilutedIn = 'Paraffin oil'; % in which solution the odor was diluted: 'Water' 'Paraffin oil' 'Mineral oil' or [] if no dilution
         odorLibrary(i).concentrationAtPresentation = 0.005; % concentration as volume fraction (v/v) of saturated headspace, which is presented to the animal: 0-1
         odorLibrary(i).inflectionPointResponseCurve = []; % concentration (v/v, of saturated head space) of presented odorant at which the response curve as measured in olfactory nerve has its inflection point.
+        odorLibrary(i).vaporPressure = [253.3 25]; % vapor pressure in Pascal @ 25?C. For mixtures use Raoult's law. To convert mmHg into Pascal multiply by 133.322
     end
 end
 
@@ -110,6 +120,7 @@ for i = 1 : length(odorLibrary)
         odorLibrary(i).dilutedIn = []; % in which solution the odor was diluted: 'Water' 'Paraffin oil' 'Mineral oil' or [] if no dilution
         odorLibrary(i).concentrationAtPresentation = 0.005; % concentration as volume fraction (v/v) of saturated headspace, which is presented to the animal: 0-1
         odorLibrary(i).inflectionPointResponseCurve = []; % concentration (v/v, of saturated head space) of presented odorant at which the response curve as measured in olfactory nerve has its inflection point.
+        odorLibrary(i).vaporPressure = [26.66 20]; % vapor pressure in Pascal @ 20?C. For mixtures use Raoult's law. To convert mmHg into Pascal multiply by 133.322
     end
 end
 
@@ -126,6 +137,7 @@ for i = 1 : length(odorLibrary)
         odorLibrary(i).dilutedIn = 'Paraffin oil'; % in which solution the odor was diluted: 'Water' 'Paraffin oil' 'Mineral oil' or [] if no dilution
         odorLibrary(i).concentrationAtPresentation = 0.005; % concentration as volume fraction (v/v) of saturated headspace, which is presented to the animal: 0-1
         odorLibrary(i).inflectionPointResponseCurve = []; % concentration (v/v, of saturated head space) of presented odorant at which the response curve as measured in olfactory nerve has its inflection point.
+        odorLibrary(i).vaporPressure = [13.87 25]; % vapor pressure in Pascal @ 25?C. For mixtures use Raoult's law. To convert mmHg into Pascal multiply by 133.322
     end
 end
 
@@ -142,6 +154,7 @@ for i = 1 : length(odorLibrary)
         odorLibrary(i).dilutedIn = []; % in which solution the odor was diluted: 'Water' 'Paraffin oil' 'Mineral oil' or [] if no dilution
         odorLibrary(i).concentrationAtPresentation = 0.005; % concentration as volume fraction (v/v) of saturated headspace, which is presented to the animal: 0-1
         odorLibrary(i).inflectionPointResponseCurve = []; % concentration (v/v, of saturated head space) of presented odorant at which the response curve as measured in olfactory nerve has its inflection point.
+        odorLibrary(i).vaporPressure = [34.13 25]; % CAREFUL! vapor pressure in Pascal @ 25?C. For mixtures use Raoult's law. To convert mmHg into Pascal multiply by 133.322
     end
 end
 
@@ -158,6 +171,7 @@ for i = 1 : length(odorLibrary)
         odorLibrary(i).dilutedIn = []; % in which solution the odor was diluted: 'Water' 'Paraffin oil' 'Mineral oil' or [] if no dilution
         odorLibrary(i).concentrationAtPresentation = 0.005; % concentration as volume fraction (v/v) of saturated headspace, which is presented to the animal: 0-1
         odorLibrary(i).inflectionPointResponseCurve = []; % concentration (v/v, of saturated head space) of presented odorant at which the response curve as measured in olfactory nerve has its inflection point.
+        odorLibrary(i).vaporPressure = [1453.21 25]; % vapor pressure in Pascal @ 25?C. For mixtures use Raoult's law. To convert mmHg into Pascal multiply by 133.322
     end
 end
 
@@ -174,6 +188,7 @@ for i = 1 : length(odorLibrary)
         odorLibrary(i).dilutedIn = []; % in which solution the odor was diluted: 'Water' 'Paraffin oil' 'Mineral oil' or [] if no dilution
         odorLibrary(i).concentrationAtPresentation = 0.005; % concentration as volume fraction (v/v) of saturated headspace, which is presented to the animal: 0-1
         odorLibrary(i).inflectionPointResponseCurve = []; % concentration (v/v, of saturated head space) of presented odorant at which the response curve as measured in olfactory nerve has its inflection point.
+        odorLibrary(i).vaporPressure = [126 25]; % vapor pressure in Pascal @ 25?C. For mixtures use Raoult's law. To convert mmHg into Pascal multiply by 133.322
     end
 end
 
@@ -190,6 +205,7 @@ for i = 1 : length(odorLibrary)
         odorLibrary(i).dilutedIn = []; % in which solution the odor was diluted: 'Water' 'Paraffin oil' 'Mineral oil' or [] if no dilution
         odorLibrary(i).concentrationAtPresentation = 0.005; % concentration as volume fraction (v/v) of saturated headspace, which is presented to the animal: 0-1
         odorLibrary(i).inflectionPointResponseCurve = []; % concentration (v/v, of saturated head space) of presented odorant at which the response curve as measured in olfactory nerve has its inflection point.
+        odorLibrary(i).vaporPressure = [1546.54 25]; % vapor pressure in Pascal @ 25?C. For mixtures use Raoult's law. To convert mmHg into Pascal multiply by 133.322
     end
 end
 
@@ -206,6 +222,7 @@ for i = 1 : length(odorLibrary)
         odorLibrary(i).dilutedIn = 'Paraffin oil'; % in which solution the odor was diluted: 'Water' 'Paraffin oil' 'Mineral oil' or [] if no dilution
         odorLibrary(i).concentrationAtPresentation = 0.005; % concentration as volume fraction (v/v) of saturated headspace, which is presented to the animal: 0-1
         odorLibrary(i).inflectionPointResponseCurve = []; % concentration (v/v, of saturated head space) of presented odorant at which the response curve as measured in olfactory nerve has its inflection point.
+        odorLibrary(i).vaporPressure = [746.61 25]; % vapor pressure in Pascal @ 20?C. For mixtures use Raoult's law. To convert mmHg into Pascal multiply by 133.322
     end
 end
 
@@ -221,7 +238,8 @@ for i = 1 : length(odorLibrary)
         odorLibrary(i).odorantDilution = 1; % volume fraction (v(odorant)/v(dilutive solution)) of odorant in the vial after diluting it with water or oil: 0-1
         odorLibrary(i).dilutedIn = []; % in which solution the odor was diluted: 'Water' 'Paraffin oil' 'Mineral oil' or [] if no dilution
         odorLibrary(i).concentrationAtPresentation = 0.005; % concentration as volume fraction (v/v) of saturated headspace, which is presented to the animal: 0-1
-        odorLibrary(i).inflectionPointResponseCurve = []; % concentration (v/v, of saturated head space) of presented odorant at which the response curve as measured in olfactory nerve has its inflection point.
+        odorLibrary(i).inflectionPointResponseCurve = []; % concentration (v/v, of saturated head space) of presented odorant at which the response curve as measured in olfactory nerve has its inflection point.\
+        odorLibrary(i).vaporPressure = [0.26 25]; % vapor pressure in Pascal @ 20?C. For mixtures use Raoult's law. To convert mmHg into Pascal multiply by 133.322
     end
 end
 
@@ -238,6 +256,7 @@ for i = 1 : length(odorLibrary)
         odorLibrary(i).dilutedIn = []; % in which solution the odor was diluted: 'Water' 'Paraffin oil' 'Mineral oil' or [] if no dilution
         odorLibrary(i).concentrationAtPresentation = 0.005; % concentration as volume fraction (v/v) of saturated headspace, which is presented to the animal: 0-1
         odorLibrary(i).inflectionPointResponseCurve = []; % concentration (v/v, of saturated head space) of presented odorant at which the response curve as measured in olfactory nerve has its inflection point.
+        odorLibrary(i).vaporPressure = []; % vapor pressure in Pascal @ 20?C. For mixtures use Raoult's law. To convert mmHg into Pascal multiply by 133.322
     end
 end
 
@@ -254,6 +273,7 @@ for i = 1 : length(odorLibrary)
         odorLibrary(i).dilutedIn = []; % in which solution the odor was diluted: 'Water' 'Paraffin oil' 'Mineral oil' or [] if no dilution
         odorLibrary(i).concentrationAtPresentation = 0.005; % concentration as volume fraction (v/v) of saturated headspace, which is presented to the animal: 0-1
         odorLibrary(i).inflectionPointResponseCurve = []; % concentration (v/v, of saturated head space) of presented odorant at which the response curve as measured in olfactory nerve has its inflection point.
+        odorLibrary(i).vaporPressure = []; % vapor pressure in Pascal @ 20?C. For mixtures use Raoult's law. To convert mmHg into Pascal multiply by 133.322
     end
 end
 
@@ -270,6 +290,7 @@ for i = 1 : length(odorLibrary)
         odorLibrary(i).dilutedIn = []; % in which solution the odor was diluted: 'Water' 'Paraffin oil' 'Mineral oil' or [] if no dilution
         odorLibrary(i).concentrationAtPresentation = 0.005; % concentration as volume fraction (v/v) of saturated headspace, which is presented to the animal: 0-1
         odorLibrary(i).inflectionPointResponseCurve = []; % concentration (v/v, of saturated head space) of presented odorant at which the response curve as measured in olfactory nerve has its inflection point.
+        odorLibrary(i).vaporPressure = [3173.1 25]; % vapor pressure in Pascal @ 25?C. For mixtures use Raoult's law. To convert mmHg into Pascal multiply by 133.322
     end
 end
 
@@ -286,6 +307,7 @@ for i = 1 : length(odorLibrary)
         odorLibrary(i).dilutedIn = []; % in which solution the odor was diluted: 'Water' 'Paraffin oil' 'Mineral oil' or [] if no dilution
         odorLibrary(i).concentrationAtPresentation = 0.005; % concentration as volume fraction (v/v) of saturated headspace, which is presented to the animal: 0-1
         odorLibrary(i).inflectionPointResponseCurve = []; % concentration (v/v, of saturated head space) of presented odorant at which the response curve as measured in olfactory nerve has its inflection point.
+        odorLibrary(i).vaporPressure = []; % vapor pressure in Pascal @ 25?C. For mixtures use Raoult's law. To convert mmHg into Pascal multiply by 133.322
     end
 end
 

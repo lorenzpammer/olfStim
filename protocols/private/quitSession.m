@@ -26,9 +26,10 @@ end
 
 function quitPushButton_Callback(source,eventdata)
     disp('To do: Quit Session function')
+    dbstack
     % Disconnect from olfactometer
     % Round up smell structure
-    % save smell structure
-    
+    % save smell structure   
+    flush
 
 end

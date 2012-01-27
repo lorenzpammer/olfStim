@@ -18,6 +18,8 @@ function  buildSmell(instruction,trialOdor,trialNum,stimProtocol,protocolSpecifi
 % - check whether it's possible to "lock" the structure of smell. ie no new
 % fields are allowed to be added after the structure is once defined when
 % calling buildSmell('update').
+% - Write the numbers which will be output as 8-bit digital timestamps to
+% the recording software for each valve and for each trial into the smell structure.
 %
 % lorenzpammer 2011/09
 
@@ -112,7 +114,7 @@ if ~isempty(strmatch(instruction,'update'))
         smell.trial(trialNum).notes = [];
     end
     
-    mapOlfactometerSettingsToSmell(trialNum); % 
+%     mapOlfactometerSettingsToSmell(trialNum); % 
 end
 
 end

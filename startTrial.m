@@ -12,4 +12,8 @@ global smell
 trialLsq = buildTrialLsq(trialNum);
 
 
+pause(1) 
+disp(['Triggered trial ' num2str(trialNum)])
+    
+
 end

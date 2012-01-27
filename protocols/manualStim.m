@@ -157,10 +157,10 @@ olfactometerSettings('get')
 
 % 2. update the smell structure
 %   
-buildSmell('update',trialOdor,trialNum,stimProtocol); % update smell structure
+ buildSmell('update',trialOdor,trialNum,stimProtocol); % update smell structure
 
 % 3. update the progress panel on the gui
-progressPanel('update',trialOdor,trialNum)
+ progressPanel('update',trialOdor,trialNum)
 
 % 4. star the new trial
 %   This will build the lsq file for the current trial, send the
