@@ -82,7 +82,7 @@ if smell.trial(trialNum).mixture == 0
             [odorValveLsq trialLsq(replaceLocation+length(replaceString) : end)];
     end
     
-    % 2. Send trial start timestamp via digital 
+    % 4. Send trial start timestamp via digital 
     replaceString = '; eof';
     replaceLocation = strfind(trialLsq,replaceString);
     odorValveLsq = fileread([lsqPath 'odorValve.lsq']); % read in the core
@@ -100,8 +100,7 @@ if smell.trial(trialNum).mixture == 0
     disp(trialLsq)
     
 elseif smell.trial(trialNum).mixture == 1
-    
-    error(': Creating Lsq files for mixtures is not yet programmed.')
+    error('Not programmed yet.')
     
 else
     error('No information whether the odor is drawn from multiple vials or of one vial.')

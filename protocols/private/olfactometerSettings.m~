@@ -125,14 +125,12 @@ if strncmp(instruction,'setUp',5)
         'unit',{ 'l/m' 's' 's' 's' 's' 's' 's' 's' 's' 's' 's'},...
         'userSettingNumber',[],...
         'used',1,...
-        'timeStampID',[]);
+        'timeStampID',[]),
+        'maxFlowRateMFCAir',[],;
     
-    %% Hard code time stamp code for the different events
-    % timeStampDefinitions holds the definitions for the mapping of
-    % olfactometer events to time stamp values, and adds this information
-    % to the olfactometerInstructions structure.
-    
-    olfactometerInstructions = timeStampDefinitions(olfactometerInstructions);
+    % Default: closeSniffingValveTime, openSuctionValveTime,
+    % unpowerFinalValveTime, unpowerGatingValveTime, purgeTime are all
+    % at the same time after "odorPresentationTime"
     
     %% Define the size of the edit field ('edit') and its descriptor ('text')
     textHeight = 30; textWidth = 70;

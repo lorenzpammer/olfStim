@@ -13,12 +13,13 @@ function  buildSmell(instruction,trialOdor,trialNum,stimProtocol,protocolSpecifi
 % TO DO: 
 % - Get accurate timing information after trial from LASOM module and
 % write this into the smell structure, as a sanity check.
+% - There is currently no mechanism implemented, which checks for errors in
+% the user specified olfactometerSettings
 % - check whether it's possible to "lock" the structure of smell. ie no new
 % fields are allowed to be added after the structure is once defined when
 % calling buildSmell('update').
 % - Write the numbers which will be output as 8-bit digital timestamps to
 % the recording software for each valve and for each trial into the smell structure.
-% - prompt LASOM to get the maximum flow rate of the MFCs
 %
 % lorenzpammer 2011/09
 
@@ -49,11 +50,6 @@ if ~isempty(strmatch(instruction,'setUp'))
     % Basic information about the current trial
     smell.olfactometerOdors = olfactometerOdors; % structure containing information which odors are loaded into olfactometer
     smell.version = 0; % Define here which version of the smell structure was used - if anything has to change in the future downstream algorithms know what to do.
-    
-    % Get this from the olfactometer
-    smell.olfactometerSettings.maxFlowRateMFCAir = 1.5; % in liters/minute
-    smell.olfactometerSettings.maxFlowRateMFCNitrogen = 0.1; % in liters/minute
-    
     odorFields = fields(olfactometerOdors.sessionOdors(1));
     smell.trial(1) = cell2struct(cell(length(odorFields),1),odorFields,1); % all fields for each used odor are written to the smell structure: odorName,iupacName,CASNumber,producingCompany,odorantPurity,state,odorantDilution,dilutedIn,concentrationAtPresentation,inflectionPointResponseCurve,slave,vial,mixture,sessionOdorNumber
     smell.trial(1).trialNum = []; % Trial number in the current session
@@ -61,11 +57,28 @@ if ~isempty(strmatch(instruction,'setUp'))
     smell.trial(1).time = []; % time at time of start of a new trial (not the time of actual odor presentation)
     smell.trial(1).notes = []; % Notes that are taken during the session will be saved here. Every trial the notes are extracted from the field and written into this field in form of a string.
     
-    % User defined times to instruct the olfactometer.
-    % olfactometerInstructions structure is handled by
-    % olfactometerSettings.m function
-    smell.trial(1).olfactometerInstructions = olfactometerInstructions; 
+    % User defined times to instruct the olfactometer
+    smell.trial(1).olfactometerInstructions = struct('name',{'mfcTotalFlow' 'powerGatingValve' 'powerFinalValve' 'closeSuctionValve',...
+        'openSniffingValve' 'closeSniffingValve' 'openSuctionValve' 'unpowerFinalValve',...
+        'unpowerGatingValve' 'purge' 'cleanNose'},...
+        'value',cell(1,11),...
+        'unit',{ 'l/m' 's' 's' 's' 's' 's' 's' 's' 's' 's' 's'},...
+        'userSettingNumber',[],...
+        'used',1,...
+        'timestampID',[]);
     
+%     % smell.trial(1).odorConcentrationSettlingTime = [];
+%     % smell.trial(1).deadVolumePurgeTime = [];
+%     % smell.trial(1).odorPresentationTime = [];
+%     smell.trial(1).olfactometerInstructions.waitAfterOdorPresentation = [];
+%     smell.trial(1).olfactometerInstructions.cleanNoseTime = [];
+%     smell.trial(1).olfactometerInstructions.sniffValveUsed = [];
+%     smell.trial(1).olfactometerInstructions.humidAirValveUsed = [];
+%     smell.trial(1).olfactometerInstructions.noseCleaningUsed = [];
+%     smell.trial(1).olfactometerInstructions.purgeUsed = []; % Whether high gas flow in between trials is used
+%     smell.trial(1).olfactometerInstructions.flowRate = []; % Flow rate that reaches the animal in % of combined max flow of the two MFCs
+%     
+%     
 %     % Actual times of opening and closing valves. Times must be extracted
 %     % from LASOM after every trial.
 %     % MFC info, odorGatingValves, emptyVialGatingValves, finalValve,
@@ -78,14 +91,18 @@ if ~isempty(strmatch(instruction,'setUp'))
 %     smell.trial(1).humidAirValveUsed = [];  % Two element vector [powerOnTime,powerOffTime]
 %     smell.trial(1).MFCAir = []; % Mass Flow Controller output voltage. Ie the mass flow meter data, indicates the percentage of total flow
 %     smell.trial(1).MFCNitrogen = []; % Mass Flow Controller output voltage. Ie the mass flow meter data, indicates the percentage of total flow
-%     smell.trial(1).purge = []; % Sets the time, when the two MFCs are set to 100% in order to have maximal gas flow cleaning the lines between trials: [purgeTime] in seconds  
-    smell.trial(1).lasomEventLog = [];
-   
+%     smell.trial(1).purge = []; % Sets the time, when the two MFCs are set to 100% in order to have maximal gas flow cleaning the lines between trials: [purgeTime] in seconds
+%     
+    % Get the information from LASOM about the maximum flow rate of the two
+    % MFCs:
+    smell.trial(1).maxFlowRateMFCAir = []; % TO DO: Can LASOM figure this out?
+    smell.trial(1).maxFlowRateMFCNitrogen = []; % TO DO:  Can LASOM figure this out?
+    
+    
     
     smell.trial(1).protocolSpecificInfo = []; % Here any information specific for the current protocol can be dumped
 end
     
-
 %% Update smell structure for every trial
 
 if ~isempty(strmatch(instruction,'update'))
@@ -103,15 +120,21 @@ if ~isempty(strmatch(instruction,'update'))
     try
         smell.trial(trialNum).notes = get(h.sessionNotes.notesFigureField,'String'); % Extract text in the notes field.
     catch
-        dbstack
-        disp(': No session notes available. Setting field blank.')
+        disp('No session notes available. Setting field blank.')
         smell.trial(trialNum).notes = [];
     end
     
-    % olfactometerInstructions structure is updated in the
-    % olfactometerSettings function prior to calling build smell. Now write
-    % the updated instructions into the smell structure.
-    smell.trial(1).olfactometerInstructions = olfactometerInstructions;    
+    smell.trial(1).olfactometerInstructions = struct('name',{'mfcTotalFlow' 'powerGatingValve' 'powerFinalValve' 'closeSuctionValve',...
+        'openSniffingValve' 'closeSniffingValve' 'openSuctionValve' 'unpowerFinalValve',...
+        'unpowerGatingValve' 'purge' 'cleanNose'},...
+        'value',cell(1,11),...
+        'unit',{ 'l/m' 's' 's' 's' 's' 's' 's' 's' 's' 's' 's'},...
+        'userSettingNumber',[],...
+        'used',1,...
+        'timestampID',[]);
+    
+%     mapOlfactometerSettingsToSmell(trialNum); % 
+    disp('To Do: code extract information olfactometerInstructions and map it into smell') 
 
 end
 

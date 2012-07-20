@@ -1,18 +1,13 @@
 function initOlfStim
 % olfStim is the wrapper function calling the all necessary steps for odor
 % stimulation. The action goes on in the called functions.
-% 
-% To Do:
-% - Check whether connection with olfactometer can be established, whether
-% MFCs are present. 
-%
 % lorenzpammer 2011/07
 
 global smell % smell is the data structure containing all information relevant to the session
 global olfactometerOdors % olfactometerOdors is a data structure, that contains information about which odors are loaded into the olfactometer
 
-%% Check whether connection can be made to the olfactometer
-lasomFunctions('checkConnection');
+%% Check whether 
+
 
 %% User has to define which odors are loaded into olfactometer
 % start by opening the odorSelectionGui. User has to define which odorants
