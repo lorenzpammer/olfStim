@@ -38,6 +38,8 @@ function olfactometerSettings(instruction,additionalSettings,panelPosition)
 % To do:
 % - the variable olfactometerInstructions is
 % - add a 'use' option to purge
+% - add humidity valve control to olfactometerInstructions. Add to GUI and
+% to structure.
 %
 % lorenzpammer 2011/09
 

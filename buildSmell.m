@@ -19,6 +19,7 @@ function  buildSmell(instruction,trialOdor,trialNum,stimProtocol,protocolSpecifi
 % - Write the numbers which will be output as 8-bit digital timestamps to
 % the recording software for each valve and for each trial into the smell structure.
 % - prompt LASOM to get the maximum flow rate of the MFCs
+% - add intertrial interval information to each smell.trial
 %
 % lorenzpammer 2011/09
 
@@ -79,10 +80,16 @@ if ~isempty(strmatch(instruction,'setUp'))
 %     smell.trial(1).MFCAir = []; % Mass Flow Controller output voltage. Ie the mass flow meter data, indicates the percentage of total flow
 %     smell.trial(1).MFCNitrogen = []; % Mass Flow Controller output voltage. Ie the mass flow meter data, indicates the percentage of total flow
 %     smell.trial(1).purge = []; % Sets the time, when the two MFCs are set to 100% in order to have maximal gas flow cleaning the lines between trials: [purgeTime] in seconds  
-    smell.trial(1).lasomEventLog = [];
-   
     
-    smell.trial(1).protocolSpecificInfo = []; % Here any information specific for the current protocol can be dumped
+    % Field for storing the event log from the LASOM after the execution of
+    % the trial:
+    smell.trial(1).lasomEventLog = [];
+    % Field for storing the lsq file (lasom sequencer script) for each
+    % trial:
+    smell.trial(1).trialLsqFile = []; 
+   
+    % Here any information specific for the current protocol can be dumped
+    smell.trial(1).protocolSpecificInfo = []; 
 end
     
 

@@ -17,7 +17,8 @@ global smell
 % olfactometerInstructions for the current trial.
 
 trialLsq = buildTrialLsq(trialNum);
-
+smell.trial(trialNum).trialLsqFile = trialLsq;
+% Add the lsq file for the current trial into the smell structure
 
 %%
 lasomFunction('connect');

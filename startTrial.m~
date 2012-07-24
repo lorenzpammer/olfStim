@@ -5,15 +5,20 @@ function startTrial(trialNum)
 % whether numbers make sense or not. Will just result in errors or
 % incorrect triggering of the vials.
 %
-% - To do: get the o
+% - To do: get the actual timing of events from LASOM and write it into the
+% smell structure.
 %
 % lorenzpammer dec 2011
 
 global smell
 
-%%
-trialLsq = buildTrialLsq(trialNum);
+%% Build the lsq file for the current trial
+% buildTrialLsq.m will create an lsq file taking into account the
+% olfactometerInstructions for the current trial.
 
+trialLsq = buildTrialLsq(trialNum);
+smell.trial(trialNum).trialLsqFile = trialLsq;
+% Add the lsq file for the current trial into the smell structure
 
 %%
 lasomFunction('connect');
