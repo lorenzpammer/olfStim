@@ -9,6 +9,9 @@ function trialLsq = buildTrialLsq(trialNum)
 % This function is called from startTrial.m
 %
 % - To DO: Check what happens if two actions start at the same time
+% - Fix how the digital outputs are triggered on LASOM. For now I'm using
+% the dummy output $DigOut1 but I think this can only be set to high or low
+% not to give out 8bit binary numbers.
 %
 % lorenzpammer 2011/12
 

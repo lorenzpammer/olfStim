@@ -118,7 +118,7 @@ if ~isempty(strmatch(instruction,'update'))
     % olfactometerInstructions structure is updated in the
     % olfactometerSettings function prior to calling build smell. Now write
     % the updated instructions into the smell structure.
-    smell.trial(1).olfactometerInstructions = olfactometerInstructions;    
+    smell.trial(trialNum).olfactometerInstructions = olfactometerInstructions;    
 
 end
 

@@ -21,25 +21,21 @@ smell.trial(trialNum).trialLsqFile = trialLsq;
 % Add the lsq file for the current trial into the smell structure
 
 %%
-lasomFunction('connect');
+% lasomFunctions('connect');
 
 
 %% set up LASOM
-invoke(h2, 'ClearSequence') 
-% invoke(h2, 'SetParamValue', 'WaitTime1', 400) 
-invoke(h2, 'ParseSeqFile', 'Example7.lsq') 
-invoke(h2, 'CompileSequence') 
-invoke(h2, 'LoadAndRunSequencer')
-
-% check the state of the variable
-get(h2, 'SequencerVar', 1)
-
-
+% invoke(h2, 'ClearSequence') 
+% % invoke(h2, 'SetParamValue', 'WaitTime1', 400) 
+% invoke(h2, 'ParseSeqFile', 'Example7.lsq') 
+% invoke(h2, 'CompileSequence') 
+% invoke(h2, 'LoadAndRunSequencer')
+% 
+% % check the state of the variable
+% get(h2, 'SequencerVar', 1)
 
 pause(1) 
 disp(['Triggered trial ' num2str(trialNum)])
-
-
     
 
 end
