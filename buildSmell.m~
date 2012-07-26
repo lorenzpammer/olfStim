@@ -19,7 +19,7 @@ function  buildSmell(instruction,trialOdor,trialNum,stimProtocol,protocolSpecifi
 % - Write the numbers which will be output as 8-bit digital timestamps to
 % the recording software for each valve and for each trial into the smell structure.
 % - prompt LASOM to get the maximum flow rate of the MFCs
-% - add intertrial interval information to smell
+% - add intertrial interval information to each smell.trial
 %
 % lorenzpammer 2011/09
 
@@ -32,6 +32,7 @@ global olfactometerInstructions
 %% Check whether inputs are correct
 if nargin < 1
     error('No instruction defined.')
+elseif strcmp('setUp
 elseif ~isempty(strmatch('update',instruction)) && nargin<2
     error('For updating smell structure, trial odor information is necessary.')
 elseif ~isempty(strmatch('update',instruction)) && nargin<3
@@ -43,11 +44,28 @@ elseif ~isempty(strmatch('update',instruction)) && nargin<5
     protocolSpecificInfo = []; % if no data is handed to the function for protocolSpecific Information this is set empty.
 end
 
+
+
 %% Set up smell structure
 
 if ~isempty(strmatch(instruction,'setUp'))
+   setUpSmellStructure(stimProtocol,protocolSpecificInfo); 
+end
     
-    % Basic information about the current trial
+
+%% Update smell structure for every trial
+
+if ~isempty(strmatch(instruction,'update'))
+    updateSmellStructure(instruction,trialOdor,trialNum,stimProtocol,protocolSpecificInfo);
+end
+
+end
+
+
+
+function setUpSmellStructure(stimProtocol,protocolSpecificInfo)
+
+ % Basic information about the current trial
     smell.olfactometerOdors = olfactometerOdors; % structure containing information which odors are loaded into olfactometer
     smell.version = 0; % Define here which version of the smell structure was used - if anything has to change in the future downstream algorithms know what to do.
     
@@ -91,12 +109,9 @@ if ~isempty(strmatch(instruction,'setUp'))
     % Here any information specific for the current protocol can be dumped
     smell.trial(1).protocolSpecificInfo = []; 
 end
-    
 
-%% Update smell structure for every trial
-
-if ~isempty(strmatch(instruction,'update'))
-    smell.trial(trialNum).odorName = []; % to set up a new struct array (1xtrialNum)
+function updateSmellStructure(instruction,trialOdor,trialNum,stimProtocol,protocolSpecificInfo)
+smell.trial(trialNum).odorName = []; % to set up a new struct array (1xtrialNum)
     % Find out how to extract information which function called buildSmell
     trialOdorFields = fields(trialOdor); % get name of fields in trialOdor (also present in smell
     % update first couple of fields (same as in trialOdor) with the data for the current trial.
@@ -118,8 +133,6 @@ if ~isempty(strmatch(instruction,'update'))
     % olfactometerInstructions structure is updated in the
     % olfactometerSettings function prior to calling build smell. Now write
     % the updated instructions into the smell structure.
-    smell.trial(1).olfactometerInstructions = olfactometerInstructions;    
-
-end
+    smell.trial(trialNum).olfactometerInstructions = olfactometerInstructions;    
 
 end

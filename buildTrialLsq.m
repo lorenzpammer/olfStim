@@ -1,7 +1,10 @@
 function trialLsq = buildTrialLsq(trialNum)
-% buildTrialLsq(trialNum)
+
+% trialLsq = buildTrialLsq(trialNum)
 %   will construct an LSQ file for the current trial using the information
-%   from the smell structure for the current trial.
+%   from the smell structure for the current trial. It returns the lsq file
+%   for the current trial and saves it in the /lsq folder in the olfStim
+%   directory.
 %
 % The .lsq files are sequencer files in a language readable by the LASOM
 % sequencer. This function allows a flexible creation of the
@@ -188,8 +191,19 @@ else
     error('No information whether the odor is drawn from multiple vials or of one vial.')
 end
 
+
+
+%% Save trialLsq file:
+fid = fopen([lsqPath 'trial.lsq'],'w');
+fprintf(fid,'%s',trialLsq);
+fclose(fid);
+clear fid;
+
 end
 
+            %% SUBFUNCTIONS
+    
+%% Utility functions
 
 function updatedLsqFile = replacePlaceHolderInLsq(lsqFile,replaceString,replacementString)
 % updatedLsqFile = replacePlaceHolderInLsq(lsqFile, replaceString, replacementString)

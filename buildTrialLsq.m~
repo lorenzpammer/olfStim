@@ -9,7 +9,9 @@ function trialLsq = buildTrialLsq(trialNum)
 % This function is called from startTrial.m
 %
 % - To DO: Check what happens if two actions start at the same time
-% - Fix 
+% - Fix how the digital outputs are triggered on LASOM. For now I'm using
+% the dummy output $DigOut1 but I think this can only be set to high or low
+% not to give out 8bit binary numbers.
 %
 % lorenzpammer 2011/12
 
@@ -186,8 +188,18 @@ else
     error('No information whether the odor is drawn from multiple vials or of one vial.')
 end
 
+
+
+%% Save trialLsq file:
+fid = fopen([lsqPath 'trial.lsq'])
+fprintf(fid,trialLsq)
+save([lsqPath 'trial.lsq'],trialLsq,'-ascii')
+
 end
 
+            %% SUBFUNCTIONS
+    
+%% Utility functions
 
 function updatedLsqFile = replacePlaceHolderInLsq(lsqFile,replaceString,replacementString)
 % updatedLsqFile = replacePlaceHolderInLsq(lsqFile, replaceString, replacementString)

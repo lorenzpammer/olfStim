@@ -1,16 +1,67 @@
-function lasomFunctions(instruction)
+function lasomH = lasomFunctions(instruction,lasomH, lsqFilePath)
 %
-% instruction - can be 
-% - 'checkConnection' -
-%   - 'connect', which establishes 
-% lorenzpammer July, 2012
+% lasomFunctions(instruction, lasomH, lsqFilePath)
+% The argument instruction is a string 
+%   - 'checkConnection', checks whether a connection to the LASOM can be
+%      established, if yes results in a positive message, if no, results in an
+%      error message, and will terminate olfStim. No input arguments
+%      besides instruction is necessary.
+%   - 'connect', establishes a connection to the LASOM. 
+%   - 'sendLsqToLasom' - clears old loaded sequences, sends the lsq code
+%      to the lasom board, and compiles it. The handle to the LASOM board
+%      and the path to the lsq file, that should be sent %      have to be provided as arguments.
+%   - 'loadAndRunSequencer'
+
+%
+% lorenzpammer 2012/07
+
+%% Check arguments to function
+
+if nargin < 1
+    error('Not enough input arguments.')
+elseif nargin < 2
+    lasomH = [];
+    lsqFilePath = [];
+elseif nargin <3
+    lsqFilePath = [];
+end
+
 
 %% extablish connection to LASOM
 
-if strcmp(instruction,'connect')
-lasomH = actxcontrol('LASOMX.LASOMXCtrl.1'); 
-invoke(h2, 'DevOpen', 0, 1);
-invoke(h2, 'GetLastError');
-invoke(h2, 'GetID');
+if strcmp(instruction,'checkConnection')
+    dbstack
+    disp(': Checking connection not yet programmed.')
+    
+
+elseif strcmp(instruction,'connect')
+    lasomH = actxcontrol('LASOMX.LASOMXCtrl.1');
+    invoke(lasomH, 'DevOpen', 0, 1);
+    invoke(lasomH, 'GetLastError');
+    invoke(lasomH, 'GetID');
+
+    
+elseif strcmp(instruction,'sendLsqToLasom')
+    if isempty(lsqFilePath) || isempty(lasomH)
+        errormsg=sprintf('Not enough input arguments. \nThe handle to the lasom board and the path to the lsq file, \nwhich should be parsed have to be provided.');
+        error(errormsg)
+        clear errormsg
+    end
+    % Clear old sequence
+    invoke(lasomH, 'ClearSequence')
+    invoke(lasomH, 'ParseSeqFile', lsqFilePath) 
+    invoke(lasomH, 'CompileSequence')
+
+    
+elseif strcmp(instruction,'loadAndRunSequencer')
+    % Check whether necessary data was provided:
+    if isempty(lsqFilePath)
+       errormsg=sprintf('Not enough input arguments. \nThe handle to the lasom board has to be provided.');
+        error(errormsg)
+        clear errormsg
+    end 
+    % Load the sequencer and run it:
+    invoke(lasomH, 'LoadAndRunSequencer') 
+end
 
 end

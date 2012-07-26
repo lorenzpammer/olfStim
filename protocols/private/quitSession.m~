@@ -18,7 +18,7 @@ global h
        buttonPosition(4) = buttonHeight;
     end
     h.quitSession = uicontrol('Parent',h.guiHandle,'Style','togglebutton',...
-        'String','Quit & Save','Units','pixels','Position',buttonPosition,'Callback',@quitPushButton_Callback);
+        'String','Quit','Units','pixels','Position',buttonPosition,'Callback',@quitPushButton_Callback);
     % Following commands set up a 3D matrix: 3 entries for every pixel of the
     % pushbutton. [1 0 0] in RGB is red
     colorMatrix(:,:,1) = ones(buttonHeight,buttonWidth);
@@ -37,13 +37,14 @@ global smell
 callingFunctionName = 'initOlfStim.m'; % Define the name of the initalizing function
 olfStimPath = which(callingFunctionName);
 olfStimPath(length(olfStimPath)-length(callingFunctionName):length(olfStimPath))=[];
-olfStimPath=[olfStimPath '/data/'];
+olfStimPath=[olfStimPath '/'];
 clear callingFunctionName
+
 
 defaultTitle = [datestr(date,'yyyy.mm.dd') '_smell'];
 % check if file with same name already exists
 
-[filename,pathname]=uiputfile('.mat','Save session data',[olfStimPath defaultTitle]);
+[filename,pathname]=uiputfile('.mat','Save session data',defaultTitle);
 if ischar(filename) && ischar(pathname) % only if filename and path specified
     extendedPath = [pathname filename];
     save(extendedPath,'smell')

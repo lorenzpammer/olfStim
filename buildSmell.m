@@ -18,7 +18,7 @@ function  buildSmell(instruction,trialOdor,trialNum,stimProtocol,protocolSpecifi
 % calling buildSmell('update').
 % - Write the numbers which will be output as 8-bit digital timestamps to
 % the recording software for each valve and for each trial into the smell structure.
-% - prompt LASOM to get the maximum flow rate of the MFCs
+% - prompt LASOM to get the maximum flow rate of the Mfcs
 % - add intertrial interval information to each smell.trial
 %
 % lorenzpammer 2011/09
@@ -32,6 +32,12 @@ global olfactometerInstructions
 %% Check whether inputs are correct
 if nargin < 1
     error('No instruction defined.')
+elseif strcmp('setUp',instruction) && nargin < 2
+    trialOdor = [];
+    trialNum = [];
+    stimProtocol = dbstack;
+    stimProtocol = stimProtocol(2).file(1:end-2); % 
+    protocolSpecificInfo =[];
 elseif ~isempty(strmatch('update',instruction)) && nargin<2
     error('For updating smell structure, trial odor information is necessary.')
 elseif ~isempty(strmatch('update',instruction)) && nargin<3
@@ -43,24 +49,49 @@ elseif ~isempty(strmatch('update',instruction)) && nargin<5
     protocolSpecificInfo = []; % if no data is handed to the function for protocolSpecific Information this is set empty.
 end
 
+
+
 %% Set up smell structure
 
 if ~isempty(strmatch(instruction,'setUp'))
+   setUpSmellStructure(stimProtocol,protocolSpecificInfo); 
+end
     
-    % Basic information about the current trial
+
+%% Update smell structure for every trial
+
+if ~isempty(strmatch(instruction,'update'))
+    updateSmellStructure(trialOdor,trialNum,stimProtocol,protocolSpecificInfo);
+end
+
+end
+
+
+
+function setUpSmellStructure(stimProtocol,protocolSpecificInfo)
+
+global olfactometerOdors
+global smell 
+global h
+global olfactometerInstructions
+%%
+    
+ % Basic information about the current trial
     smell.olfactometerOdors = olfactometerOdors; % structure containing information which odors are loaded into olfactometer
     smell.version = 0; % Define here which version of the smell structure was used - if anything has to change in the future downstream algorithms know what to do.
     
     % Get this from the olfactometer
-    smell.olfactometerSettings.maxFlowRateMFCAir = 1.5; % in liters/minute
-    smell.olfactometerSettings.maxFlowRateMFCNitrogen = 0.1; % in liters/minute
+    smell.olfactometerSettings.maxFlowRateMfcAir = 1.5; % in liters/minute
+    smell.olfactometerSettings.maxFlowRateMfcNitrogen = 0.1; % in liters/minute
     
     odorFields = fields(olfactometerOdors.sessionOdors(1));
     smell.trial(1) = cell2struct(cell(length(odorFields),1),odorFields,1); % all fields for each used odor are written to the smell structure: odorName,iupacName,CASNumber,producingCompany,odorantPurity,state,odorantDilution,dilutedIn,concentrationAtPresentation,inflectionPointResponseCurve,slave,vial,mixture,sessionOdorNumber
     smell.trial(1).trialNum = []; % Trial number in the current session
     smell.trial(1).stimProtocol = []; % which stimulation protocol was used for this session
     smell.trial(1).time = []; % time at time of start of a new trial (not the time of actual odor presentation)
-    smell.trial(1).notes = []; % Notes that are taken during the session will be saved here. Every trial the notes are extracted from the field and written into this field in form of a string.
+    smell.trial(1).notes = []; % Notes that are taken during the session will be saved here. Every trial the notes are extracted from the field and written into this field in form of a string.\
+    smell.trial(1).flowRateMfcAir = [];
+    smell.trial(1).flowRateMfcN = [];
     
     % User defined times to instruct the olfactometer.
     % olfactometerInstructions structure is handled by
@@ -77,9 +108,9 @@ if ~isempty(strmatch(instruction,'setUp'))
 %     smell.trial(1).suctionValve = []; % Two element vector [powerOnTime,powerOffTime]. Suction valve is normally open (NO) valve. powerOn therefore means closing of the valve, powerOff means opening of the valve.
 %     smell.trial(1).sniffingValve = []; % Two to four element vector [powerOnTime,powerOffTime,powerOnTime,powerOffTime]
 %     smell.trial(1).humidAirValveUsed = [];  % Two element vector [powerOnTime,powerOffTime]
-%     smell.trial(1).MFCAir = []; % Mass Flow Controller output voltage. Ie the mass flow meter data, indicates the percentage of total flow
-%     smell.trial(1).MFCNitrogen = []; % Mass Flow Controller output voltage. Ie the mass flow meter data, indicates the percentage of total flow
-%     smell.trial(1).purge = []; % Sets the time, when the two MFCs are set to 100% in order to have maximal gas flow cleaning the lines between trials: [purgeTime] in seconds  
+%     smell.trial(1).MfcAir = []; % Mass Flow Controller output voltage. Ie the mass flow meter data, indicates the percentage of total flow
+%     smell.trial(1).MfcNitrogen = []; % Mass Flow Controller output voltage. Ie the mass flow meter data, indicates the percentage of total flow
+%     smell.trial(1).purge = []; % Sets the time, when the two Mfcs are set to 100% in order to have maximal gas flow cleaning the lines between trials: [purgeTime] in seconds  
     
     % Field for storing the event log from the LASOM after the execution of
     % the trial:
@@ -91,11 +122,14 @@ if ~isempty(strmatch(instruction,'setUp'))
     % Here any information specific for the current protocol can be dumped
     smell.trial(1).protocolSpecificInfo = []; 
 end
-    
 
-%% Update smell structure for every trial
+function updateSmellStructure(trialOdor,trialNum,stimProtocol,protocolSpecificInfo)
 
-if ~isempty(strmatch(instruction,'update'))
+global olfactometerOdors
+global smell 
+global h
+global olfactometerInstructions
+%%
     smell.trial(trialNum).odorName = []; % to set up a new struct array (1xtrialNum)
     % Find out how to extract information which function called buildSmell
     trialOdorFields = fields(trialOdor); % get name of fields in trialOdor (also present in smell
@@ -119,7 +153,5 @@ if ~isempty(strmatch(instruction,'update'))
     % olfactometerSettings function prior to calling build smell. Now write
     % the updated instructions into the smell structure.
     smell.trial(trialNum).olfactometerInstructions = olfactometerInstructions;    
-
-end
 
 end

@@ -20,21 +20,45 @@ trialLsq = buildTrialLsq(trialNum);
 smell.trial(trialNum).trialLsqFile = trialLsq;
 % Add the lsq file for the current trial into the smell structure
 
+%% Connect to LASOM:
+% lasomH = lasomFunctions('connect');
+
+%% Send lsq file of the current trial to the LASOM
+
+callingFunctionName = 'startTrial.m'; % Define the name of the initalizing function
+lsqPath = which(callingFunctionName);
+lsqPath(length(lsqPath)-length(callingFunctionName):length(lsqPath))=[];
+lsqPath=[lsqPath '/lsq/'];
+clear callingFunctionName
+
+pathTrialLsq = [lsqPath 'trial.lsq'];
+% lasomFunctions('sendLsqToLasom',lasomH,pathTrialLsq);
+
+%% Start sequencer
+
+% lasomFunctions('loadAndRunSequencer');
+
+%% Set MFC flow rates
+
+
+slave = smell.trial(trialNum).slave;
+calculateMfcFlowRates(trialNum);
+percentOfCapacityAir = smell.trial(trialNum).flowRateMfcAir / smell.olfactometerSettings.maxFlowRateMfcAir;
+percentOfCapacityN = smell.trial(trialNum).flowRateMfcN / smell.olfactometerSettings.maxFlowRateMfcNitrogen;
+% invoke(lasomH,'SetMfcFlowRate',slave,1,percentOfCapacityAir);
+% invoke(lasomH,'SetMfcFlowRate',slave,2,percentOfCapacityN);
+
+clear percentOfCapacityAir;clear percentOfCapacityN;
+
+%% Let concentrations settle
+
+pause(3) % let settle for 3 minutes
+
+%% Trigger trial:
+
+
 %%
-% lasomFunctions('connect');
 
-
-%% set up LASOM
-% invoke(h2, 'ClearSequence') 
-% % invoke(h2, 'SetParamValue', 'WaitTime1', 400) 
-% invoke(h2, 'ParseSeqFile', 'Example7.lsq') 
-% invoke(h2, 'CompileSequence') 
-% invoke(h2, 'LoadAndRunSequencer')
-% 
-% % check the state of the variable
-% get(h2, 'SequencerVar', 1)
-
-pause(1) 
 disp(['Triggered trial ' num2str(trialNum)])
     
 

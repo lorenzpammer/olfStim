@@ -150,21 +150,10 @@ function triggerOdorCallback(~,~,trialOdor,stimProtocol)
 % protocols.
 
 global trialNum
-global smell
 
-%% First save the current smell file to the temp folder in case anything happens.
-callingFunctionName = 'initOlfStim.m'; % Define the name of the initalizing function
-olfStimPath = which(callingFunctionName);
-olfStimPath(length(olfStimPath)-length(callingFunctionName):length(olfStimPath))=[];
-olfStimPath=[olfStimPath '/temp/'];
-clear callingFunctionName
+% First save the current smell file to the temp folder in case anything
+% happens.
 
-defaultTitle = [datestr(date,'yyyy.mm.dd') '_smell_temp'];
-extendedPath = [olfStimPath defaultTitle '.mat'];
-save(extendedPath,'smell')
-clear olfStimPath defaultTitle
-
-%% Now trigger the trial
 
 trialNum = round(trialNum+1); % every time a odor is triggered a new trial is counted
 

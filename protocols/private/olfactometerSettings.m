@@ -694,7 +694,5 @@ function close_helpSchematicWindow(~,~)
 end
 
 
-
-
       
 %% Add subfunctions to add additional settings
