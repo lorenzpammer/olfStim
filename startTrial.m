@@ -7,6 +7,7 @@ function startTrial(trialNum)
 %
 % - To do: get the actual timing of events from LASOM and write it into the
 % smell structure.
+% - Figure out how to trigger the trial
 %
 % lorenzpammer dec 2011
 
@@ -57,6 +58,22 @@ pause(3) % let settle for 3 minutes
 %% Trigger trial:
 
 
+
+%% Purge at the end of trial
+
+% Extract the time at which purge should start:
+settingNames = {smell.trial(trialNum).olfactometerInstructions.name};
+index = find(strcmp('purge',settingNames));
+purgeTime = smell.trial(trialNum).olfactometerInstructions(index).value;
+
+if smell.trial(trialNum).olfactometerInstructions(index).used
+    pause(purgeTime)
+    
+    % Set mfcs to maximum flow rate:
+    % invoke(lasomH,'SetMfcFlowRate',slave,1,1);
+    % invoke(lasomH,'SetMfcFlowRate',slave,2,1);
+    
+end
 %%
 
 disp(['Triggered trial ' num2str(trialNum)])

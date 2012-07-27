@@ -83,7 +83,10 @@ if smell.trial(trialNum).mixture == 0
     % Find the mfcTotalFlow field. Make a logical indexing vector
     % denoting the actions (fields), that have to be dealt with in the
     % sequencer:
-    olfactometerActionsIndex = ~strcmp('mfcTotalFlow',{smell.trial(trialNum).olfactometerInstructions.name});
+    ai{1} = ~strcmp('mfcTotalFlow',{smell.trial(trialNum).olfactometerInstructions.name});
+    ai{2} = ~strcmp('purge',{smell.trial(trialNum).olfactometerInstructions.name});
+    olfactometerActionsIndex = logical(ai{1} .* ai{2});
+    clear ai;
     % Timing of the different actions
     timesOfAction = [smell.trial(trialNum).olfactometerInstructions.value];
     % Sort the actions in the sequence in which they will be triggered
@@ -107,7 +110,6 @@ if smell.trial(trialNum).mixture == 0
         
         % Add 1 to the action counter.
         actionNumber = actionNumber+1;
-        smell.trial(trialNum).olfactometerInstructions(i).name
         
         % If the action is used:
         if smell.trial(trialNum).olfactometerInstructions(i).used
@@ -128,12 +130,15 @@ if smell.trial(trialNum).mixture == 0
                 
                 
             else
-                
+                clear currentActionLsq
                 % Read the lsq file that includes the command for the current
                 % action in the loop iteration
                 currentActionLsq = fileread([lsqPath smell.trial(trialNum).olfactometerInstructions(i).name '.lsq']);
                 
-                
+                if isempty(currentActionLsq) 
+                   errormsg=sprintf('No lsq template for the current action found.\nCurrent action: %s',smell.trial(trialNum).olfactometerInstructions(i).name) 
+                   error(errormsg)
+                end
                 % Read in the sequencer code, that allows to check
                 % whether the next action should be triggered or
                 % whether it should wait.

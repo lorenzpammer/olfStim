@@ -318,12 +318,6 @@ if strncmp(instruction,'setUp',5)
         'Style','edit','String',num2str(olfactometerInstructions(settingNumber).value),'Position', position,...
         'Tag',olfactometerInstructions(settingNumber).name);
     
-    % Use the same handle for the used setting as the setting
-    % 'openSniffingValve'
-    tagNames = get(h.olfactometerSettings.text, 'Tag');
-    relatedSettingIndex = find(strcmp('openSniffingValve',tagNames));
-    h.olfactometerSettings.check(userSettingNumber) = h.olfactometerSettings.check(relatedSettingIndex);
-    
     
     % Open suction valve
     settingNumber = 7;
@@ -340,12 +334,6 @@ if strncmp(instruction,'setUp',5)
     h.olfactometerSettings.edit(userSettingNumber) = uicontrol('Parent',h.guiHandle,...
         'Style','edit','String',num2str(olfactometerInstructions(settingNumber).value),'Position', position,...
         'Tag',olfactometerInstructions(settingNumber).name);
-    
-    % Use the same handle for the used setting as the setting
-    % 'closeSuctionValve'
-    tagNames = get(h.olfactometerSettings.text, 'Tag');
-    relatedSettingIndex = find(strcmp('closeSuctionValve',tagNames));
-    h.olfactometerSettings.check(userSettingNumber) = h.olfactometerSettings.check(relatedSettingIndex);
     
     
     % Unpower final valve
@@ -368,7 +356,7 @@ if strncmp(instruction,'setUp',5)
     % 'powerFinalValve'
     tagNames = get(h.olfactometerSettings.text, 'Tag');
     relatedSettingIndex = find(strcmp('powerFinalValve',tagNames));
-    h.olfactometerSettings.check(userSettingNumber) = h.olfactometerSettings.check(relatedSettingIndex);
+    h.olfactometerSettings.check(relatedSettingIndex) = h.olfactometerSettings.check(relatedSettingIndex);
     
     
     % Unpower gating valve
@@ -386,12 +374,6 @@ if strncmp(instruction,'setUp',5)
     h.olfactometerSettings.edit(userSettingNumber) = uicontrol('Parent',h.guiHandle,...
         'Style','edit','String',num2str(olfactometerInstructions(settingNumber).value),'Position', position,...
         'Tag',olfactometerInstructions(settingNumber).name);
-    
-    % Use the same handle for the used setting as the setting
-    % 'powerGatingValve'
-    tagNames = get(h.olfactometerSettings.text, 'Tag');
-    relatedSettingIndex = find(strcmp('powerGatingValve',tagNames));
-    h.olfactometerSettings.check(userSettingNumber) = h.olfactometerSettings.check(relatedSettingIndex);
     
     
     % Start purge

@@ -45,8 +45,8 @@ slave = smell.trial(trialNum).slave;
 calculateMfcFlowRates(trialNum);
 percentOfCapacityAir = smell.trial(trialNum).flowRateMfcAir / smell.olfactometerSettings.maxFlowRateMfcAir;
 percentOfCapacityN = smell.trial(trialNum).flowRateMfcN / smell.olfactometerSettings.maxFlowRateMfcNitrogen;
-invoke(lasomH,'SetMfcFlowRate',slave,1,percentOfCapacityAir);
-invoke(lasomH,'SetMfcFlowRate',slave,2,percentOfCapacityN);
+% invoke(lasomH,'SetMfcFlowRate',slave,1,percentOfCapacityAir);
+% invoke(lasomH,'SetMfcFlowRate',slave,2,percentOfCapacityN);
 
 clear percentOfCapacityAir;clear percentOfCapacityN;
 
@@ -56,6 +56,13 @@ pause(3) % let settle for 3 minutes
 
 %% Trigger trial:
 
+
+
+%% Purge at the end of trial
+purgeTime = smell.trial(trialNum).
+
+
+%%
 
 disp(['Triggered trial ' num2str(trialNum)])
     
