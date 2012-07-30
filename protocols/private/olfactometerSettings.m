@@ -95,7 +95,7 @@ if strncmp(instruction,'setUp',5)
         'Units','pixels','Position',panelPosition); % 'Position',[x y width height]
     
     %% Define positions for the controls:
-    % Total of 12 possible positions in the panel: 2x6
+    % Total of 14 possible positions in the panel: 2x7
     
     positions = cell(2,7); % One cell for each of the 12 positions in the panel
     width = panelPosition(3) / 7;
@@ -122,9 +122,9 @@ if strncmp(instruction,'setUp',5)
     
     olfactometerInstructions = struct('name',{'mfcTotalFlow' 'powerGatingValve' 'powerFinalValve' 'closeSuctionValve',...
         'openSniffingValve' 'closeSniffingValve' 'openSuctionValve' 'unpowerFinalValve',...
-        'unpowerGatingValve' 'purge' 'cleanNose'},...
-        'value',cell(1,11),...
-        'unit',{ 'l/m' 's' 's' 's' 's' 's' 's' 's' 's' 's' 's'},...
+        'unpowerGatingValve' 'purge' 'cleanNose' 'powerHumidityValve' 'unpowerHumidityValve'},...
+        'value',cell(1,13),...
+        'unit',{ 'l/m' 's' 's' 's' 's' 's' 's' 's' 's' 's' 's' 's' 's'},...
         'userSettingNumber',[],...
         'used',1,...
         'timeStampID',[]);
@@ -439,6 +439,55 @@ if strncmp(instruction,'setUp',5)
         'Tag',olfactometerInstructions(settingNumber).name);
     
     
+    % Time of opening humidity valve in seconds
+    % Defines the timepoint at which humidity valve is powered.
+    settingNumber = 12;
+    userSettingNumber = 12;
+    olfactometerInstructions(settingNumber).userSettingNumber = userSettingNumber;
+    olfactometerInstructions(settingNumber).value = 9; % in seconds
+    
+    position = [positions{userSettingNumber}(1)+spacing positions{userSettingNumber}(2)+20 textWidth textHeight];
+    h.olfactometerSettings.text(userSettingNumber) = uicontrol('Parent',h.guiHandle,...
+        'Style','text','String',[olfactometerInstructions(settingNumber).name ' ' olfactometerInstructions(settingNumber).unit],'Position', position,...
+        'Tag',olfactometerInstructions(settingNumber).name);
+    
+    position = [positions{userSettingNumber}(1)+spacing positions{userSettingNumber}(2)+spacing editWidth editHeight];
+    h.olfactometerSettings.edit(userSettingNumber) = uicontrol('Parent',h.guiHandle,...
+        'Style','edit','String',num2str(olfactometerInstructions(settingNumber).value),'Position', position,...
+        'Tag',olfactometerInstructions(settingNumber).name);
+    
+    position = [position(1)+position(3)+spacing position(2)+10 15 15];
+    h.olfactometerSettings.check(userSettingNumber) = uicontrol('Parent',h.guiHandle,... % check to define whether the final valve should be used
+        'Style','checkbox','String','','Value',0,'Position', position,...
+        'Tag',olfactometerInstructions(settingNumber).name);
+    
+    
+    
+    % Time of closing humidity valve in seconds
+    % Defines the timepoint at which humidity valve is powered.
+    settingNumber = 13;
+    userSettingNumber = 13;
+    olfactometerInstructions(settingNumber).userSettingNumber = userSettingNumber;
+    olfactometerInstructions(settingNumber).value = 12; % in seconds
+    
+    position = [positions{userSettingNumber}(1)+spacing positions{userSettingNumber}(2)+20 textWidth textHeight];
+    h.olfactometerSettings.text(userSettingNumber) = uicontrol('Parent',h.guiHandle,...
+        'Style','text','String',[olfactometerInstructions(settingNumber).name ' ' olfactometerInstructions(settingNumber).unit],'Position', position,...
+        'Tag',olfactometerInstructions(settingNumber).name);
+    
+    position = [positions{userSettingNumber}(1)+spacing positions{userSettingNumber}(2)+spacing editWidth editHeight];
+    h.olfactometerSettings.edit(userSettingNumber) = uicontrol('Parent',h.guiHandle,...
+        'Style','edit','String',num2str(olfactometerInstructions(settingNumber).value),'Position', position,...
+        'Tag',olfactometerInstructions(settingNumber).name);
+    
+    % Use the same handle for the used setting as the setting
+    % 'powerGatingValve'
+    tagNames = get(h.olfactometerSettings.text, 'Tag');
+    relatedSettingIndex = find(strcmp('powerHumidityValve',tagNames));
+    h.olfactometerSettings.check(userSettingNumber) = h.olfactometerSettings.check(relatedSettingIndex);
+    
+    
+    
     % Color the describing text
     names = get(h.olfactometerSettings.edit,'Tag');
     
@@ -466,6 +515,9 @@ if strncmp(instruction,'setUp',5)
     index1(i) = strmatch('cleanNose',names);
     index2(i) = 0;
     
+    i = 7;
+    index1(i) = strmatch('powerHumidityValve',names);
+    index2(i) = strmatch('unpowerHumidityValve',names);
     
     color = hsv(length(index1));
     
@@ -531,8 +583,6 @@ for i = 1 : length(h.olfactometerSettings.edit)
             olfactometerInstructions(indexStruct2GuiField).used = get(h.olfactometerSettings.check(i),'Value');
         end
         
-        % 
-        
     else
         error(['olfactometerInstructions structure has no matching entry for field # ' num2str(i)])
     end
@@ -587,6 +637,11 @@ elseif strncmp(get(h.olfactometerSettings.trialSeqFig,'Visible'),'off',3)
     
     lookFor = 'cleanNose';
     cn = strcmp(lookFor,names);
+    
+    lookFor = 'powerHumidityValve';
+    phv = strcmp(lookFor,names);
+    lookFor = 'unpowerHumidityValve';
+    uhv = strcmp(lookFor,names);
      
     clear names;
     
@@ -620,7 +675,7 @@ elseif strncmp(get(h.olfactometerSettings.trialSeqFig,'Visible'),'off',3)
             isempty(olfactometerInstructions(pfv).value) || isempty(olfactometerInstructions(ufv).value) || ... % if powering or unpowering values are not defined
             ~isreal(olfactometerInstructions(pfv).value) || ~isreal(olfactometerInstructions(ufv).value) || ... % if any of the values is not a real number
             olfactometerInstructions(pfv).value < 0 || olfactometerInstructions(ufv).value < 0 % if any of the values is negative
-            warning('GOnly positive values allowed. Change settings!')
+            warning('Only positive values allowed. Change settings!')
             cla
             return
         end
@@ -628,7 +683,7 @@ elseif strncmp(get(h.olfactometerSettings.trialSeqFig,'Visible'),'off',3)
     
     
     
-    % conditional that no problems exist otherwise 
+    %% If no problems exist plot the following:
     
     axisHandle = gca(h.olfactometerSettings.trialSeqFig);
     cla(axisHandle); % clear all children (=plotted data) of the axis
@@ -694,6 +749,15 @@ elseif strncmp(get(h.olfactometerSettings.trialSeqFig,'Visible'),'off',3)
         [i i i+0.5 i+0.5 i i],'-k','Linewidth',1.5,'Color',color)
     end
     value{i} = olfactometerInstructions(cn).value+2;
+    
+    i=7;
+    index = strcmp('powerHumidityValve',settingsName);
+    color = get(h.olfactometerSettings.edit(index),'BackgroundColor');
+    if olfactometerInstructions(phv).used == 1
+    plot(axisHandle,[0 olfactometerInstructions(phv).value olfactometerInstructions(phv).value olfactometerInstructions(uhv).value olfactometerInstructions(uhv).value 100],...
+        [i i i+0.5 i+0.5 i i],'-k','Linewidth',1.5,'Color',color)
+    end
+    value{i} = olfactometerInstructions(uhv).value;
     
     
     ylim([0 i+1])

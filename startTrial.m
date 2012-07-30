@@ -43,7 +43,7 @@ pathTrialLsq = [lsqPath 'trial.lsq'];
 
 
 slave = smell.trial(trialNum).slave;
-calculateMfcFlowRates(trialNum);
+smell = calculateMfcFlowRates(trialNum,smell);
 percentOfCapacityAir = smell.trial(trialNum).flowRateMfcAir / smell.olfactometerSettings.maxFlowRateMfcAir;
 percentOfCapacityN = smell.trial(trialNum).flowRateMfcN / smell.olfactometerSettings.maxFlowRateMfcNitrogen;
 % invoke(lasomH,'SetMfcFlowRate',slave,1,percentOfCapacityAir);

@@ -1,0 +1,3 @@
+;
+UnGate, slaveIndex, humidityValveIndex	; Closes the humidity valve. The index is set in the core lsq file
+;

@@ -32,7 +32,7 @@ Param, debug, 0				; in the debug mode the program will output several control s
 Param, finalValveIndex, 31              ; the final valve is the valve in front of the animal switching between the clean air & the odor.
 Param, sniffingValveIndex, 32			; the sniffing valve is the valve which gates the suction of air through the nose
 Param, suctionValveIndex, 28			; the suction valve gates the suction around the delivery tube
-Param, humidAirValveIndex, 27			; the humidity valve gates the delivery of humid air to the nose
+Param, humidityValveIndex, 27			; the humidity valve gates the delivery of humid air to the nose
 Param, startTrialTrigger, $DigIn1 		; defines line which when high, will start the trial
 Param, slave, 1                         ; defines from which slave module the valves are driven
 Param, outputIndex, 

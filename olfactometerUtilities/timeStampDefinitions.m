@@ -42,7 +42,13 @@ timeStampIDs(9).name = 'purge';
 timeStampIDs(9).timeStampValue = 9;
 
 timeStampIDs(10).name = 'cleanNose';
-timeStampIDs(10).timeStampValue = 10;    
+timeStampIDs(10).timeStampValue = 10;
+
+timeStampIDs(11).name = 'powerHumidityValve';
+timeStampIDs(11).timeStampValue = 11;
+
+timeStampIDs(12).name = 'unpowerHumidityValve';
+timeStampIDs(12).timeStampValue = 12;
 
 
 %% Write time stamp values into olfactometerInstructions structure

@@ -15,6 +15,8 @@ function trialLsq = buildTrialLsq(trialNum)
 % - Fix how the digital outputs are triggered on LASOM. For now I'm using
 % the dummy output $DigOut1 but I think this can only be set to high or low
 % not to give out 8bit binary numbers.
+% - CRITICAL: Account for the possibility of opening and closing valves
+% multiple times. 
 %
 % lorenzpammer 2011/12
 
@@ -119,10 +121,19 @@ if smell.trial(trialNum).mixture == 0
                 currentActionLsq = fileread([lsqPath smell.trial(trialNum).olfactometerInstructions(i).name '.lsq']);
                 % in the first action of a trial the wait time is the
                 % time when the first action should be triggered:
-                waitTime = smell.trial(trialNum).olfactometerInstructions(i).value;
+                waitTime = smell.trial(trialNum).olfactometerInstructions(i).value*1000;% *1000 because LASOM expects ms, values in smell are in s
                 currentActionLsq = sprintf([';\n wait, %d \n' currentActionLsq], waitTime);
                 % Start the timer in the beginning of the trial:
                 currentActionLsq = sprintf([';\n startTimer, $Timer1 ; Starts the timer for the trial \n' currentActionLsq]);
+                
+                % Add the command to send a timestamp:
+                sendTimestampLsq = fileread([lsqPath 'sendTimestamp.lsq']);
+                replacementString = num2str(smell.trial(trialNum).olfactometerInstructions(i).timeStampID);
+                sendTimestampLsq = replacePlaceHolderInLsq(sendTimestampLsq,'MYTIMESTAMP',replacementString);
+                % Add the command to send a timestamp to the
+                % currentActionLsq:
+                currentActionLsq = [currentActionLsq sendTimestampLsq];
+                
                 
                 actionLsq = currentActionLsq;
                 
@@ -146,7 +157,7 @@ if smell.trial(trialNum).mixture == 0
                 
                 % First change the timing of the when it lapses:
                 replaceString = 'MYVAL';
-                waitTime = num2str(smell.trial(trialNum).olfactometerInstructions(i).value);
+                waitTime = num2str(smell.trial(trialNum).olfactometerInstructions(i).value*1000); % *1000 because LASOM expects ms, values in smell are in s
                 timeLapseLsq = replacePlaceHolderInLsq(timeLapseLsq,replaceString, waitTime);
                 clear waitTime
                 
