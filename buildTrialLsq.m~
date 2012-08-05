@@ -213,6 +213,7 @@ if smell.trial(trialNum).mixture == 0
     disp(trialLsq)
     
 elseif smell.trial(trialNum).mixture == 1
+    
     error(': Creating Lsq files for mixtures is not yet programmed.')
     
 else
