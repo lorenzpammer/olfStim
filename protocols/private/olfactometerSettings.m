@@ -36,8 +36,6 @@ function olfactometerSettings(instruction,additionalSettings,panelPosition)
 % odor presentation time - default 1s
 %
 % To do:
-% - resort the olfactometer instructions. Always have the instruction to
-% closing of a valve follow the instruction of opening it.
 % - Account for the possibility of having multiple opening and closing
 % times for a valve within a trial.
 %
@@ -557,7 +555,7 @@ if strncmp(instruction,'get',3)
     % Get the information in the Gui prior to sending the commands to the
     % olfactometer.
 
-    olfactometerInstructions = extractOlfactometerSettings(olfactometerInstructions);
+    olfactometerInstructions = extractOlfactometerSettings(olfactometerInstructions,h);
    
    % Check whether user input makes sense. Otherwise throw an error and
    % terminate the program.
@@ -574,10 +572,8 @@ end
 %% SUBFUNCTIONS
 
 
-function olfactometerInstructions = extractOlfactometerSettings(olfactometerInstructions)
+function olfactometerInstructions = extractOlfactometerSettings(olfactometerInstructions,h)
 
-% global olfactometerInstructions
-global h
 
 % Extract field from gui and update olfactometerInstructions structure
 % As not all necessary olfactometer settings are present in the gui, these numbers allow cross referencing
@@ -603,7 +599,7 @@ clear pointersToGui; clear indexStruct2GuiField;
 end
 
 
-function trialSeqButton(~,~)%,olfactometerInstructions)
+function trialSeqButton(~,~)
 global h
 global olfactometerInstructions
 
@@ -616,7 +612,7 @@ elseif strncmp(get(h.olfactometerSettings.trialSeqFig,'Visible'),'off',3)
     set(h.olfactometerSettings.trialSeqFig,'Visible','on');
     cla(gca(h.olfactometerSettings.trialSeqFig));
     
-    olfactometerInstructions = extractOlfactometerSettings(olfactometerInstructions);
+    olfactometerInstructions = extractOlfactometerSettings(olfactometerInstructions,h);
        
     names = {olfactometerInstructions.name}; % Extract names of the parameters in the structure
     settingsName = get(h.olfactometerSettings.edit,'Tag'); % Extract names of the parameters in the gui
@@ -670,11 +666,11 @@ elseif strncmp(get(h.olfactometerSettings.trialSeqFig,'Visible'),'off',3)
     % Gating valve
     if olfactometerInstructions(pgv).used == 1
         for i=1:length(olfactometerInstructions(pgv).value)
-            if olfactometerInstructions(pgv).value(i) >= olfactometerInstructions(ugv).value(i) || ... % if powering of gating valve is later or at the same time than unpowering
-                    isempty(olfactometerInstructions(pgv).value(i)) || isempty(olfactometerInstructions(ugv).value(i)) || ... % if powering or unpowering values are not defined
-                    ~isreal(olfactometerInstructions(pgv).value(i)) || ~isreal(olfactometerInstructions(ugv).value(i)) || ... % if any of the values is not a real number also works for vector elements
-                    olfactometerInstructions(pgv).value(i) < 0 || olfactometerInstructions(pgv).value(i) < 0 % if any of the values is negative
-                warning('Gating valve settings: Only real positive values. Powering must precede unpowering. Change settings!')
+            if any(olfactometerInstructions(pgv).value(i) >= olfactometerInstructions(ugv).value(i) | ... % if powering of gating valve is later or at the same time than unpowering
+                    isempty(olfactometerInstructions(pgv).value(i)) | isempty(olfactometerInstructions(ugv).value(i)) | ... % if powering or unpowering values are not defined
+                    ~isreal(olfactometerInstructions(pgv).value(i)) | ~isreal(olfactometerInstructions(ugv).value(i)) | ... % if any of the values is not a real number also works for vector elements
+                    olfactometerInstructions(pgv).value(i) < 0 | olfactometerInstructions(pgv).value(i) < 0) % if any of the values is negative
+                warning('Gating valve: Only real positive values. Powering must precede unpowering. Change settings!')
                 cla
                 return
             end
@@ -683,11 +679,23 @@ elseif strncmp(get(h.olfactometerSettings.trialSeqFig,'Visible'),'off',3)
     
     % Final valve
     if olfactometerInstructions(pfv).used == 1
-        if olfactometerInstructions(pfv).value >= olfactometerInstructions(ufv).value || ... % if powering of final valve is later or at the same time than unpowering
-            isempty(olfactometerInstructions(pfv).value) || isempty(olfactometerInstructions(ufv).value) || ... % if powering or unpowering values are not defined
-            ~isreal(olfactometerInstructions(pfv).value) || ~isreal(olfactometerInstructions(ufv).value) || ... % if any of the values is not a real number
-            olfactometerInstructions(pfv).value < 0 || olfactometerInstructions(ufv).value < 0 % if any of the values is negative
-            warning('Only positive values allowed. Change settings!')
+        if any(olfactometerInstructions(pfv).value >= olfactometerInstructions(ufv).value | ... % if powering of final valve is later or at the same time than unpowering
+            isempty(olfactometerInstructions(pfv).value) | isempty(olfactometerInstructions(ufv).value) | ... % if powering or unpowering values are not defined
+            ~isreal(olfactometerInstructions(pfv).value) | ~isreal(olfactometerInstructions(ufv).value) | ... % if any of the values is not a real number
+            olfactometerInstructions(pfv).value < 0 | olfactometerInstructions(ufv).value < 0) % if any of the values is negative
+            warning('Final valve: Only positive, real values allowed. Powering must precede unpowering. Change settings!')
+            cla
+            return
+        end
+    end
+    
+    % Purging
+    if olfactometerInstructions(purge).used == 1
+        if any(~isreal(olfactometerInstructions(purge).value) | ... % if any of the values is not a real number
+            isempty(olfactometerInstructions(purge).value) | ... % if powering or unpowering values are not defined
+            olfactometerInstructions(purge).value < 0 | ... % if any of the values is negative
+            length(olfactometerInstructions(purge).value) > 1)
+            warning('Purge: Only positive, real, single values allowed. Change settings!')
             cla
             return
         end
@@ -704,7 +712,6 @@ elseif strncmp(get(h.olfactometerSettings.trialSeqFig,'Visible'),'off',3)
     i=1;
     index = strcmp('powerGatingValve',settingsName);
     color = get(h.olfactometerSettings.edit(index),'BackgroundColor');
-    
     xvalues = 0;
     yvalues = i;
     for j = 1 : length(olfactometerInstructions(pgv).value)
@@ -714,38 +721,75 @@ elseif strncmp(get(h.olfactometerSettings.trialSeqFig,'Visible'),'off',3)
     xvalues(end+1) = 100;
     yvalues(end+1) = i;
     if olfactometerInstructions(pgv).used == 1
-    plot(axisHandle,xvalues,yvalues,'-k','Linewidth',1.5,'Color',color)
+        plot(axisHandle,xvalues,yvalues,'-k','Linewidth',1.5,'Color',color)
     end
     value{i} = olfactometerInstructions(ugv).value;
     
     i=2;
     index = strcmp('powerFinalValve',settingsName);
     color = get(h.olfactometerSettings.edit(index),'BackgroundColor');
+    xvalues = 0;
+    yvalues = i;
+    for j = 1 : length(olfactometerInstructions(pfv).value)
+        xvalues(end+1:end+4) = [olfactometerInstructions(pfv).value(j) olfactometerInstructions(pfv).value(j) olfactometerInstructions(ufv).value(j) olfactometerInstructions(ufv).value(j)];
+        yvalues(end+1:end+4) = [i i+0.5 i+0.5 i];
+    end
+    xvalues(end+1) = 100;
+    yvalues(end+1) = i;
     if olfactometerInstructions(pfv).used == 1
-    plot(axisHandle,[0 olfactometerInstructions(pfv).value olfactometerInstructions(pfv).value olfactometerInstructions(ufv).value olfactometerInstructions(ufv).value 100],...
-        [i i i+0.5 i+0.5 i i],'-k','Linewidth',1.5,'Color',color)
+        plot(axisHandle,xvalues,yvalues,'-k','Linewidth',1.5,'Color',color)
     end
     value{i} = olfactometerInstructions(ufv).value;
     
     i=3;
     index = strcmp('closeSuctionValve',settingsName);
     color = get(h.olfactometerSettings.edit(index),'BackgroundColor');
+    xvalues = 0;
+    yvalues = i;
+    for j = 1 : length(olfactometerInstructions(csv).value)
+        xvalues(end+1:end+4) = [olfactometerInstructions(csv).value(j) olfactometerInstructions(csv).value(j) olfactometerInstructions(osv).value(j) olfactometerInstructions(osv).value(j)];
+        yvalues(end+1:end+4) = [i i+0.5 i+0.5 i];
+    end
+    xvalues(end+1) = 100;
+    yvalues(end+1) = i;
     if olfactometerInstructions(csv).used == 1
-    plot(axisHandle,[0 olfactometerInstructions(csv).value olfactometerInstructions(csv).value olfactometerInstructions(osv).value olfactometerInstructions(osv).value 100],...
-        [i i i+0.5 i+0.5 i i],'-k','Linewidth',1.5,'Color',color)
+    plot(axisHandle,xvalues,yvalues,'-k','Linewidth',1.5,'Color',color)
     end
     value{i} = olfactometerInstructions(osv).value;
     
     i=4;
     index = strcmp('openSniffingValve',settingsName);
     color = get(h.olfactometerSettings.edit(index),'BackgroundColor');
+    xvalues = 0;
+    yvalues = i;
+    for j = 1 : length(olfactometerInstructions(osnv).value)
+        xvalues(end+1:end+4) = [olfactometerInstructions(osnv).value(j) olfactometerInstructions(osnv).value(j) olfactometerInstructions(csnv).value(j) olfactometerInstructions(csnv).value(j)];
+        yvalues(end+1:end+4) = [i i+0.5 i+0.5 i];
+    end
+    xvalues(end+1) = 100;
+    yvalues(end+1) = i;
     if olfactometerInstructions(osnv).used == 1
-    plot(axisHandle,[0 olfactometerInstructions(osnv).value olfactometerInstructions(osnv).value olfactometerInstructions(csnv).value olfactometerInstructions(csnv).value 100],...
-        [i i i+0.5 i+0.5 i i],'-k','Linewidth',1.5,'Color',color)
+        plot(axisHandle,xvalues,yvalues,'-k','Linewidth',1.5,'Color',color)
     end
     value{i} = olfactometerInstructions(csnv).value;
     
     i=5;
+    index = strcmp('powerHumidityValve',settingsName);
+    color = get(h.olfactometerSettings.edit(index),'BackgroundColor');
+    xvalues = 0;
+    yvalues = i;
+    for j = 1 : length(olfactometerInstructions(phv).value)
+        xvalues(end+1:end+4) = [olfactometerInstructions(phv).value(j) olfactometerInstructions(phv).value(j) olfactometerInstructions(uhv).value(j) olfactometerInstructions(uhv).value(j)];
+        yvalues(end+1:end+4) = [i i+0.5 i+0.5 i];
+    end
+    xvalues(end+1) = 100;
+    yvalues(end+1) = i;
+    if olfactometerInstructions(phv).used == 1
+        plot(axisHandle,xvalues,yvalues,'-k','Linewidth',1.5,'Color',color)
+    end
+    value{i} = olfactometerInstructions(uhv).value;
+    
+    i=6;
     index = strcmp('purge',settingsName);
     color = get(h.olfactometerSettings.edit(index),'BackgroundColor');
     if olfactometerInstructions(purge).used == 1
@@ -753,23 +797,21 @@ elseif strncmp(get(h.olfactometerSettings.trialSeqFig,'Visible'),'off',3)
     end
     value{i} = olfactometerInstructions(purge).value;
     
-    i=6;
+    i=7;
     index = strcmp('cleanNose',settingsName);
     color = get(h.olfactometerSettings.edit(index),'BackgroundColor');
+    xvalues = 0;
+    yvalues = i;
+    for j = 1 : length(olfactometerInstructions(cn).value)
+        xvalues(end+1:end+4) = [olfactometerInstructions(cn).value(j) olfactometerInstructions(cn).value(j) olfactometerInstructions(cn).value(j)+2 olfactometerInstructions(cn).value(j)+2];
+        yvalues(end+1:end+4) = [i i+0.5 i+0.5 i];
+    end
+    xvalues(end+1) = 100;
+    yvalues(end+1) = i;
     if olfactometerInstructions(cn).used == 1
-    plot(axisHandle,[0 olfactometerInstructions(cn).value olfactometerInstructions(cn).value olfactometerInstructions(cn).value+2 olfactometerInstructions(cn).value+2 100],...
-        [i i i+0.5 i+0.5 i i],'-k','Linewidth',1.5,'Color',color)
+    plot(axisHandle,xvalues,yvalues,'-k','Linewidth',1.5,'Color',color)
     end
     value{i} = olfactometerInstructions(cn).value+2;
-    
-    i=7;
-    index = strcmp('powerHumidityValve',settingsName);
-    color = get(h.olfactometerSettings.edit(index),'BackgroundColor');
-    if olfactometerInstructions(phv).used == 1
-    plot(axisHandle,[0 olfactometerInstructions(phv).value olfactometerInstructions(phv).value olfactometerInstructions(uhv).value olfactometerInstructions(uhv).value 100],...
-        [i i i+0.5 i+0.5 i i],'-k','Linewidth',1.5,'Color',color)
-    end
-    value{i} = olfactometerInstructions(uhv).value;
     
     
     ylim([0 i+1])

@@ -1,4 +1,4 @@
-function startTrial(trialNum)
+function smell = startTrial(trialNum, smell)
 % startTrial(trialNum)
 % This function assumes all information for the current trial are present
 % in smell and that these values are correct. From here on no more checking
@@ -11,7 +11,6 @@ function startTrial(trialNum)
 %
 % lorenzpammer dec 2011
 
-global smell
 
 %% Build the lsq file for the current trial
 % buildTrialLsq.m will create an lsq file taking into account the

@@ -54,25 +54,23 @@ end
 %% Set up smell structure
 
 if ~isempty(strmatch(instruction,'setUp'))
-   setUpSmellStructure(stimProtocol,protocolSpecificInfo); 
+   smell = setUpSmellStructure(smell, h, stimProtocol,protocolSpecificInfo); 
 end
     
 
 %% Update smell structure for every trial
 
 if ~isempty(strmatch(instruction,'update'))
-    updateSmellStructure(trialOdor,trialNum,stimProtocol,protocolSpecificInfo);
+    smell = updateSmellStructure(smell, h, trialOdor,trialNum,stimProtocol,protocolSpecificInfo);
 end
 
 end
 
 
 
-function setUpSmellStructure(stimProtocol,protocolSpecificInfo)
+function smell = setUpSmellStructure(smell, h, stimProtocol,protocolSpecificInfo)
 
 global olfactometerOdors
-global smell 
-global h
 global olfactometerInstructions
 %%
     
@@ -123,11 +121,9 @@ global olfactometerInstructions
     smell.trial(1).protocolSpecificInfo = []; 
 end
 
-function updateSmellStructure(trialOdor,trialNum,stimProtocol,protocolSpecificInfo)
+function smell = updateSmellStructure(smell, h, trialOdor,trialNum,stimProtocol,protocolSpecificInfo)
 
 global olfactometerOdors
-global smell 
-global h
 global olfactometerInstructions
 %%
     smell.trial(trialNum).odorName = []; % to set up a new struct array (1xtrialNum)

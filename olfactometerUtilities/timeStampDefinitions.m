@@ -17,38 +17,39 @@ function olfactometerInstructions = timeStampDefinitions(olfactometerInstruction
 timeStampIDs(1).name = 'powerGatingValve';
 timeStampIDs(1).timeStampValue = 1;
 
+timeStampIDs(8).name = 'unpowerGatingValve';
+timeStampIDs(8).timeStampValue = 2;
+
 timeStampIDs(2).name = 'powerFinalValve';
-timeStampIDs(2).timeStampValue = 2;
+timeStampIDs(2).timeStampValue = 3;
+
+timeStampIDs(7).name = 'unpowerFinalValve';
+timeStampIDs(7).timeStampValue = 4;
 
 timeStampIDs(3).name = 'closeSuctionValve';
-timeStampIDs(3).timeStampValue = 3;
-
-timeStampIDs(4).name = 'openSniffingValve';
-timeStampIDs(4).timeStampValue = 4;
-
-timeStampIDs(5).name = 'closeSniffingValve';
-timeStampIDs(5).timeStampValue = 5;
+timeStampIDs(3).timeStampValue = 5;
 
 timeStampIDs(6).name = 'openSuctionValve';
 timeStampIDs(6).timeStampValue = 6;
 
-timeStampIDs(7).name = 'unpowerFinalValve';
-timeStampIDs(7).timeStampValue = 7;
+timeStampIDs(4).name = 'openSniffingValve';
+timeStampIDs(4).timeStampValue = 7;
 
-timeStampIDs(8).name = 'unpowerGatingValve';
-timeStampIDs(8).timeStampValue = 8;
-
-timeStampIDs(9).name = 'purge';
-timeStampIDs(9).timeStampValue = 9;
-
-timeStampIDs(10).name = 'cleanNose';
-timeStampIDs(10).timeStampValue = 10;
+timeStampIDs(5).name = 'closeSniffingValve';
+timeStampIDs(5).timeStampValue = 8;
 
 timeStampIDs(11).name = 'powerHumidityValve';
-timeStampIDs(11).timeStampValue = 11;
+timeStampIDs(11).timeStampValue = 9;
 
 timeStampIDs(12).name = 'unpowerHumidityValve';
-timeStampIDs(12).timeStampValue = 12;
+timeStampIDs(12).timeStampValue = 10;
+
+timeStampIDs(9).name = 'purge';
+timeStampIDs(9).timeStampValue = 11;
+
+timeStampIDs(10).name = 'cleanNose';
+timeStampIDs(10).timeStampValue = 12;
+
 
 
 %% Write time stamp values into olfactometerInstructions structure

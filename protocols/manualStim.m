@@ -183,7 +183,7 @@ olfactometerSettings('get')
 % 4. star the new trial
 %   This will build the lsq file for the current trial, send the
 %   instructions to the olfactometer and trigger the trial.
-startTrial(trialNum);
+smell = startTrial(trialNum, smell);
 
 end
 
