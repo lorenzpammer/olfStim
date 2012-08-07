@@ -1,4 +1,4 @@
-function notes = sessionNotes(instruction,panelPosition)
+function [notes,h] = sessionNotes(h,instruction,panelPosition)
 % sessionNotes(position) position is an optional input argument that
 % defines the position of the panel for the notes. Expects a 4 element
 % vector (x-position,y-position,width,height)
@@ -6,17 +6,16 @@ function notes = sessionNotes(instruction,panelPosition)
 % an experiment. The notes will be saved to the smell structure for every
 % trial.
 
-global h
+%%
 
-
-if nargin < 1
+if nargin < 2
     error('You have to define the input "instruction", to set up (setUp) the sessionNotes feature.')
 end
-    
+
 if strncmp(instruction,'setUp',5)
-    if nargin < 2
+    if nargin < 3
         % Define position for notes in respect to other panels in the gui
-        stimProtocolPosition = get(h.panelProtocol,'Position');
+        stimProtocolPosition = get(h.panelProtocolChooser,'Position');
         closeGuiButtonPosition = get(h.closeGuiButton,'Position');
         panelPosition(1) = stimProtocolPosition(1);
         panelPosition(2) = closeGuiButtonPosition(2) + closeGuiButtonPosition(4) + 5;
@@ -62,7 +61,7 @@ if strncmp(instruction,'setUp',5)
     notesFieldPosition(4) = position(4) - 6;
     h.sessionNotes.notesFigureField = uicontrol(h.sessionNotes.notesFigure,'Style','edit',...
         'String','','Units','pixels','Position',notesFieldPosition);
-%     set(h.sessionNotes.notesFigure,'CloseRequestFcn',@closeFcn)
+    %     set(h.sessionNotes.notesFigure,'CloseRequestFcn',@closeFcn)
     
     notes=[];
 end
@@ -71,13 +70,16 @@ if strncmp(instruction,'get',3)
     notes = get(h.sessionNotes.notesFigureField,'string'); % extract notes which were typed into notes figure.
 end
 
+
 end
 
 
 function pushButton_Callback(source,eventdata)
-% When the "Notes" button is pushed 
+% When the "Notes" button is pushed
 
-global h
+% Extract the gui handle structure from the appdata of the figure:
+h=appdataManager('olfStimGui','get','h');
+
 
 if strmatch(get(h.sessionNotes.notesFigure,'Visible'),'on')
     set(h.sessionNotes.notesFigure,'Visible','off');

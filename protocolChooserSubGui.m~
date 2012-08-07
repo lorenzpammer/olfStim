@@ -7,7 +7,7 @@ function selectedProtocol = protocolChooserSubGui
 global selectedProtocol
 
 % Extract the gui handle structure from the appdata of the figure:
-h=appdataManager('olfStimGui','get','h');
+h=appdataManager('olfStimGui','get','h')
 
 %%
 

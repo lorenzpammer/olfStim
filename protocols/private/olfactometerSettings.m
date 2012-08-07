@@ -1,4 +1,4 @@
-function olfactometerSettings(instruction,additionalSettings,panelPosition)
+function h = olfactometerSettings(h,instruction,additionalSettings,panelPosition)
 % olfactometerInstructions(instruction)
 % This function is private to the protocols and adds a panel to the bottom
 % of the gui where the settings specifying the olfactometer behavior are
@@ -36,22 +36,20 @@ function olfactometerSettings(instruction,additionalSettings,panelPosition)
 % odor presentation time - default 1s
 %
 % To do:
-% - Account for the possibility of having multiple opening and closing
-% times for a valve within a trial.
 %
 % lorenzpammer 2011/09
 
-global h
 global smell
 global olfactometerInstructions
 
+
 %% Check inputs
 
-if nargin < 1
+if nargin < 2
     error('You have to give instructions, whether to set up the panel or get information.')
 end
 
-if nargin < 2
+if nargin < 3
     additionalSettings = []; % Set additional settings to empty. Only default settings will be set up and extracted.
     
     if strncmp(instruction, 'setUp',5) || strncmp(instruction,'get',3)
@@ -61,10 +59,10 @@ if nargin < 2
     end
 end
 
-if nargin < 3
+if nargin < 4
     % if additional settings are specified but not correctly, give errors.
-    if nargin > 1 && ~iscell(additionalSettings)
-        error('Second input to function, "additionalSettings" must be a cell array of strings.')
+    if nargin > 2 && ~iscell(additionalSettings)
+        error('Third input to function, "additionalSettings" must be a cell array of strings.')
     end
 end
 
@@ -75,7 +73,7 @@ end
 if strncmp(instruction,'setUp',5)
     
     %% Define panelPosition if it wasn't defined in inputs
-    if nargin < 3
+    if nargin < 4
         sessionNotesPanel = get(h.sessionNotes.panel,'Position');
         figurePosition = get(h.guiHandle,'Position');
         quitSessionPosition = get(h.quitSession,'Position');
@@ -168,24 +166,6 @@ if strncmp(instruction,'setUp',5)
         'Callback',@helpButton_Callback);
     
     %% Define the options which can be set to control the olfactometer
-    
-    
-    %     numberOfUserDefinedSettings = 7 + length(additionalSettings); % default settings + number of additional settings required for the current protocol
-    %
-    %     % Which lsq file is used for the paradigm
-    %     settingNumber = 1;
-    %     userSettingNumber = 1;
-    %     olfactometerInstructions(settingNumber).userSettingNumber = userSettingNumber;
-    %     olfactometerInstructions(settingNumber).value = 1;
-    %
-    %     position = [positions{userSettingNumber}(1)+spacing positions{userSettingNumber}(2)+20 textWidth textHeight];
-    %     h.olfactometerSettings.text(userSettingNumber) = uicontrol('Parent',h.guiHandle,...
-    %         'Style','text','String',[olfactometerInstructions(settingNumber).name],...
-    %         'Position', position);
-    %
-    %     position = [positions{userSettingNumber}(1)+spacing positions{userSettingNumber}(2)+spacing editWidth editHeight];
-    %     h.olfactometerSettings.edit(userSettingNumber) = uicontrol('Parent',h.guiHandle,...
-    %         'Style','edit','String',num2str(olfactometerInstructions(settingNumber).value),'Position', position);
     
     
     % total flow at presentation of both MFCs combined in l/min
@@ -563,7 +543,6 @@ if strncmp(instruction,'get',3)
    dbstack
    
 end
-
 end
 
 
@@ -599,11 +578,14 @@ clear pointersToGui; clear indexStruct2GuiField;
 end
 
 
-function trialSeqButton(~,~)
-global h
+function trialSeqButton(src, event)
+
 global olfactometerInstructions
 
+% Extract the gui handle structure from the appdata of the figure:
+h=appdataManager('olfStimGui','get','h');
 
+%%
 % switch graphical trialSequence figure from visible to non visible and
 % back when clicking the button
 if strncmp(get(h.olfactometerSettings.trialSeqFig,'Visible'),'on',2)
@@ -822,16 +804,12 @@ end
 
 end
 
-% 
-% function close_trialSeqFig(~,~)
-% global h
-% 
-%     set(h.olfactometerSettings.trialSeqFig,'Visible','off'); 
-% end
-
 
 function helpButton_Callback(~,~)
-global h
+
+% Extract the gui handle structure from the appdata of the figure:
+h=appdataManager('olfStimGui','get','h');
+%%
 
 callingFunctionName = 'initOlfStim.m'; % Define the name of the initalizing function in the highest
 path = which(callingFunctionName);
@@ -841,6 +819,10 @@ helpImage = imread(path);
 h.olfactometerSettings.helpSchematicWindow = figure('ToolBar','none','Name','Layout & nomenclature','MenuBar','none');
 imshow(helpImage,'Border','tight')
 clear callingFunctionName; clear path;
+
+%% Update h structure in the appdata
+% Write the structure h containing all handles for the figure as appdata:
+appdataManager('olfStimGui','set',h)
 end
  
 

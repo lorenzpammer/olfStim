@@ -1,0 +1,23 @@
+function concentrationAtPresentation = concentrationAtPresentationSettings(instruction)
+
+
+
+%%
+
+global h
+
+%%
+
+if strcmp(instruction, 'setUp')
+    
+    
+elseif strcmp(instruction, 'get')
+    
+    
+end
+
+end
+
+function extractConcentrationAtPresentationSettings(olfactometerInstructions,h)
+
+end

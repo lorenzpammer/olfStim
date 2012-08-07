@@ -1,5 +1,5 @@
-function progressPanel(instruction,trialOdor,trialNum,panelPosition)
-% progressPanel(instruction,trial,position) builds a panel in the gui where
+function h=progressPanel(h,instruction,trialOdor,trialNum,panelPosition)
+% progressPanel(h,instruction,trial,position) builds a panel in the gui where
 % current and previous odor presentations are plotted.
 % instruction expects a string either 'setUp' or 'update'. Depending on
 % whether the presented odors panel should be set up (when building the
@@ -7,15 +7,14 @@ function progressPanel(instruction,trialOdor,trialNum,panelPosition)
 % trialOdor
 %
 % lorenzpammer 2011/09
-
+%%
 
 global smell
-global h
 
 %% Setting up the progress panel
 % When setting up the gui the following lines are called
 if strmatch(instruction,'setUp')
-    if nargin<3
+    if nargin<4
         position = get(h.guiHandle,'Position'); % get position of main gui window
         panelWidth=position(3)-10; panelHeight = 100; % set the width and height of the progress panel
         panelPosition =[5 position(4)-panelHeight panelWidth panelHeight]; % set the position vector for the progress panel
@@ -61,5 +60,6 @@ if strmatch(instruction,'update')
         xlim([trialNum-10 trialNum] + 0.5)
     end
 end
+
 
 end

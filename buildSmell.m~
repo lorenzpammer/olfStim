@@ -1,4 +1,4 @@
-function  buildSmell(instruction,trialOdor,trialNum,stimProtocol,protocolSpecificInfo)
+function  buildSmell(instruction,trialOdor,trialNum,stimProtocol,concentration,protocolSpecificInfo)
 % buildSmell(instruction,trialOdor,trialNum,stimProtocol) creates or
 % updates the smell structure.
 % The smell structure contains the relevant information about every trial

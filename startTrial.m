@@ -5,8 +5,9 @@ function smell = startTrial(trialNum, smell)
 % whether numbers make sense or not. Will just result in errors or
 % incorrect triggering of the vials.
 %
-% - To do: get the actual timing of events from LASOM and write it into the
-% smell structure.
+% To do: 
+% -get the actual timing of events from LASOM and write it into the
+%   smell structure.
 % - Figure out how to trigger the trial
 %
 % lorenzpammer dec 2011

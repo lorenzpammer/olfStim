@@ -24,6 +24,9 @@ olfactometerOdors = odorSelectionGui;
 %% Set up smell structure
 buildSmell('setUp');
 
+%% Set up basic gui
+setUpMainGui;
+
 %% Next start the gui for controlling 
 selectedProtocol = protocolChooserSubGui;
 

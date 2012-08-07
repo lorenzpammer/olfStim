@@ -1,14 +1,12 @@
-function quitSession(buttonPosition)
+function h = quitSession(h,buttonPosition)
 %
 %
 %
 % lorenzpammer 2011
 
-global h
-
 
 %% 
-    if nargin < 1
+    if nargin < 2
        figurePosition = get(h.guiHandle,'Position');
        buttonWidth = 70; buttonHeight = 50;
        spacing = 3;
