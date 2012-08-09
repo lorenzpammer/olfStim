@@ -21,7 +21,7 @@ function odorLibrary=odorLibraryGenerator
 
 odorNames = {'Benzyl alcohol','Butanone','Camphor','Cineole','Citral', ...
     'Eugenol','Geranyl acetate','Hexanal','1-Hexanol','2-Hexanone','Isoamyl acetate', ...
-    'Vanillin','Paraffin oil','Mineral oil','Water','Empty'}; % Cell array of strings with names of odorants in Library
+    'Vanillin','Paraffin oil','Mineral oil','Ethanol', 'Water','Empty'}; % Cell array of strings with names of odorants in Library
 
 
 %% B) Set up the property fields of each odor
@@ -278,6 +278,23 @@ for i = 1 : length(odorLibrary)
 end
 
 %% Odor 15
+odor = 'Ethanol'; % make sure the name is the same as specified in the 'odorNames' cell array above
+for i = 1 : length(odorLibrary)
+    if strcmp(odorLibrary(i).odorName, odor) % at the respective odor write the following properties to the structure:
+        odorLibrary(i).iupacName = 'Ethanol'; % the name of the molecule following IUPAC convention as a string
+        odorLibrary(i).CASNumber = '64-17-5'; % the CAS registry number identifying the molecule as a string
+        odorLibrary(i).producingCompany = []; % the name of the company that produced the odorant: 'Sigma', 'Roth', etc.
+        odorLibrary(i).odorantPurity = 0.98; % purity of the molecule given as a fraction, usually above 0.95: 0-1
+        odorLibrary(i).state = 'liquid'; % string describing whether the state of the molecule is liquid or solid: 'liquid' or 'solid'
+        odorLibrary(i).odorantDilution = 1; % volume fraction (v(odorant)/v(dilutive solution)) of odorant in the vial after diluting it with water or oil: 0-1
+        odorLibrary(i).dilutedIn = []; % in which solution the odor was diluted: 'Water' 'Paraffin oil' 'Mineral oil' or [] if no dilution
+        odorLibrary(i).concentrationAtPresentation = 0.005; % concentration as volume fraction (v/v) of saturated headspace, which is presented to the animal: 0-1
+        odorLibrary(i).inflectionPointResponseCurve = []; % concentration (v/v, of saturated head space) of presented odorant at which the response curve as measured in olfactory nerve has its inflection point.
+        odorLibrary(i).vaporPressure = [7900 25]; % vapor pressure in Pascal @ 25?C. For mixtures use Raoult's law. To convert mmHg into Pascal multiply by 133.322
+    end
+end
+
+%% Odor 16
 odor = 'Water';
 for i = 1 : length(odorLibrary)
     if strcmp(odorLibrary(i).odorName, odor) % at the respective odor write the following properties to the structure:
@@ -294,7 +311,7 @@ for i = 1 : length(odorLibrary)
     end
 end
 
-%% Odor 16
+%% Odor 17
 odor = 'Empty';
 for i = 1 : length(odorLibrary)
     if strcmp(odorLibrary(i).odorName, odor) % at the respective odor write the following properties to the structure:

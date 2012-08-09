@@ -87,7 +87,7 @@ disp(message)
 uiwait
 
 
-
+%% Set up the smell structure
 
 % User has to define how many slaves have to be cleaned.
 message = sprintf(['\n \n',...
@@ -107,9 +107,6 @@ numberOfSlavesToClean = str2num(get(infoHandle.nSlaves,'String')); % extract the
 
 clear editPosition; clear buttonPosition;
 delete(infoHandle.dynamicText); delete(infoHandle.nSlaves); delete(h.continue); 
-
-
-%% Set up the smell structure
 
 smell.olfactometerOdors.sessionOdors(numberOfSlavesToClean*9).odorName = 'Ethanol'; % set up for the number of vials = number of slaves * 9
 

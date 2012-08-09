@@ -11,7 +11,7 @@ function smell = calculateMfcFlowRates(trialNum, smell)
 % lorenzpammer July, 2012
 
 
-%% 
+%% Do the calculation and update smell
 
 % Calculate flow rate ratio between 100% flow of both MFCs 
 ratio = smell.olfactometerSettings.maxFlowRateMfcNitrogen/smell.olfactometerSettings.maxFlowRateMfcAir;

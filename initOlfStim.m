@@ -5,6 +5,8 @@ function initOlfStim
 % To Do:
 % - Check whether connection with olfactometer can be established, whether
 % MFCs are present. 
+% - Check how many slaves are connected. Depending on this build the
+% odorSelectionGui.
 %
 % lorenzpammer 2011/07
 

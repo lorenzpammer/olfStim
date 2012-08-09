@@ -172,9 +172,9 @@ if strncmp(instruction,'setUp',5)
     %     'powerFinalValve' 'unpowerFinalValve' 'closeSuctionValve' 'openSuctionValve',...
     %     'openSniffingValve' 'closeSniffingValve' 'powerHumidityValve' 'unpowerHumidityValve',...
     %          'purge' 'cleanNose'}
-    settingValue = [1 0 5 3 5 3.25 5 3.5 5 9 12 5 10];
-    useCheckBox = logical([0 1 0 1 0 1 0 1 0 1 0 1 1]);
-    dependentOnSetting = {0 0 'powerGatingValve' 0 'powerFinalValve' 0 ...
+    settingValue = [1 0 5 3 5 3.25 5 3.5 5 9 12 5 10]; % value for the different settings (in the according units)
+    useCheckBox = logical([0 1 0 1 0 1 0 1 0 1 0 1 1]); % whether or not a checkbox indicating used/non-used should be added to the gui
+    dependentOnSetting = {0 0 'powerGatingValve' 0 'powerFinalValve' 0 ... % on which setting (written as a string) a given setting (sequence) is dependent.
         'closeSuctionValve' 0 'openSniffingValve' 0 'powerHumidityValve' 0 0};
     
     

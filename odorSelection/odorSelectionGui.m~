@@ -234,13 +234,13 @@ function Save_Callback(hObject, eventdata, handles,fhandles) % add fhandles to i
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 olfactometerOdors = extractSlaveDataFromGui(hObject,eventdata,handles);
-
-% mixtureTable = get(handles.olfactometerMixtureTable,'Data');
-% present = [mixtureTable{:,1}]'; % extract 'Present' column - whether to present odor or not
-% mixturesUsed = sum(present) > 0.5; % see whether any mixture is selected as to 'Present', if nothing to present, mixtures are not used
-% if mixturesUsed
+olfactometerOdors=extractMixtureDataFromGui(hObject,eventdata,handles)
+mixtureTable = get(handles.olfactometerMixtureTable,'Data');
+present = [mixtureTable{:,1}]'; % extract 'Present' column - whether to present odor or not
+mixturesUsed = sum(present) > 0.5; % see whether any mixture is selected as to 'Present', if nothing to present, mixtures are not used
+if mixturesUsed
     olfactometerOdors = extractMixtureDataFromGui(hObject,eventdata,handles,olfactometerOdors);
-% end
+end
 for i = 1 : length(olfactometerOdors.sessionOdors) % Hacked! At some point add the field nicely in the subfunctions
         olfactometerOdors.sessionOdors(i).sessionOdorNumber = i;
 end
@@ -450,6 +450,7 @@ for i = 1 : length(mixtureIndex) % go through every mixture that was marked to p
                 newFieldEntry = [fieldEntry currentSlaveFieldEntry];% concatenenate cells into cell array
                 
                 olfactometerOdors.mixtures.sessionOdors(i) = setfield(olfactometerOdors.mixtures.sessionOdors(i),fieldNames{k},newFieldEntry); % write new field entry into field
+                
             end
         end
         clear fieldEntry;clear currentSlaveFieldEntry;clear newFieldEntry;
