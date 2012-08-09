@@ -125,7 +125,11 @@ function varargout = odorSelectionGui_OutputFcn(hObject, eventdata, handles)
     present = [mixtureTable{:,1}]'; % extract 'Present' column - whether to present odor or not
     mixturesUsed = sum(present) > 0.5; % see whether any mixture is selected as to 'Present', if nothing to present, mixtures are not used
     if mixturesUsed
+        % If mixtures are used extract them from the gui:
         olfactometerOdors = extractMixtureDataFromGui(hObject,eventdata,handles,olfactometerOdors);
+    else
+        % if mixtures aren't used write a zero into the structure:
+        olfactometerOdors.mixtures.used = logical(0); 
     end
     for i = 1 : length(olfactometerOdors.sessionOdors) % Hacked! At some point add the field nicely in the subfunctions
         olfactometerOdors.sessionOdors(i).sessionOdorNumber = i;

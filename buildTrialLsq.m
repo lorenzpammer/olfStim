@@ -15,6 +15,7 @@ function trialLsq = buildTrialLsq(trialNum)
 % - Fix how the digital outputs are triggered on LASOM. For now I'm using
 % the dummy output $DigOut1 but I think this can only be set to high or low
 % not to give out 8bit binary numbers.
+% - Support presenting mixtures.
 %
 % lorenzpammer 2011/12
 

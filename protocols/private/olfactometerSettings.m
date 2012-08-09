@@ -167,316 +167,61 @@ if strncmp(instruction,'setUp',5)
     
     %% Define the options which can be set to control the olfactometer
     
-    
-    % total flow at presentation of both MFCs combined in l/min
-    settingNumber = 1;
-    userSettingNumber = 1;
-    olfactometerInstructions(settingNumber).userSettingNumber = userSettingNumber;
-    olfactometerInstructions(settingNumber).value = 1.0;
-    
-    position = [positions{userSettingNumber}(1)+spacing positions{userSettingNumber}(2)+20 textWidth textHeight];
-    h.olfactometerSettings.text(userSettingNumber) = uicontrol('Parent',h.guiHandle,...
-        'Style','text','String',[olfactometerInstructions(settingNumber).name ' ' olfactometerInstructions(settingNumber).unit],...
-        'Position', position,'Tag',olfactometerInstructions(settingNumber).name);
-    
-    position = [positions{userSettingNumber}(1)+spacing positions{userSettingNumber}(2)+spacing editWidth editHeight];
-    h.olfactometerSettings.edit(userSettingNumber) = uicontrol('Parent',h.guiHandle,...
-        'Style','edit','String',num2str(olfactometerInstructions(settingNumber).value),'Position', position,...
-        'Tag',olfactometerInstructions(settingNumber).name);
-    
-    
-    % Time of opening odor gating valves & closing empty vial gating valves
-    settingNumber = 2;
-    userSettingNumber = 2;
-    olfactometerInstructions(settingNumber).userSettingNumber = userSettingNumber;
-    olfactometerInstructions(settingNumber).value = 0; % Default power the gating valves at t=0s
-    
-    position = [positions{userSettingNumber}(1)+spacing positions{userSettingNumber}(2)+20 textWidth textHeight];
-    h.olfactometerSettings.text(userSettingNumber) = uicontrol('Parent',h.guiHandle,...
-        'Style','text','String',[olfactometerInstructions(settingNumber).name ' ' olfactometerInstructions(settingNumber).unit],...
-        'Position', position,'Tag',olfactometerInstructions(settingNumber).name);
-    
-    position = [positions{userSettingNumber}(1)+spacing positions{userSettingNumber}(2)+spacing editWidth editHeight];
-    h.olfactometerSettings.edit(userSettingNumber) = uicontrol('Parent',h.guiHandle,...
-        'Style','edit','String',num2str(olfactometerInstructions(settingNumber).value),'Position', position,...
-        'Tag',olfactometerInstructions(settingNumber).name);
-    
-    position = [positions{userSettingNumber}(1)+position(3)+spacing positions{userSettingNumber}(2)+10 15 15];
-    h.olfactometerSettings.check(userSettingNumber) = uicontrol('Parent',h.guiHandle,... % check to define whether the final valve should be used
-        'Style','checkbox','String','','Value',olfactometerInstructions(settingNumber).used,'Position', position,...
-        'Tag',olfactometerInstructions(settingNumber).name);
-    
-    
-    
-     % Unpower gating valve
-    settingNumber = 3;
-    userSettingNumber = 3;
-    olfactometerInstructions(settingNumber).userSettingNumber = userSettingNumber;
-    olfactometerInstructions(settingNumber).value = 5; % in seconds
-    
-    position = [positions{userSettingNumber}(1)+spacing positions{userSettingNumber}(2)+20 textWidth textHeight];
-    h.olfactometerSettings.text(userSettingNumber) = uicontrol('Parent',h.guiHandle,...
-        'Style','text','String',[olfactometerInstructions(settingNumber).name ' ' olfactometerInstructions(settingNumber).unit],'Position', position,...
-        'Tag',olfactometerInstructions(settingNumber).name);
-    
-    position = [positions{userSettingNumber}(1)+spacing positions{userSettingNumber}(2)+spacing editWidth editHeight];
-    h.olfactometerSettings.edit(userSettingNumber) = uicontrol('Parent',h.guiHandle,...
-        'Style','edit','String',num2str(olfactometerInstructions(settingNumber).value),'Position', position,...
-        'Tag',olfactometerInstructions(settingNumber).name);
-    
-    % Use the same handle for the used setting as the setting
-    % 'powerGatingValve'
-    tagNames = get(h.olfactometerSettings.text, 'Tag');
-    relatedSettingIndex = find(strcmp('powerGatingValve',tagNames));
-    h.olfactometerSettings.check(userSettingNumber) = h.olfactometerSettings.check(relatedSettingIndex);
-    
-    
-    
-    
-    % Time of Powering final valve in seconds
-    % Defines the timepoint at which final valve is powered - time odor
-    % concentration can settle in the line between the vial and the final
-    % valve.
-    settingNumber = 4;
-    userSettingNumber = 4;
-    olfactometerInstructions(settingNumber).userSettingNumber = userSettingNumber;
-    olfactometerInstructions(settingNumber).value = 3.0; % in seconds
-    
-    position = [positions{userSettingNumber}(1)+spacing positions{userSettingNumber}(2)+20 textWidth textHeight];
-    h.olfactometerSettings.text(userSettingNumber) = uicontrol('Parent',h.guiHandle,...
-        'Style','text','String',[olfactometerInstructions(settingNumber).name ' ' olfactometerInstructions(settingNumber).unit],'Position', position,...
-        'Tag',olfactometerInstructions(settingNumber).name);
-    
-    position = [positions{userSettingNumber}(1)+spacing positions{userSettingNumber}(2)+spacing editWidth editHeight];
-    h.olfactometerSettings.edit(userSettingNumber) = uicontrol('Parent',h.guiHandle,...
-        'Style','edit','String',num2str(olfactometerInstructions(settingNumber).value),'Position', position,...
-        'Tag',olfactometerInstructions(settingNumber).name);
-    
-    position = [position(1)+position(3)+spacing position(2)+10 15 15];
-    h.olfactometerSettings.check(userSettingNumber) = uicontrol('Parent',h.guiHandle,... % check to define whether the final valve should be used
-        'Style','checkbox','String','','Value',olfactometerInstructions(settingNumber).used,'Position', position,...
-        'Tag',olfactometerInstructions(settingNumber).name);
-    
-    
-    
-    % Unpower final valve
-    settingNumber = 5;
-    userSettingNumber = 5;
-    olfactometerInstructions(settingNumber).userSettingNumber = userSettingNumber;
-    olfactometerInstructions(settingNumber).value = 5; % in seconds
-    
-    position = [positions{userSettingNumber}(1)+spacing positions{userSettingNumber}(2)+20 textWidth textHeight];
-    h.olfactometerSettings.text(userSettingNumber) = uicontrol('Parent',h.guiHandle,...
-        'Style','text','String',[olfactometerInstructions(settingNumber).name ' ' olfactometerInstructions(settingNumber).unit],'Position', position,...
-        'Tag',olfactometerInstructions(settingNumber).name);
-    
-    position = [positions{userSettingNumber}(1)+spacing positions{userSettingNumber}(2)+spacing editWidth editHeight];
-    h.olfactometerSettings.edit(userSettingNumber) = uicontrol('Parent',h.guiHandle,...
-        'Style','edit','String',num2str(olfactometerInstructions(settingNumber).value),'Position', position,...
-        'Tag',olfactometerInstructions(settingNumber).name);
-    
-    % Use the same handle for the used setting as the setting
-    % 'powerFinalValve'
-    tagNames = get(h.olfactometerSettings.text, 'Tag');
-    relatedSettingIndex = find(strcmp('powerFinalValve',tagNames));
-    h.olfactometerSettings.check(userSettingNumber) = h.olfactometerSettings.check(relatedSettingIndex);
-    
-    
-    
-    % Timepoint closing suction valve in seconds
-    % Dead volume purge time. Dead volume between final valve and
-    settingNumber = 6;
-    userSettingNumber = 6;
-    olfactometerInstructions(settingNumber).userSettingNumber = userSettingNumber;
-    olfactometerInstructions(settingNumber).value = 3.25; % in seconds
-    
-    position = [positions{userSettingNumber}(1)+spacing positions{userSettingNumber}(2)+20 textWidth textHeight];
-    h.olfactometerSettings.text(userSettingNumber) = uicontrol('Parent',h.guiHandle,...
-        'Style','text','String',[olfactometerInstructions(settingNumber).name ' ' olfactometerInstructions(settingNumber).unit],'Position', position,...
-        'Tag',olfactometerInstructions(settingNumber).name);
-    
-    position = [positions{userSettingNumber}(1)+spacing positions{userSettingNumber}(2)+spacing editWidth editHeight];
-    h.olfactometerSettings.edit(userSettingNumber) = uicontrol('Parent',h.guiHandle,...
-        'Style','edit','String',num2str(olfactometerInstructions(settingNumber).value),'Position', position,...
-        'Tag',olfactometerInstructions(settingNumber).name);
-    
-    position = [position(1)+position(3)+spacing position(2)+10 15 15];
-    h.olfactometerSettings.check(userSettingNumber) = uicontrol('Parent',h.guiHandle,...% check to define whether the suction valve should be used
-        'Style','checkbox','String','','Value',olfactometerInstructions(settingNumber).used,'Position', position,...
-        'Tag',olfactometerInstructions(settingNumber).name);
-    
-    
-    % Open suction valve
-    settingNumber = 7;
-    userSettingNumber = 7;
-    olfactometerInstructions(settingNumber).userSettingNumber = userSettingNumber;
-    olfactometerInstructions(settingNumber).value = 5; % in seconds
-    
-    position = [positions{userSettingNumber}(1)+spacing positions{userSettingNumber}(2)+20 textWidth textHeight];
-    h.olfactometerSettings.text(userSettingNumber) = uicontrol('Parent',h.guiHandle,...
-        'Style','text','String',[olfactometerInstructions(settingNumber).name ' ' olfactometerInstructions(settingNumber).unit],'Position', position,...
-        'Tag',olfactometerInstructions(settingNumber).name);
-    
-    position = [positions{userSettingNumber}(1)+spacing positions{userSettingNumber}(2)+spacing editWidth editHeight];
-    h.olfactometerSettings.edit(userSettingNumber) = uicontrol('Parent',h.guiHandle,...
-        'Style','edit','String',num2str(olfactometerInstructions(settingNumber).value),'Position', position,...
-        'Tag',olfactometerInstructions(settingNumber).name);
-    
-    % Use the same handle for the used setting as the setting
-    % 'closeSuctionValve'
-    tagNames = get(h.olfactometerSettings.text, 'Tag');
-    relatedSettingIndex = find(strcmp('closeSuctionValve',tagNames));
-    h.olfactometerSettings.check(userSettingNumber) = h.olfactometerSettings.check(relatedSettingIndex);
-    
-
-    
-    
-    % Timepoint opening sniffing valve + optional sniffing valve
-    settingNumber = 8;
-    userSettingNumber = 8;
-    olfactometerInstructions(settingNumber).userSettingNumber = userSettingNumber;
-    olfactometerInstructions(settingNumber).value = 3.5; % in seconds
-    
-    position = [positions{userSettingNumber}(1)+spacing positions{userSettingNumber}(2)+20 textWidth textHeight];
-    h.olfactometerSettings.text(userSettingNumber) = uicontrol('Parent',h.guiHandle,...
-        'Style','text','String',[olfactometerInstructions(settingNumber).name ' ' olfactometerInstructions(settingNumber).unit],'Position', position,...
-        'Tag',olfactometerInstructions(settingNumber).name);
-    
-    position = [positions{userSettingNumber}(1)+spacing positions{userSettingNumber}(2)+spacing editWidth editHeight];
-    h.olfactometerSettings.edit(userSettingNumber) = uicontrol('Parent',h.guiHandle,...
-        'Style','edit','String',num2str(olfactometerInstructions(settingNumber).value),'Position', position,...
-        'Tag',olfactometerInstructions(settingNumber).name);
-    
-    position = [position(1)+position(3)+spacing position(2)+10 15 15];
-    h.olfactometerSettings.check(userSettingNumber) = uicontrol('Parent',h.guiHandle,... % check to define whether the sniffing valve should be used
-        'Style','checkbox','String','','Value',olfactometerInstructions(settingNumber).used,'Position', position,...
-        'Tag',olfactometerInstructions(settingNumber).name);
-    
-    
-    
-    % Odor Presentation Time ends:
-    
-    % Close sniffing valve
-    settingNumber = 9;
-    userSettingNumber = 9;
-    olfactometerInstructions(settingNumber).userSettingNumber = userSettingNumber;
-    olfactometerInstructions(settingNumber).value = 5; % in seconds
-    
-    position = [positions{userSettingNumber}(1)+spacing positions{userSettingNumber}(2)+20 textWidth textHeight];
-    h.olfactometerSettings.text(userSettingNumber) = uicontrol('Parent',h.guiHandle,...
-        'Style','text','String',[olfactometerInstructions(settingNumber).name ' ' olfactometerInstructions(settingNumber).unit],'Position', position,...
-        'Tag',olfactometerInstructions(settingNumber).name);
-    
-    position = [positions{userSettingNumber}(1)+spacing positions{userSettingNumber}(2)+spacing editWidth editHeight];
-    h.olfactometerSettings.edit(userSettingNumber) = uicontrol('Parent',h.guiHandle,...
-        'Style','edit','String',num2str(olfactometerInstructions(settingNumber).value),'Position', position,...
-        'Tag',olfactometerInstructions(settingNumber).name);
-    
-    % Use the same handle for the used setting as the setting
-    % 'openSniffingValve'
-    tagNames = get(h.olfactometerSettings.text, 'Tag');
-    relatedSettingIndex = find(strcmp('openSniffingValve',tagNames));
-    h.olfactometerSettings.check(userSettingNumber) = h.olfactometerSettings.check(relatedSettingIndex);
-    
-    
-    % Time of opening humidity valve in seconds
-    % Defines the timepoint at which humidity valve is powered.
-    settingNumber = 10;
-    userSettingNumber = 10;
-    olfactometerInstructions(settingNumber).userSettingNumber = userSettingNumber;
-    olfactometerInstructions(settingNumber).value = 9; % in seconds
-    
-    position = [positions{userSettingNumber}(1)+spacing positions{userSettingNumber}(2)+20 textWidth textHeight];
-    h.olfactometerSettings.text(userSettingNumber) = uicontrol('Parent',h.guiHandle,...
-        'Style','text','String',[olfactometerInstructions(settingNumber).name ' ' olfactometerInstructions(settingNumber).unit],'Position', position,...
-        'Tag',olfactometerInstructions(settingNumber).name);
-    
-    position = [positions{userSettingNumber}(1)+spacing positions{userSettingNumber}(2)+spacing editWidth editHeight];
-    h.olfactometerSettings.edit(userSettingNumber) = uicontrol('Parent',h.guiHandle,...
-        'Style','edit','String',num2str(olfactometerInstructions(settingNumber).value),'Position', position,...
-        'Tag',olfactometerInstructions(settingNumber).name);
-    
-    position = [position(1)+position(3)+spacing position(2)+10 15 15];
-    h.olfactometerSettings.check(userSettingNumber) = uicontrol('Parent',h.guiHandle,... % check to define whether the final valve should be used
-        'Style','checkbox','String','','Value',0,'Position', position,...
-        'Tag',olfactometerInstructions(settingNumber).name);
-    
-    
-    
-    % Time of closing humidity valve in seconds
-    % Defines the timepoint at which humidity valve is powered.
-    settingNumber = 11;
-    userSettingNumber = 11;
-    olfactometerInstructions(settingNumber).userSettingNumber = userSettingNumber;
-    olfactometerInstructions(settingNumber).value = 12; % in seconds
-    
-    position = [positions{userSettingNumber}(1)+spacing positions{userSettingNumber}(2)+20 textWidth textHeight];
-    h.olfactometerSettings.text(userSettingNumber) = uicontrol('Parent',h.guiHandle,...
-        'Style','text','String',[olfactometerInstructions(settingNumber).name ' ' olfactometerInstructions(settingNumber).unit],'Position', position,...
-        'Tag',olfactometerInstructions(settingNumber).name);
-    
-    position = [positions{userSettingNumber}(1)+spacing positions{userSettingNumber}(2)+spacing editWidth editHeight];
-    h.olfactometerSettings.edit(userSettingNumber) = uicontrol('Parent',h.guiHandle,...
-        'Style','edit','String',num2str(olfactometerInstructions(settingNumber).value),'Position', position,...
-        'Tag',olfactometerInstructions(settingNumber).name);
-    
-    % Use the same handle for the used setting as the setting
-    % 'powerGatingValve'
-    tagNames = get(h.olfactometerSettings.text, 'Tag');
-    relatedSettingIndex = find(strcmp('powerHumidityValve',tagNames));
-    h.olfactometerSettings.check(userSettingNumber) = h.olfactometerSettings.check(relatedSettingIndex);
-    
-    
-    
-    
-    % Start purge
-    settingNumber = 12;
-    userSettingNumber = 12;
-    olfactometerInstructions(settingNumber).userSettingNumber = userSettingNumber;
-    olfactometerInstructions(settingNumber).value = 5; % in seconds
-    
-    position = [positions{userSettingNumber}(1)+spacing positions{userSettingNumber}(2)+20 textWidth textHeight];
-    h.olfactometerSettings.text(userSettingNumber) = uicontrol('Parent',h.guiHandle,...
-        'Style','text','String',[olfactometerInstructions(settingNumber).name ' ' olfactometerInstructions(settingNumber).unit],'Position', position,...
-        'Tag',olfactometerInstructions(settingNumber).name);
-    
-    position = [positions{userSettingNumber}(1)+spacing positions{userSettingNumber}(2)+spacing editWidth editHeight];
-    h.olfactometerSettings.edit(userSettingNumber) = uicontrol('Parent',h.guiHandle,...
-        'Style','edit','String',num2str(olfactometerInstructions(settingNumber).value),'Position', position,...
-        'Tag',olfactometerInstructions(settingNumber).name);
-    
-     position = [positions{userSettingNumber}(1)+position(3)+spacing positions{userSettingNumber}(2)+10 15 15];
-    h.olfactometerSettings.check(userSettingNumber) = uicontrol('Parent',h.guiHandle,... % check to define whether the final valve should be used
-        'Style','checkbox','String','','Value',olfactometerInstructions(settingNumber).used,'Position', position,...
-        'Tag',olfactometerInstructions(settingNumber).name);
-    
-    
-    % Clean nose
-    settingNumber = 13;
-    userSettingNumber = 13;
-    olfactometerInstructions(settingNumber).userSettingNumber = userSettingNumber;
-    olfactometerInstructions(settingNumber).value = 10; % in seconds
-    
-    
-    position = [positions{userSettingNumber}(1)+spacing positions{userSettingNumber}(2)+20 textWidth textHeight];
-    h.olfactometerSettings.text(userSettingNumber) = uicontrol('Parent',h.guiHandle,...
-        'Style','text','String',[olfactometerInstructions(settingNumber).name ' ' olfactometerInstructions(settingNumber).unit],'Position', position,...
-        'Tag',olfactometerInstructions(settingNumber).name);
-    
-    position = [positions{userSettingNumber}(1)+spacing positions{userSettingNumber}(2)+spacing editWidth editHeight];
-    h.olfactometerSettings.edit(userSettingNumber) = uicontrol('Parent',h.guiHandle,...
-        'Style','edit','String',num2str(olfactometerInstructions(settingNumber).value),'Position', position,...
-        'Tag',olfactometerInstructions(settingNumber).name);
-    
-    position = [position(1)+position(3)+spacing position(2)+10 15 15];
-    h.olfactometerSettings.check(userSettingNumber) = uicontrol('Parent',h.guiHandle,...
-        'Style','checkbox','String','','Value',olfactometerInstructions(settingNumber).used,'Position', position,...
-        'Tag',olfactometerInstructions(settingNumber).name);
-    
-    
-    
-    
-    % Color the describing text
+    % Order of Olfactometer settings fields
+    %     {'mfcTotalFlow' 'powerGatingValve' 'unpowerGatingValve' ,...
+    %     'powerFinalValve' 'unpowerFinalValve' 'closeSuctionValve' 'openSuctionValve',...
+    %     'openSniffingValve' 'closeSniffingValve' 'powerHumidityValve' 'unpowerHumidityValve',...
+    %          'purge' 'cleanNose'}
+    settingValue = [1 0 5 3 5 3.25 5 3.5 5 9 12 5 10];
+    useCheckBox = logical([0 1 0 1 0 1 0 1 0 1 0 1 1]);
+    dependentOnSetting = {0 0 'powerGatingValve' 0 'powerFinalValve' 0 ...
+        'closeSuctionValve' 0 'openSniffingValve' 0 'powerHumidityValve' 0 0};
+    
+    
+    for settingNumber = 1 : length(olfactometerInstructions)
+        
+        % Set up some missing parameters for the current setting:
+        userSettingNumber = settingNumber;
+        olfactometerInstructions(settingNumber).userSettingNumber = userSettingNumber;
+        olfactometerInstructions(settingNumber).value = settingValue(settingNumber);
+        
+        % Set up the user controls for the current setting in the GUI:
+        
+        % Text label:
+        position = [positions{userSettingNumber}(1)+spacing positions{userSettingNumber}(2)+20 textWidth textHeight];
+        h.olfactometerSettings.text(userSettingNumber) = uicontrol('Parent',h.guiHandle,...
+            'Style','text','String',[olfactometerInstructions(settingNumber).name ' ' olfactometerInstructions(settingNumber).unit],...
+            'Position', position,'Tag',olfactometerInstructions(settingNumber).name);
+        
+        % Field for editing the value of the setting:
+        position = [positions{userSettingNumber}(1)+spacing positions{userSettingNumber}(2)+spacing editWidth editHeight];
+        h.olfactometerSettings.edit(userSettingNumber) = uicontrol('Parent',h.guiHandle,...
+            'Style','edit','String',num2str(olfactometerInstructions(settingNumber).value),'Position', position,...
+            'Tag',olfactometerInstructions(settingNumber).name);
+        
+        % Check field whether to use the valve or not:
+        if useCheckBox(settingNumber)
+            position = [positions{userSettingNumber}(1)+position(3)+spacing positions{userSettingNumber}(2)+10 15 15];
+            h.olfactometerSettings.check(userSettingNumber) = uicontrol('Parent',h.guiHandle,... % check to define whether the final valve should be used
+                'Style','checkbox','String','','Value',olfactometerInstructions(settingNumber).used,'Position', position,...
+                'Tag',olfactometerInstructions(settingNumber).name);
+        end
+        
+        
+        % Use the same handle for the used setting in the opening and
+        % closing of a valve
+        if all(dependentOnSetting{settingNumber} ~= 0)
+            tagName = get(h.olfactometerSettings.text, 'Tag');
+            relatedSettingIndex = find(strcmp(dependentOnSetting{settingNumber},tagName));
+            h.olfactometerSettings.check(userSettingNumber) = h.olfactometerSettings.check(relatedSettingIndex);
+        end
+        
+    end
+    
+    clear settingValue userSettingNumber settingNumber useCheckBox tagName relatedSettingIndex dependentOnSetting
+    
+    
+    % Color code the setting fields
     names = get(h.olfactometerSettings.edit,'Tag');
     
     i = 1;
