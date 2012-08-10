@@ -13,12 +13,14 @@ function cleanOlfactometerStim
 %
 
 global smell;
-
+global olfactometerOdors;
+global olfactometerInstructions;
 
 % Extract the gui handle structure from the appdata of the figure:
 h=appdataManager('olfStimGui','get','h');
 
 %% Starting up
+
 
 % Set up the progress panel
 h=progressPanel(h,'setUp');
@@ -26,6 +28,10 @@ h=progressPanel(h,'setUp');
 % Adapt it for the cleaning protocol
 set(h.progressFigure,'XColor',[1 1 1],'YColor',[1 1 1],'Xtick',[]); 
 set(h.progressPanel,'Title',[]); 
+
+% Set up olfactometerInstructions
+olfactometerSettings([],'setUpStructure');
+
 
 % Make sure user has Ethanol in the vials:
 
@@ -109,74 +115,94 @@ clear editPosition; clear buttonPosition;
 delete(infoHandle.dynamicText); delete(infoHandle.nSlaves); delete(h.continue); 
 
 
-%% Set up the smell structure
-
-smell.olfactometerOdors.sessionOdors(numberOfSlavesToClean*9).odorName = 'Ethanol'; % set up for the number of vials = number of slaves * 9
-
-[smell.olfactometerOdors.sessionOdors(:).odorName] = deal('Ethanol');
-[smell.olfactometerOdors.sessionOdors(:).iupacName] = deal('Ethanol');
-[smell.olfactometerOdors.sessionOdors(:).CASNumber] = deal([]);
-[smell.olfactometerOdors.sessionOdors(:).odorantDilution] = deal(1);
-[smell.olfactometerOdors.sessionOdors(:).concentrationAtPresentation] = deal(1);
-[smell.olfactometerOdors.sessionOdors(:).mixture] = deal(0);
-[smell.olfactometerOdors.sessionOdors(:).producingCompany] = deal([]);
-[smell.olfactometerOdors.sessionOdors(:).dilutedIn] = deal([]);
-[smell.olfactometerOdors.sessionOdors(:).odorantPurity] = deal(1);
-[smell.olfactometerOdors.sessionOdors(:).state] = deal([]);
-
-% go through each session odor and define the slave & vial
-for i =  1: length(smell.olfactometerOdors.sessionOdors)
-    slaveNr = ceil(i/9);
-    vialNr = i - (slaveNr-1) * 9;
-    smell.olfactometerOdors.sessionOdors(i).sessionOdorNumber = i;
-    smell.olfactometerOdors.sessionOdors(i).slave = slaveNr;
-    smell.olfactometerOdors.sessionOdors(i).vial = vialNr;
-end
-clear slaveNr;clear vialNr;
-
-
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Prepare sequence of cleaning steps (here using the trial structure)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% First two steps for each slave for dealing with the dummy vial
+
+%% First two steps for each slave for dealing with the dummy vial
 for i = 1 : numberOfSlavesToClean
     stepIndex = 20 * (i-1) + 1; % calculates the cleaning step in which
-    [smell.trial(stepIndex:stepIndex+1).slave] = deal(i); % which slave
-    [smell.trial(stepIndex:stepIndex+1).vial] = deal([]); % no odor vial used
-    [smell.trial(stepIndex:stepIndex+1).sniffValveUsed] = deal(logical(0)); % not used
-    [smell.trial(stepIndex:stepIndex+1).noseCleaningUsed] = deal(logical(0)); % not used
-    [smell.trial(stepIndex:stepIndex+1).humidAirValveUsed] = deal(logical(0)); % not used
-    [smell.trial(stepIndex:stepIndex+1).odorGatingValves] = deal([]); % time in seconds [power unpower]
-    [smell.trial(stepIndex:stepIndex+1).emptyVialGatingValves] = deal([]); % time in seconds [power unpower]
-    [smell.trial(stepIndex:stepIndex+1).finalValve] = deal([1 900]); % time in seconds [power unpower]
-    [smell.trial(stepIndex:stepIndex+1).suctionValve] = deal([]); % not used
-    [smell.trial(stepIndex:stepIndex+1).sniffingValve] = deal([]); % not used
     
-    smell.trial(stepIndex).odorName = 'Ethanol';
-    smell.trial(stepIndex).MFCAir = 0; % turn off when cleaning ethanol. Results in only ethanol being p
-    smell.trial(stepIndex).MFCNitrogen = 0.1; % TO DO: see what command LASOM expects to open the MFC completely
+    trialOdor = olfactometerOdors.sessionOdors(1); %
+    
+    buildSmell('update',trialOdor,stepIndex,'cleanOlfactometerStim')
+    
+    [smell.trial(stepIndex:stepIndex+1).slave] = deal(i); % which slave
+    [smell.trial(stepIndex:stepIndex+1).vial] = deal([]); % no odor vial used, because only dealing with dummy valve.
+    smell.trial(stepIndex).concentrationAtPresentation = 1;
+    smell.trial(stepIndex).flowRateMfcAir = 0; % turn off when cleaning ethanol. Results in only ethanol being p
+    smell.trial(stepIndex).flowRateMfcN = smell.olfactometerSettings.maxFlowRateMfcNitrogen; % TO DO: see what command LASOM expects to open the MFC completely
     smell.trial(stepIndex).trialNum = stepIndex;
+        
+    % Adapt olfactometerInstructions for these trials:
+    % Define what to write in olfactometerInstructions:
+    settingName = {'mfcTotalFlow' 'powerGatingValve' 'unpowerGatingValve' 'powerFinalValve' 'unpowerFinalValve' ...
+    'closeSuctionValve' 'openSuctionValve' 'openSniffingValve' 'closeSniffingValve' ...
+    'powerHumidityValve' 'unpowerHumidityValve' 'purge' 'cleanNose'};
+    settingValue = [smell.olfactometerSettings.maxFlowRateMfcNitrogen ...
+                    0 0 900 1800 0 0 0 0 0 0 0 0];
+    settingUsed =  [1 0 0 1 1 0 0 0 0 0 0 0 0];
+    
+    for j = 1 : length(settingName)
+        index = find(strcmp(settingName{j},{olfactometerInstructions.name}));
+        olfactometerInstructions(index).value = settingValue(j);
+        olfactometerInstructions(index).used = settingUsed(j);  
+    end
+    smell.trial(stepIndex).olfactometerInstructions = olfactometerInstructions;
+    
+    
     % TO DO: see what command LASOM expects to open the MFC completely
     % Also check whether there is any N2 flow when MFCAir is opened all the
     % way.
-    smell.trial(stepIndex+1).MFCAir = 'max'; % turn off when cleaning ethanol. Results in only ethanol being p
-    smell.trial(stepIndex+1).MFCNitrogen = 'max'; % TO DO: see what command LASOM expects to open the MFC completely
+    smell.trial(stepIndex+1).flowRateMfcAir = smell.olfactometerSettings.maxFlowRateMfcAir; % turn off when cleaning ethanol. Results in only ethanol being p
+    smell.trial(stepIndex+1).flowRateMfcN = smell.olfactometerSettings.maxFlowRateMfcNitrogen; % TO DO: see what command LASOM expects to open the MFC completely
+    smell.trial(stepIndex+1).concentrationAtPresentation = smell.trial(stepIndex+1).flowRateMfcN/smell.trial(stepIndex+1).flowRateMfcAir; % have to define this even though it doesn't make sense, because later in processing it is used
     smell.trial(stepIndex+1).odorName = 'Air';
     smell.trial(stepIndex+1).odorantPurity = 1;
     smell.trial(stepIndex+1).odorantDilution = 1;
     smell.trial(stepIndex+1).odorantPurity = 1;
     smell.trial(stepIndex+1).trialNum = stepIndex+1;
+    
+    % Adapt olfactometerInstructions for these trials:
+    % Define what to write in olfactometerInstructions:
+    settingName = {'mfcTotalFlow' 'powerGatingValve' 'unpowerGatingValve' 'powerFinalValve' 'unpowerFinalValve' ...
+    'closeSuctionValve' 'openSuctionValve' 'openSniffingValve' 'closeSniffingValve' ...
+    'powerHumidityValve' 'unpowerHumidityValve' 'purge' 'cleanNose'};
+    settingValue = [smell.olfactometerSettings.maxFlowRateMfcAir+smell.olfactometerSettings.maxFlowRateMfcNitrogen ...
+                    0 0 900 1800 0 0 0 0 0 0 0 0];
+    settingUsed =  [1 0 0 1 1 0 0 0 0 0 0 0 0];
+    
+    % Write olfactometerInstructions for the current cleaning step
+    for j = 1 : length(settingName)
+        index = find(strcmp(settingName{j},{olfactometerInstructions.name}));
+        olfactometerInstructions(index).value = settingValue(j);
+        olfactometerInstructions(index).used = settingUsed(j);  
+    end
+    % Update smell structure
+    smell.trial(stepIndex+1).olfactometerInstructions = olfactometerInstructions;
 end
 
-% Steps of ethanol cleaning (every odd cleaning step)
+
+%% Steps of ethanol cleaning (every odd cleaning step)
 % In these steps only the N2 MFC is opened a small amount, to ensure that
 % there is some 
+
+% Define what to write in olfactometerInstructions:
+settingName = {'mfcTotalFlow' 'powerGatingValve' 'unpowerGatingValve' 'powerFinalValve' 'unpowerFinalValve' ...
+    'closeSuctionValve' 'openSuctionValve' 'openSniffingValve' 'closeSniffingValve' ...
+    'powerHumidityValve' 'unpowerHumidityValve' 'purge' 'cleanNose'};
+settingValue = [smell.olfactometerSettings.maxFlowRateMfcNitrogen ...
+ 0 1800 900 1800 0 0 0 0 0 0 0 0];
+settingUsed =  [1 1 1 1 1 0 0 0 0 0 0 0 0];
+
 odorNr = 0;
 addToIndex = 0;
 for i = 1 : length(smell.olfactometerOdors.sessionOdors) % starting at 3 because steps 1 & 2 are for dummy vials
+    % Define the index in the sequence of steps where the current step has
+    % to be written. Need to jump through some hoops here:
     calcIndex = i*2 - 1 + 2; % start with an ethanol cleaning step
     odorNr = odorNr+1;
-
     
     try
         previousSlave = smell.olfactometerOdors.sessionOdors(odorNr-1).slave;
@@ -188,30 +214,42 @@ for i = 1 : length(smell.olfactometerOdors.sessionOdors) % starting at 3 because
     end
     stepIndex = calcIndex + addToIndex;
     
-    
     buildSmell('update',smell.olfactometerOdors.sessionOdors(odorNr),stepIndex,'cleanOlfactometerStim');
     
-        
-    smell.trial(stepIndex).sniffValveUsed = logical(0);
-    smell.trial(stepIndex).noseCleaningUsed = logical(0);
-    smell.trial(stepIndex).humidAirValveUsed = logical(0);
-    
-    smell.trial(stepIndex).odorGatingValves = [1 1800]; % time in seconds [power unpower]
-    smell.trial(stepIndex).emptyVialGatingValves = [1 1800]; % time in seconds [power unpower]
-    smell.trial(stepIndex).finalValve = [1 900]; % time in seconds [power unpower]
-    smell.trial(stepIndex).suctionValve = []; % not used
-    smell.trial(stepIndex).sniffingValve = []; % not used
-    smell.trial(stepIndex).MFCAir = 0; % turn off when cleaning ethanol. Results in only ethanol being p
-    smell.trial(stepIndex).MFCNitrogen = 0.1; % TO DO: see what command LASOM expects to open the MFC completely
+    smell.trial(stepIndex).concentrationAtPresentation = 1;
+    smell.trial(stepIndex).flowRateMfcAir = 0; % turn off when cleaning ethanol. Results in only ethanol being p
+    smell.trial(stepIndex).flowRateMfcN = smell.olfactometerSettings.maxFlowRateMfcNitrogen; % TO DO: see what command LASOM expects to open the MFC completely
     smell.trial(stepIndex).trialNum = stepIndex;
+    
+    
+    % Write olfactometerInstructions for the current cleaning step
+    for j = 1 : length(settingName)
+        index = find(strcmp(settingName{j},{olfactometerInstructions.name}));
+        olfactometerInstructions(index).value = settingValue(j);
+        olfactometerInstructions(index).used = settingUsed(j);  
+    end
+    % Update smell structure
+    smell.trial(stepIndex).olfactometerInstructions = olfactometerInstructions;
+    
 end
 clear odorNr;
 
-% Steps of blowing the tubes dry with high gas flow
+%% Steps of blowing the tubes dry with high gas flow
+
+
+%% Adapt olfactometerInstructions for these trials:
+    % Define what to write in olfactometerInstructions:
+    settingName = {'mfcTotalFlow' 'powerGatingValve' 'unpowerGatingValve' 'powerFinalValve' 'unpowerFinalValve' ...
+    'closeSuctionValve' 'openSuctionValve' 'openSniffingValve' 'closeSniffingValve' ...
+    'powerHumidityValve' 'unpowerHumidityValve' 'purge' 'cleanNose'};
+    settingValue = [smell.olfactometerSettings.maxFlowRateMfcAir+smell.olfactometerSettings.maxFlowRateMfcNitrogen ...
+                    0 1800 900 1800 0 0 0 0 0 0 0 0];
+    settingUsed =  [1 1 1 1 1 0 0 0 0 0 0 0 0];
+
 addToIndex = 0;
 for i = 1 : length(smell.olfactometerOdors.sessionOdors)
     calcIndex = i*2 + 2; % all even cleaning steps are high gas flow steps
-    
+    % In case multiple slaves are used, adapt the index:
     try
         previousSlave = smell.olfactometerOdors.sessionOdors(i-1).slave;
         currentSlave = smell.olfactometerOdors.sessionOdors(i).slave;
@@ -227,34 +265,32 @@ for i = 1 : length(smell.olfactometerOdors.sessionOdors)
     smell.trial(stepIndex).vial = smell.trial(stepIndex-1).vial;
     smell.trial(stepIndex).odorantPurity = 1;
     smell.trial(stepIndex).odorantDilution = 1;
-    smell.trial(stepIndex).odorantPurity = 1;
-    
-    smell.trial(stepIndex).sniffValveUsed = logical(0);
-    smell.trial(stepIndex).noseCleaningUsed = logical(0);
-    smell.trial(stepIndex).humidAirValveUsed = logical(0);
-    
-    smell.trial(stepIndex).odorGatingValves = [1 1800]; % time in seconds [power unpower]
-    smell.trial(stepIndex).emptyVialGatingValves = [1 1800]; % time in seconds [power unpower]
-    smell.trial(stepIndex).finalValve = [1 900]; % time in seconds [power unpower]
-    smell.trial(stepIndex).suctionValve = []; % not used
-    smell.trial(stepIndex).sniffingValve = []; % not used
+
     % TO DO: see what command LASOM expects to open the MFC completely
     % Also check whether there is any N2 flow when MFCAir is opened all the
     % way.
-    smell.trial(stepIndex).MFCAir = 'max'; % Open all the way when blowing a lot of air
-    smell.trial(stepIndex).MFCNitrogen = 'max'; 
+%     smell.trial(stepIndex).MFCAir = 'max'; % Open all the way when blowing a lot of air
+%     smell.trial(stepIndex).MFCNitrogen = 'max'; 
+    smell.trial(stepIndex).flowRateMfcAir = smell.olfactometerSettings.maxFlowRateMfcAir; % turn off when cleaning ethanol. Results in only ethanol being p
+    smell.trial(stepIndex).flowRateMfcN = smell.olfactometerSettings.maxFlowRateMfcNitrogen; % TO DO: see what command LASOM expects to open the MFC completely
+    smell.trial(stepIndex).concentrationAtPresentation = smell.trial(stepIndex).flowRateMfcN/smell.trial(stepIndex).flowRateMfcAir; % have to define this even though it doesn't make sense, because later in processing it is used
     smell.trial(stepIndex).trialNum = stepIndex;
+    
+    
+    % Write olfactometerInstructions for the current cleaning step
+    for j = 1 : length(settingName)
+        index = find(strcmp(settingName{j},{olfactometerInstructions.name}));
+        olfactometerInstructions(index).value = settingValue(j);
+        olfactometerInstructions(index).used = settingUsed(j);  
+    end
+    % Update smell structure
+    smell.trial(stepIndex).olfactometerInstructions = olfactometerInstructions;
     
 end
 
-[smell.trial(:).concentrationAtPresentation] = deal(1);
 [smell.trial(:).mixture] = deal(logical(0));
 [smell.trial(:).odorantDilution] = deal(1);
-[smell.trial(:).odorantPurity] = deal(1);
-[smell.trial(:).state] = deal([]);
 [smell.trial(:).stimProtocol] = deal('cleanOlfactometerStim');
-
-
 
 %% Start cleaning
 
@@ -268,12 +304,8 @@ for i = 1 : length(smell.trial)
     disp(message)
     
     startTrial(i,smell);
-    
-    
 end
 
-
-a=1;
 
 end
 

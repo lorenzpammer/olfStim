@@ -13,7 +13,7 @@ function lasomH = lasomFunctions(instruction,lasomH, varargin)
 %      provided as arguments.
 %   - 'loadAndRunSequencer', providing this argument will start the
 %      sequencer with the previously loaded and compiled lsq file.
-%   - 'setMfcFlowRate', varargin: (flowRateMfcAir, flowRateMfcN). In l/min
+%   - 'setMfcFlowRate', 
 
 %
 % lorenzpammer 2012/07
@@ -64,7 +64,7 @@ elseif strcmp(instruction,'loadAndRunSequencer')
 
 elseif strcmp(instruction,'setMfcFlowRate')
     if isempty(varargin{1}) || isempty(lasomH)
-        errormsg=sprintf('Not enough input arguments. \nThe handle to the lasom board and the MFC flow rates, \nhave to be provided.');
+        errormsg=sprintf('Not enough input arguments. \nThe handle to the lasom board and the path to the lsq file, \nwhich should be parsed have to be provided.');
         error(errormsg)
         clear errormsg
     end

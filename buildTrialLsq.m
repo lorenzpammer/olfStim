@@ -68,11 +68,10 @@ if smell.trial(trialNum).mixture == 0
     if ~isempty(smell.trial(trialNum).vial)
         % Rewrite the trialLsq with the correct value in the parameter
         % definition for the current trial
-        replaceString = 'Param, slave, 1';
+        replaceString = 'Param, slaveIndex, 1';
         replacementString = [replaceString(1:end-1) num2str(smell.trial(trialNum).slave)];
         trialLsq = replacePlaceHolderInLsq(trialLsq,replaceString,replacementString);
     end
-    
     
     
     %% Sort the actions according to their timing

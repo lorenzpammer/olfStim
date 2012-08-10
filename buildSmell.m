@@ -133,7 +133,7 @@ global olfactometerInstructions
     try
         smell.trial(trialNum).notes = get(h.sessionNotes.notesFigureField,'String'); % Extract text in the notes field.
     catch
-        dbstack
+%         dbstack
         disp(': No session notes available. Setting field blank.')
         smell.trial(trialNum).notes = [];
     end

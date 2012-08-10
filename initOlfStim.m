@@ -7,6 +7,7 @@ function initOlfStim
 % MFCs are present. 
 % - Check how many slaves are connected. Depending on this build the
 % odorSelectionGui.
+% - Possibility to give digital triggers at arbitrary time points.
 %
 % lorenzpammer 2011/07
 

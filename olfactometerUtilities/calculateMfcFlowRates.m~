@@ -17,28 +17,18 @@ function smell = calculateMfcFlowRates(trialNum, smell)
 
 %% Do the calculation and update smell
 
-% Calculate flow rate ratio between 100% flow of both MFCs 
-ratio = smell.olfactometerSettings.maxFlowRateMfcNitrogen/smell.olfactometerSettings.maxFlowRateMfcAir;
-% Calculate the desired dilution factor to reach the desired concentration,
-% given the odorant dilution in the vial:
-dilutionFactorForTrial = smell.trial(trialNum).concentrationAtPresentation / (ratio * smell.trial(trialNum).odorantDilution);
-% Flow rate of the Nitrogen MFC at 100% flow of the air MFC, to reach the
-% desired concentration:
-flowRateMfcN = smell.olfactometerSettings.maxFlowRateMfcNitrogen * dilutionFactorForTrial; 
-% The combined flow rate of the two MFCs to reach the desired
-% concentration, with 100% flow rate of the air MFC:
-totalFlowRate = flowRateMfcN + smell.olfactometerSettings.maxFlowRateMfcAir;
+
+flowRateMfcN = smell.trial(trialNum).concentrationAtPresentation * smell.olfactometerSettings.maxFlowRateMfcNitrogen;
+flowRateMfcAir = smell.olfactometerSettings.maxFlowRateMfcNitrogen - flowN;
+
+totalFlow = flowN + flowA;
 
 % Find the index of the MfcTotalFlow field in the olfactometerInstructions:
 index = find(strcmp({smell.trial(trialNum).olfactometerInstructions.name},'mfcTotalFlow'));
 
-% Ratio to reach the desired total flow rate:
-ratio = smell.trial(trialNum).olfactometerInstructions(index).value / totalFlowRate;
-% Multiply the calculated flow rates by the ratio, to get the flow rates
-% to reach the desired concentration with the desired combined (total) flow
-% rate:
+ratio = smell.trial(trialNum).olfactometerInstructions(index).value / totalFlow;
 flowRateMfcN = flowRateMfcN * ratio;
-flowRateMfcAir = smell.olfactometerSettings.maxFlowRateMfcAir * ratio;
+flowRateMfcAir = flowRateMfcAir * ratio;
 
 % Check if the desired flow rates can be reached given the maximum flow
 % rates of the MFCs. If not give an error:

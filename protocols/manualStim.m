@@ -1,6 +1,8 @@
 function manualStim
 % To do:
 % - Add possibility to change concentration for each trial.
+% - At the beginning of session set MFC flow rate, and close MFCs at the
+% end of session.
 %
 % lorenzpammer 2011/09
 

@@ -7,6 +7,7 @@ function h = olfactometerSettings(h,instruction,additionalSettings,panelPosition
 % instruction is either 'setUp' - when building the gui at the beginning of
 % a session this option will add the panel and all the user defineable
 % settings to the gui.
+% 'setUpStructure' - only olfactometerSettingsStructure is set up.
 % or 'get' - which is called at the beginning of every trial from the
 % stimulation protocol functions, before calling buildSmell('update') and
 % commands are sent to the LASOM. The instruction 'get' will cause the
@@ -52,10 +53,10 @@ end
 if nargin < 3
     additionalSettings = []; % Set additional settings to empty. Only default settings will be set up and extracted.
     
-    if strncmp(instruction, 'setUp',5) || strncmp(instruction,'get',3)
+    if strncmp(instruction, 'setUp',5) || strncmp(instruction,'get',3) || strncmp(instruction,'setUpStructure',3)
         % Fine
     else
-        error('First input to the function must be a string "setUp" or "get". See the help.')
+        error('First input to the function must be a string "setUp", "setUpStructure" or "get". See the help.')
     end
 end
 
@@ -72,54 +73,12 @@ end
 
 if strncmp(instruction,'setUp',5)
     
-    %% Define panelPosition if it wasn't defined in inputs
-    if nargin < 4
-        sessionNotesPanel = get(h.sessionNotes.panel,'Position');
-        figurePosition = get(h.guiHandle,'Position');
-        quitSessionPosition = get(h.quitSession,'Position');
-        spacing = 3;
-        panelPosition(1) = sessionNotesPanel(1) + sessionNotesPanel(3) + spacing;
-        panelPosition(2) = spacing;
-        panelPosition(3) = figurePosition(3) - sessionNotesPanel(1) - sessionNotesPanel(3) - quitSessionPosition(3) - spacing*3;
-        panelPosition(4) = sessionNotesPanel(2) + sessionNotesPanel(4);
-    end
-    clear sessionNotesPanel;clear figurePosition;clear quitSessionPosition;
-    
-    
-    h.olfactometerSettings.panel = uipanel('Parent',h.guiHandle,'Title','Olfactometer Settings',...
-        'FontSize',12,'TitlePosition','centertop',...
-        'Units','pixels','Position',panelPosition); % 'Position',[x y width height]
-    
-    %% Define positions for the controls:
-    % Total of 14 possible positions in the panel: 2x7
-    
-    positions = cell(2,7); % One cell for each of the 12 positions in the panel
-    width = panelPosition(3) / 7;
-    height = (panelPosition(4)-15) / 2; % -10 because the text of the panel is included in the height
-    
-    counter = 0;
-    for i = 1 : 2 : numel(positions)
-        counter = counter+1;
-        positions{i} = [panelPosition(1) + (counter-1)*width,...
-            panelPosition(2) + height,...
-            width, height];
-    end
-    counter = 0;
-    for i = 2 : 2 : numel(positions)
-        counter = counter+1;
-        positions{i} = [panelPosition(1) + (counter-1)*width,...
-            panelPosition(2),...
-            width, height];
-    end
-    clear counter; clear width; clear height
-    
-    
     %% Set up olfactometerInstructions structure
     
     olfactometerInstructions = struct('name',{'mfcTotalFlow' 'powerGatingValve' 'unpowerGatingValve' ,...
-    'powerFinalValve' 'unpowerFinalValve' 'closeSuctionValve' 'openSuctionValve',...
-    'openSniffingValve' 'closeSniffingValve' 'powerHumidityValve' 'unpowerHumidityValve',...
-         'purge' 'cleanNose'},...
+        'powerFinalValve' 'unpowerFinalValve' 'closeSuctionValve' 'openSuctionValve',...
+        'openSniffingValve' 'closeSniffingValve' 'powerHumidityValve' 'unpowerHumidityValve',...
+        'purge' 'cleanNose'},...
         'value',cell(1,13),...
         'unit',{ 'l/m' 's' 's' 's' 's' 's' 's' 's' 's' 's' 's' 's' 's'},...
         'userSettingNumber',[],...
@@ -133,143 +92,190 @@ if strncmp(instruction,'setUp',5)
     
     olfactometerInstructions = timeStampDefinitions(olfactometerInstructions);
     
-    %% Define the size of the edit field ('edit') and its descriptor ('text')
-    textHeight = 30; textWidth = 70;
-    editHeight = 25; editWidth = 50;
     
-    %% Graphical depiction of a sequence of events in a trial
-    
-    % First create a button which allows one to open and close the
-    % graphical depiction of the sequence of events, but also checks
-    % whether the sequence makes sense (eg when one valve is opened it must
-    % be closed as well)
-    position = [panelPosition(1)+panelPosition(3)-53 panelPosition(2)+spacing 50 25];
-    h.olfactometerSettings.trialSeqButton = uicontrol(h.guiHandle,'Position',position,'String','Trial Seq',...
-        'Callback',@trialSeqButton); % give input to function handle: 'Callback',{@trialSeqButton, olfactometerInstructions}
-    
-    position = get(h.guiHandle,'Position');
-    position = [(position(1:3) - [0 160 0]) 130];
-    h.olfactometerSettings.trialSeqFig = figure('Position',position,'menubar','none',...
-        'Visible','off','Name','Sequence of events in a trial'); %'CloseRequestFcn',@close_trialSeqFig
-    
-    h.olfactometerSettings.trialSeqGraph = axes('Units','Pixels');
-    position(1) = 5; % x
-    position(2) = 35; % y
-    position(3) = position(3)-10; %
-    position(4) = position(4)-40;
-    set(h.olfactometerSettings.trialSeqGraph,'Ytick',[],'Position',position)
-    xlabel(h.olfactometerSettings.trialSeqGraph,'Seconds');
-    ylim([0 10])
-    
-    position = [position(3)-35 5 33 20];
-    h.olfactometerSettings.help = uicontrol('Position',position,'String','Help',...
-        'Callback',@helpButton_Callback);
-    
-    %% Define the options which can be set to control the olfactometer
-    
-    % Order of Olfactometer settings fields
-    %     {'mfcTotalFlow' 'powerGatingValve' 'unpowerGatingValve' ,...
-    %     'powerFinalValve' 'unpowerFinalValve' 'closeSuctionValve' 'openSuctionValve',...
-    %     'openSniffingValve' 'closeSniffingValve' 'powerHumidityValve' 'unpowerHumidityValve',...
-    %          'purge' 'cleanNose'}
-    settingValue = [1 0 5 3 5 3.25 5 3.5 5 9 12 5 10]; % value for the different settings (in the according units)
-    useCheckBox = logical([0 1 0 1 0 1 0 1 0 1 0 1 1]); % whether or not a checkbox indicating used/non-used should be added to the gui
-    dependentOnSetting = {0 0 'powerGatingValve' 0 'powerFinalValve' 0 ... % on which setting (written as a string) a given setting (sequence) is dependent.
-        'closeSuctionValve' 0 'openSniffingValve' 0 'powerHumidityValve' 0 0};
-    
-    
-    for settingNumber = 1 : length(olfactometerInstructions)
+    if strcmp(instruction,'setUp')
+        %% Define panelPosition if it wasn't defined in inputs
+        if nargin < 4
+            sessionNotesPanel = get(h.sessionNotes.panel,'Position');
+            figurePosition = get(h.guiHandle,'Position');
+            quitSessionPosition = get(h.quitSession,'Position');
+            spacing = 3;
+            panelPosition(1) = sessionNotesPanel(1) + sessionNotesPanel(3) + spacing;
+            panelPosition(2) = spacing;
+            panelPosition(3) = figurePosition(3) - sessionNotesPanel(1) - sessionNotesPanel(3) - quitSessionPosition(3) - spacing*3;
+            panelPosition(4) = sessionNotesPanel(2) + sessionNotesPanel(4);
+        end
+        clear sessionNotesPanel;clear figurePosition;clear quitSessionPosition;
         
-        % Set up some missing parameters for the current setting:
-        userSettingNumber = settingNumber;
-        olfactometerInstructions(settingNumber).userSettingNumber = userSettingNumber;
-        olfactometerInstructions(settingNumber).value = settingValue(settingNumber);
         
-        % Set up the user controls for the current setting in the GUI:
+        h.olfactometerSettings.panel = uipanel('Parent',h.guiHandle,'Title','Olfactometer Settings',...
+            'FontSize',12,'TitlePosition','centertop',...
+            'Units','pixels','Position',panelPosition); % 'Position',[x y width height]
         
-        % Text label:
-        position = [positions{userSettingNumber}(1)+spacing positions{userSettingNumber}(2)+20 textWidth textHeight];
-        h.olfactometerSettings.text(userSettingNumber) = uicontrol('Parent',h.guiHandle,...
-            'Style','text','String',[olfactometerInstructions(settingNumber).name ' ' olfactometerInstructions(settingNumber).unit],...
-            'Position', position,'Tag',olfactometerInstructions(settingNumber).name);
+        %% Define positions for the controls:
+        % Total of 14 possible positions in the panel: 2x7
         
-        % Field for editing the value of the setting:
-        position = [positions{userSettingNumber}(1)+spacing positions{userSettingNumber}(2)+spacing editWidth editHeight];
-        h.olfactometerSettings.edit(userSettingNumber) = uicontrol('Parent',h.guiHandle,...
-            'Style','edit','String',num2str(olfactometerInstructions(settingNumber).value),'Position', position,...
-            'Tag',olfactometerInstructions(settingNumber).name);
+        positions = cell(2,7); % One cell for each of the 12 positions in the panel
+        width = panelPosition(3) / 7;
+        height = (panelPosition(4)-15) / 2; % -10 because the text of the panel is included in the height
         
-        % Check field whether to use the valve or not:
-        if useCheckBox(settingNumber)
-            position = [positions{userSettingNumber}(1)+position(3)+spacing positions{userSettingNumber}(2)+10 15 15];
-            h.olfactometerSettings.check(userSettingNumber) = uicontrol('Parent',h.guiHandle,... % check to define whether the final valve should be used
-                'Style','checkbox','String','','Value',olfactometerInstructions(settingNumber).used,'Position', position,...
+        counter = 0;
+        for i = 1 : 2 : numel(positions)
+            counter = counter+1;
+            positions{i} = [panelPosition(1) + (counter-1)*width,...
+                panelPosition(2) + height,...
+                width, height];
+        end
+        counter = 0;
+        for i = 2 : 2 : numel(positions)
+            counter = counter+1;
+            positions{i} = [panelPosition(1) + (counter-1)*width,...
+                panelPosition(2),...
+                width, height];
+        end
+        clear counter; clear width; clear height
+        
+        
+        
+        
+        %% Define the size of the edit field ('edit') and its descriptor ('text')
+        textHeight = 30; textWidth = 70;
+        editHeight = 25; editWidth = 50;
+        
+        %% Graphical depiction of a sequence of events in a trial
+        
+        % First create a button which allows one to open and close the
+        % graphical depiction of the sequence of events, but also checks
+        % whether the sequence makes sense (eg when one valve is opened it must
+        % be closed as well)
+        position = [panelPosition(1)+panelPosition(3)-53 panelPosition(2)+spacing 50 25];
+        h.olfactometerSettings.trialSeqButton = uicontrol(h.guiHandle,'Position',position,'String','Trial Seq',...
+            'Callback',@trialSeqButton); % give input to function handle: 'Callback',{@trialSeqButton, olfactometerInstructions}
+        
+        position = get(h.guiHandle,'Position');
+        position = [(position(1:3) - [0 160 0]) 130];
+        h.olfactometerSettings.trialSeqFig = figure('Position',position,'menubar','none',...
+            'Visible','off','Name','Sequence of events in a trial'); %'CloseRequestFcn',@close_trialSeqFig
+        
+        h.olfactometerSettings.trialSeqGraph = axes('Units','Pixels');
+        position(1) = 5; % x
+        position(2) = 35; % y
+        position(3) = position(3)-10; %
+        position(4) = position(4)-40;
+        set(h.olfactometerSettings.trialSeqGraph,'Ytick',[],'Position',position)
+        xlabel(h.olfactometerSettings.trialSeqGraph,'Seconds');
+        ylim([0 10])
+        
+        position = [position(3)-35 5 33 20];
+        h.olfactometerSettings.help = uicontrol('Position',position,'String','Help',...
+            'Callback',@helpButton_Callback);
+        
+        %% Define the options which can be set to control the olfactometer
+        
+        % Order of Olfactometer settings fields
+        %     {'mfcTotalFlow' 'powerGatingValve' 'unpowerGatingValve' ,...
+        %     'powerFinalValve' 'unpowerFinalValve' 'closeSuctionValve' 'openSuctionValve',...
+        %     'openSniffingValve' 'closeSniffingValve' 'powerHumidityValve' 'unpowerHumidityValve',...
+        %          'purge' 'cleanNose'}
+        settingValue = [1 0 5 3 5 3.25 5 3.5 5 9 12 5 10]; % value for the different settings (in the according units)
+        useCheckBox = logical([0 1 0 1 0 1 0 1 0 1 0 1 1]); % whether or not a checkbox indicating used/non-used should be added to the gui
+        dependentOnSetting = {0 0 'powerGatingValve' 0 'powerFinalValve' 0 ... % on which setting (written as a string) a given setting (sequence) is dependent.
+            'closeSuctionValve' 0 'openSniffingValve' 0 'powerHumidityValve' 0 0};
+        
+        
+        for settingNumber = 1 : length(olfactometerInstructions)
+            
+            % Set up some missing parameters for the current setting:
+            userSettingNumber = settingNumber;
+            olfactometerInstructions(settingNumber).userSettingNumber = userSettingNumber;
+            olfactometerInstructions(settingNumber).value = settingValue(settingNumber);
+            
+            % Set up the user controls for the current setting in the GUI:
+            
+            % Text label:
+            position = [positions{userSettingNumber}(1)+spacing positions{userSettingNumber}(2)+20 textWidth textHeight];
+            h.olfactometerSettings.text(userSettingNumber) = uicontrol('Parent',h.guiHandle,...
+                'Style','text','String',[olfactometerInstructions(settingNumber).name ' ' olfactometerInstructions(settingNumber).unit],...
+                'Position', position,'Tag',olfactometerInstructions(settingNumber).name);
+            
+            % Field for editing the value of the setting:
+            position = [positions{userSettingNumber}(1)+spacing positions{userSettingNumber}(2)+spacing editWidth editHeight];
+            h.olfactometerSettings.edit(userSettingNumber) = uicontrol('Parent',h.guiHandle,...
+                'Style','edit','String',num2str(olfactometerInstructions(settingNumber).value),'Position', position,...
                 'Tag',olfactometerInstructions(settingNumber).name);
+            
+            % Check field whether to use the valve or not:
+            if useCheckBox(settingNumber)
+                position = [positions{userSettingNumber}(1)+position(3)+spacing positions{userSettingNumber}(2)+10 15 15];
+                h.olfactometerSettings.check(userSettingNumber) = uicontrol('Parent',h.guiHandle,... % check to define whether the final valve should be used
+                    'Style','checkbox','String','','Value',olfactometerInstructions(settingNumber).used,'Position', position,...
+                    'Tag',olfactometerInstructions(settingNumber).name);
+            end
+            
+            
+            % Use the same handle for the used setting in the opening and
+            % closing of a valve
+            if all(dependentOnSetting{settingNumber} ~= 0)
+                tagName = get(h.olfactometerSettings.text, 'Tag');
+                relatedSettingIndex = find(strcmp(dependentOnSetting{settingNumber},tagName));
+                h.olfactometerSettings.check(userSettingNumber) = h.olfactometerSettings.check(relatedSettingIndex);
+            end
+            
         end
         
+        clear settingValue userSettingNumber settingNumber useCheckBox tagName relatedSettingIndex dependentOnSetting
         
-        % Use the same handle for the used setting in the opening and
-        % closing of a valve
-        if all(dependentOnSetting{settingNumber} ~= 0)
-            tagName = get(h.olfactometerSettings.text, 'Tag');
-            relatedSettingIndex = find(strcmp(dependentOnSetting{settingNumber},tagName));
-            h.olfactometerSettings.check(userSettingNumber) = h.olfactometerSettings.check(relatedSettingIndex);
+        
+        % Color code the setting fields
+        names = get(h.olfactometerSettings.edit,'Tag');
+        
+        i = 1;
+        index1(i) = strmatch('powerGatingValve',names);
+        index2(i) = strmatch('unpowerGatingValve',names);
+        
+        i = 2;
+        index1(i) = strmatch('powerFinalValve',names);
+        index2(i) = strmatch('unpowerFinalValve',names);
+        
+        i = 3;
+        index1(i) = strmatch('closeSuctionValve',names);
+        index2(i) = strmatch('openSuctionValve',names);
+        
+        i = 4;
+        index1(i) = strmatch('openSniffingValve',names);
+        index2(i) = strmatch('closeSniffingValve',names);
+        
+        i = 5;
+        index1(i) = strmatch('powerHumidityValve',names);
+        index2(i) = strmatch('unpowerHumidityValve',names);
+        
+        i = 6;
+        index1(i) = strmatch('purge',names);
+        index2(i) = 0;
+        
+        i = 7;
+        index1(i) = strmatch('cleanNose',names);
+        index2(i) = 0;
+        
+        
+        
+        color = hsv(length(index1));
+        
+        for i = 1 : length(color(:,1))
+            set(h.olfactometerSettings.edit(index1(i)),'BackgroundColor',color(i,:));
+            if index2(i) ~= 0
+                set(h.olfactometerSettings.edit(index2(i)),'BackgroundColor',color(i,:));
+            end
         end
         
-    end
-    
-    clear settingValue userSettingNumber settingNumber useCheckBox tagName relatedSettingIndex dependentOnSetting
-    
-    
-    % Color code the setting fields
-    names = get(h.olfactometerSettings.edit,'Tag');
-    
-    i = 1;
-    index1(i) = strmatch('powerGatingValve',names);
-    index2(i) = strmatch('unpowerGatingValve',names);
-    
-    i = 2;
-    index1(i) = strmatch('powerFinalValve',names);
-    index2(i) = strmatch('unpowerFinalValve',names);
-    
-    i = 3;
-    index1(i) = strmatch('closeSuctionValve',names);
-    index2(i) = strmatch('openSuctionValve',names);
-    
-    i = 4;
-    index1(i) = strmatch('openSniffingValve',names);
-    index2(i) = strmatch('closeSniffingValve',names);
-    
-    i = 5;
-    index1(i) = strmatch('powerHumidityValve',names);
-    index2(i) = strmatch('unpowerHumidityValve',names);
-    
-    i = 6;
-    index1(i) = strmatch('purge',names);
-    index2(i) = 0;
-    
-    i = 7;
-    index1(i) = strmatch('cleanNose',names);
-    index2(i) = 0;
-    
-
-    
-    color = hsv(length(index1));
-    
-    for i = 1 : length(color(:,1))
-        set(h.olfactometerSettings.edit(index1(i)),'BackgroundColor',color(i,:));
-        if index2(i) ~= 0
-            set(h.olfactometerSettings.edit(index2(i)),'BackgroundColor',color(i,:));
-        end
-    end
-    
-    clear names; clear index1; clear index2; clear color
-    %%
-    % If additional settings are necessary for the particular protocol
-    if ~isempty(additionalSettings)
-        for i = 1 : length(additionalSettings)
-            fh = str2func(additionalSettings(i)); % make string of selected additional Setting to function handle
-            fh(instruction,olfactometerInstructions); % evaluate function handle, i.e. call function
+        clear names; clear index1; clear index2; clear color
+        %%
+        % If additional settings are necessary for the particular protocol
+        if ~isempty(additionalSettings)
+            for i = 1 : length(additionalSettings)
+                fh = str2func(additionalSettings(i)); % make string of selected additional Setting to function handle
+                fh(instruction,olfactometerInstructions); % evaluate function handle, i.e. call function
+            end
         end
     end
 end
@@ -288,6 +294,7 @@ if strncmp(instruction,'get',3)
    dbstack
    
 end
+
 end
 
 
