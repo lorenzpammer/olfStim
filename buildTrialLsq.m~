@@ -11,12 +11,11 @@ function trialLsq = buildTrialLsq(trialNum)
 %
 % This function is called from startTrial.m
 %
-% - To DO: Check what happens if two actions start at the same time
+% TO DO:
 % - Fix how the digital outputs are triggered on LASOM. For now I'm using
 % the dummy output $DigOut1 but I think this can only be set to high or low
 % not to give out 8bit binary numbers.
-% - CRITICAL: Account for the possibility of opening and closing valves
-% multiple times. 
+% - Support presenting mixtures.
 %
 % lorenzpammer 2011/12
 
@@ -59,6 +58,7 @@ if smell.trial(trialNum).mixture == 0
         
         % if no odor gating valves have to be opened (air is presented)
     elseif isempty(smell.trial(trialNum).vial)
+        replaceString = 'Param, odorValveIndex, 1';
         replacementString = [replaceString(1:end-1) num2str(0)];
         trialLsq = replacePlaceHolderInLsq(trialLsq,replaceString,replacementString);
     end
@@ -69,11 +69,10 @@ if smell.trial(trialNum).mixture == 0
     if ~isempty(smell.trial(trialNum).vial)
         % Rewrite the trialLsq with the correct value in the parameter
         % definition for the current trial
-        replaceString = 'Param, slave, 1';
+        replaceString = 'Param, slaveIndex, 1';
         replacementString = [replaceString(1:end-1) num2str(smell.trial(trialNum).slave)];
         trialLsq = replacePlaceHolderInLsq(trialLsq,replaceString,replacementString);
     end
-    
     
     
     %% Sort the actions according to their timing
@@ -135,9 +134,9 @@ if smell.trial(trialNum).mixture == 0
                 % in the first action of a trial the wait time is the
                 % time when the first action should be triggered:
                 waitTime = smell.trial(trialNum).olfactometerInstructions(i).value*1000;% *1000 because LASOM expects ms, values in smell are in s
-                currentActionLsq = sprintf([';\n wait, %d \n' currentActionLsq], waitTime);
+                currentActionLsq = sprintf([';\nwait, %d \n' currentActionLsq], waitTime);
                 % Start the timer in the beginning of the trial:
-                currentActionLsq = sprintf([';\n startTimer, $Timer1 ; Starts the timer for the trial \n' currentActionLsq]);
+                currentActionLsq = sprintf([';\nstartTimer, $Timer1 ; Starts the timer for the trial \n' currentActionLsq]);
                 
                 % Add the command to send a timestamp:
                 sendTimestampLsq = fileread([lsqPath 'sendTimestamp.lsq']);
@@ -146,7 +145,6 @@ if smell.trial(trialNum).mixture == 0
                 % Add the command to send a timestamp to the
                 % currentActionLsq:
                 currentActionLsq = [currentActionLsq sendTimestampLsq];
-                
                 
                 actionLsq = currentActionLsq;
                 
@@ -213,7 +211,6 @@ if smell.trial(trialNum).mixture == 0
     disp(trialLsq)
     
 elseif smell.trial(trialNum).mixture == 1
-    
     error(': Creating Lsq files for mixtures is not yet programmed.')
     
 else

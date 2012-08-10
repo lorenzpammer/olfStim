@@ -58,6 +58,7 @@ if smell.trial(trialNum).mixture == 0
         
         % if no odor gating valves have to be opened (air is presented)
     elseif isempty(smell.trial(trialNum).vial)
+        replaceString = 'Param, odorValveIndex, 1';
         replacementString = [replaceString(1:end-1) num2str(0)];
         trialLsq = replacePlaceHolderInLsq(trialLsq,replaceString,replacementString);
     end
@@ -121,11 +122,13 @@ if smell.trial(trialNum).mixture == 0
             continue % to next iteration of for loop
         end
         
-        % Add 1 to the action counter.
-        actionNumber = actionNumber+1;
         
         % If the action is used:
         if smell.trial(trialNum).olfactometerInstructions(i).used
+            
+            % Add 1 to the action counter.
+            actionNumber = actionNumber+1;
+            
             if actionNumber==1
                 %    read the lsq file that includes the command for the current
                 % action in the1 loop iteration
@@ -133,9 +136,9 @@ if smell.trial(trialNum).mixture == 0
                 % in the first action of a trial the wait time is the
                 % time when the first action should be triggered:
                 waitTime = smell.trial(trialNum).olfactometerInstructions(i).value*1000;% *1000 because LASOM expects ms, values in smell are in s
-                currentActionLsq = sprintf([';\n wait, %d \n' currentActionLsq], waitTime);
+                currentActionLsq = sprintf([';\nwait, %d \n' currentActionLsq], waitTime);
                 % Start the timer in the beginning of the trial:
-                currentActionLsq = sprintf([';\n startTimer, $Timer1 ; Starts the timer for the trial \n' currentActionLsq]);
+                currentActionLsq = sprintf([';\nstartTimer, $Timer1 ; Starts the timer for the trial \n' currentActionLsq]);
                 
                 % Add the command to send a timestamp:
                 sendTimestampLsq = fileread([lsqPath 'sendTimestamp.lsq']);

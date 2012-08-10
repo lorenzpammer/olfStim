@@ -157,7 +157,7 @@ for i = 1 : numberOfSlavesToClean
     % way.
     smell.trial(stepIndex+1).flowRateMfcAir = smell.olfactometerSettings.maxFlowRateMfcAir; % turn off when cleaning ethanol. Results in only ethanol being p
     smell.trial(stepIndex+1).flowRateMfcN = smell.olfactometerSettings.maxFlowRateMfcNitrogen; % TO DO: see what command LASOM expects to open the MFC completely
-    smell.trial(stepIndex+1).concentrationAtPresentation = smell.trial(stepIndex+1).flowRateMfcN/smell.trial(stepIndex+1).flowRateMfcAir; % have to define this even though it doesn't make sense, because later in processing it is used
+    smell.trial(stepIndex+1).concentrationAtPresentation = smell.trial(stepIndex+1).flowRateMfcN/(smell.trial(stepIndex+1).flowRateMfcAir+smell.trial(stepIndex+1).flowRateMfcN); % have to define this even though it doesn't make sense, because later in processing it is used
     smell.trial(stepIndex+1).odorName = 'Air';
     smell.trial(stepIndex+1).odorantPurity = 1;
     smell.trial(stepIndex+1).odorantDilution = 1;
@@ -273,7 +273,7 @@ for i = 1 : length(smell.olfactometerOdors.sessionOdors)
 %     smell.trial(stepIndex).MFCNitrogen = 'max'; 
     smell.trial(stepIndex).flowRateMfcAir = smell.olfactometerSettings.maxFlowRateMfcAir; % turn off when cleaning ethanol. Results in only ethanol being p
     smell.trial(stepIndex).flowRateMfcN = smell.olfactometerSettings.maxFlowRateMfcNitrogen; % TO DO: see what command LASOM expects to open the MFC completely
-    smell.trial(stepIndex).concentrationAtPresentation = smell.trial(stepIndex).flowRateMfcN/smell.trial(stepIndex).flowRateMfcAir; % have to define this even though it doesn't make sense, because later in processing it is used
+    smell.trial(stepIndex).concentrationAtPresentation = smell.trial(stepIndex).flowRateMfcN/(smell.trial(stepIndex).flowRateMfcAir+smell.trial(stepIndex).flowRateMfcN); % have to define this even though it doesn't make sense, because later in processing it is used
     smell.trial(stepIndex).trialNum = stepIndex;
     
     
@@ -306,6 +306,7 @@ for i = 1 : length(smell.trial)
     startTrial(i,smell);
 end
 
+infoHandle.dynamicText = text(xPosition+0.5,yPosition+0.4,'Finished cleaning','Fontsize',18);
 
 end
 
