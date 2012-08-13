@@ -222,16 +222,16 @@ trialNum = round(trialNum+1); % every time a odor is triggered a new trial is co
 % 1. extract the current olfactometerSettings. 
 %   This will update the global olfactometerSettings structure to the
 %   current instructions from the gui.
-olfactometerSettings(h,'get')
+olfactometerSettings(h,'get');
 
 % 2. extract the concentration of from gui and update trialOdor
-trialOdor.concentrationAtPresentation = str2num(get(h.protocolSpecificHandles.concentration(trialOdor.slave,trialOdor.vial),'string'))
+trialOdor.concentrationAtPresentation = str2num(get(h.protocolSpecificHandles.concentration(trialOdor.slave,trialOdor.vial),'string'));
 
 % 3. update the smell structure
  buildSmell('update',trialOdor,trialNum,stimProtocol); % update smell structure
 
 % 4. update the progress panel on the gui
- progressPanel(h,'update',trialOdor,trialNum)
+ progressPanel(h,'update',trialOdor,trialNum);
 
 % 5. star the new trial
 %   This will build the lsq file for the current trial, send the

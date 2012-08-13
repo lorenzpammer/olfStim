@@ -9,15 +9,18 @@ function flush
 h=appdataManager('olfStimGui','get','h');
 
 %%
+
 if isstruct(h)
     delete(get(h.guiHandle,'Children'))
+    delete(h.guiHandle)
 end
-close all;
-
-clear;
-clear all;
-clear classes;
-clear functions;
+% close all;
+clear
+clear all
+clear classes
+clear functions
+cleavars -global
+clear global
 
 
 end

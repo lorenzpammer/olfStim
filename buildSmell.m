@@ -83,6 +83,8 @@ global olfactometerInstructions
     % Get this from the olfactometer
     smell.olfactometerSettings.maxFlowRateMfcAir = 1.5; % in liters/minute
     smell.olfactometerSettings.maxFlowRateMfcNitrogen = 0.1; % in liters/minute
+    % Field for storing information about LASOM (firmware, etc.)
+    smell.olfactometerSettings.lasomID = [];
     
     odorFields = fields(olfactometerOdors.sessionOdors(1));
     smell.trial(1) = cell2struct(cell(length(odorFields),1),odorFields,1); % all fields for each used odor are written to the smell structure: odorName,iupacName,CASNumber,producingCompany,odorantPurity,state,odorantDilution,dilutedIn,concentrationAtPresentation,inflectionPointResponseCurve,slave,vial,mixture,sessionOdorNumber
@@ -98,6 +100,7 @@ global olfactometerInstructions
     % olfactometerSettings.m function
     smell.trial(1).olfactometerInstructions = olfactometerInstructions; 
         
+    
     % Field for storing the event log from the LASOM after the execution of
     % the trial:
     smell.trial(1).lasomEventLog = [];

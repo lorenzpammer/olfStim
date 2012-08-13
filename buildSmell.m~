@@ -1,4 +1,4 @@
-function  buildSmell(instruction,trialOdor,trialNum,stimProtocol,concentration,protocolSpecificInfo)
+function  buildSmell(instruction,trialOdor,trialNum,stimProtocol,protocolSpecificInfo)
 % buildSmell(instruction,trialOdor,trialNum,stimProtocol) creates or
 % updates the smell structure.
 % The smell structure contains the relevant information about every trial
@@ -97,21 +97,9 @@ global olfactometerInstructions
     % olfactometerInstructions structure is handled by
     % olfactometerSettings.m function
     smell.trial(1).olfactometerInstructions = olfactometerInstructions; 
-    
-%     % Actual times of opening and closing valves. Times must be extracted
-%     % from LASOM after every trial.
-%     % MFC info, odorGatingValves, emptyVialGatingValves, finalValve,
-%     % suctionValve, sniffingValve, humidAirValve
-%     smell.trial(1).odorGatingValves = []; % Two element vector [powerOnTime,powerOffTime]
-%     smell.trial(1).emptyVialGatingValves = []; % Two element vector [powerOnTime,powerOffTime]
-%     smell.trial(1).finalValve = []; % Two element vector [powerOnTime,powerOffTime]
-%     smell.trial(1).suctionValve = []; % Two element vector [powerOnTime,powerOffTime]. Suction valve is normally open (NO) valve. powerOn therefore means closing of the valve, powerOff means opening of the valve.
-%     smell.trial(1).sniffingValve = []; % Two to four element vector [powerOnTime,powerOffTime,powerOnTime,powerOffTime]
-%     smell.trial(1).humidAirValveUsed = [];  % Two element vector [powerOnTime,powerOffTime]
-%     smell.trial(1).MfcAir = []; % Mass Flow Controller output voltage. Ie the mass flow meter data, indicates the percentage of total flow
-%     smell.trial(1).MfcNitrogen = []; % Mass Flow Controller output voltage. Ie the mass flow meter data, indicates the percentage of total flow
-%     smell.trial(1).purge = []; % Sets the time, when the two Mfcs are set to 100% in order to have maximal gas flow cleaning the lines between trials: [purgeTime] in seconds  
-    
+        
+    % Field for storing
+    smell.trial(1).lasomID
     % Field for storing the event log from the LASOM after the execution of
     % the trial:
     smell.trial(1).lasomEventLog = [];
@@ -147,7 +135,7 @@ global olfactometerInstructions
     try
         smell.trial(trialNum).notes = get(h.sessionNotes.notesFigureField,'String'); % Extract text in the notes field.
     catch
-        dbstack
+%         dbstack
         disp(': No session notes available. Setting field blank.')
         smell.trial(trialNum).notes = [];
     end

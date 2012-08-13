@@ -1,10 +1,7 @@
-function manualStim
-% To do:
-% - Add possibility to change concentration for each trial.
+function manualSessionProgrammingStim
 %
-% lorenzpammer 2011/09
+% lorenzpammer 2012/01
 
-%%
 
 global smell
 global olfactometerOdors
@@ -18,7 +15,7 @@ h=appdataManager('olfStimGui','get','h');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % These variables have to be defined in every stimulation paradigm
 trialNum = 0;
-stimProtocol = 'manualStim';
+stimProtocol = 'manualSessionProgrammingStim';
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Set up common gui components for all stimulation paradigms
@@ -52,8 +49,6 @@ h.protocolSpecificHandles = [];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Set up gui components for particular stimulation paradigm
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%% Set up push buttons for triggering odor presentation
 
 % 2. Buttons for triggering odor presentation
 % Define positions:
@@ -188,6 +183,7 @@ clear mixtures;clear activeSlaves;clear j
 % Write the structure h containing all handles for the figure as appdata:
 appdataManager('olfStimGui','set',h)
 
+
 end
 
 
@@ -222,7 +218,7 @@ trialNum = round(trialNum+1); % every time a odor is triggered a new trial is co
 %   current instructions from the gui.
 olfactometerSettings(h,'get')
 
-% 2. extract the concentration of from gui and update trialOdor
+% 2. extract the concentration offrom gui and update trialOdor
 trialOdor.concentrationAtPresentation = str2num(get(h.protocolSpecificHandles.concentration(trialOdor.slave,trialOdor.vial),'string'))
 
 % 3. update the smell structure

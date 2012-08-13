@@ -48,6 +48,7 @@ EndWhile
 ;
 ;
 Label, @startTrial
-
+;
+EmitStatus
 ; eof
 Idle,0,0

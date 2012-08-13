@@ -306,6 +306,7 @@ for i = 1 : length(smell.trial)
     startTrial(i,smell);
 end
 
+delete(infoHandle.dynamicText);
 infoHandle.dynamicText = text(xPosition+0.5,yPosition+0.4,'Finished cleaning','Fontsize',18);
 
 end

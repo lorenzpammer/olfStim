@@ -29,6 +29,7 @@ elseif nargin<4
     panelPosition =[5 position(4)-panelHeight panelWidth panelHeight]; % set the position vector for the progress panel
     color =  [1.0000    0.8000    0.2000];
 else
+    % Extract the 
    index = find(strcmpi('position',varargin));
    if ~isempty(index)
        position = varargin{index+1};
@@ -42,7 +43,7 @@ else
    if ~isempty(index)
        color = varargin{index+1};
    else
-   
+   % Define a default color, here orange:
    color =  [1.0000    0.8000    0.2000];
    end
 end
