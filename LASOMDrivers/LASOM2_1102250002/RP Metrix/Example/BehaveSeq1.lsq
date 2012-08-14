@@ -1,0 +1,194 @@
+; This is a comment
+; BehaveSeq1.lsq
+;
+; **********************************
+; Sequence file syntax
+; **********************************
+; Action Param1 Param2
+;
+; Wait Delay(ms)
+; Odor Slave OdorValveIndex
+; Dummy Slave
+; Gate Slave GateValveIndex
+; UnGate Slave GateValveIndex
+; Select Slave GateValveIndex
+; Arm Slave
+; Clear Slave
+; Strobe Mask
+; Param ParamName DefaultValue
+; Monitor Input Output
+; IfGen NonZero
+; EndGen
+; LoopGen RepeatCount
+; Output BitNum Activate
+; While Duration(ms)
+; EndWhile
+; Label LabelSymbol
+; IfNotIn BitNum LabelSymbol
+; IfIn BitNum LabelSymbol
+;
+; ******************************************************
+; Trial Parameters
+; These parameter definitions provide default values.
+; They are usually overridden with external definitions.
+; ******************************************************
+Param,InterTrialDelay,2000
+Param,ToneDuration,2000
+Param,LickWaitDuration,2000
+Param,RewardDuration,2000
+Param,TrialCaseSPos,1
+Param,TrialCaseSNeg,0
+Param,OdorValveA,1
+Param,OdorValveB,2
+Param,StartWithA,1
+Param,EndWithB,1
+Param,PairCount,2
+;
+; Only one of these should be non-zero
+;
+Param,TrialCaseSPos,1
+Param,TrialCaseSNeg,0
+;
+; End Trial Parameters
+;
+; *************************************************************
+; Configuration Parameters
+; These parameter definitions relate to physical configuration.
+; They are usually not overridden.
+; *************************************************************
+;
+; VacValve activates a 3-way valve to deliver the odor to the animal.
+; When inactive, a vacuum pump draws the scented air away form the animal.
+Param,VacValve,16
+;
+; RewardPump activates a water pump to provide a reward.
+Param,RewardPump,12
+;
+; Tone1 sounds at the beginning of a trial
+;
+Param,Tone1,$XLogicOut1
+Param,ErrorTone,$XLogicOut3		; sounds if animal did the wrong thing
+Param,CorrectTone,$XLogicOut4	; sounds if animal did the right thing
+;
+Param,ShowLick,$DigOut1
+Param,ShowVac,$DigOut2
+Param,ShowSPosNeg,$DigOut3
+Param,ShowPump,$XLogicOut2
+;
+Param,LickInput,$Beam1
+;
+Param,Slave,1
+;
+;
+; ******************************************************
+; Continuous Monitors
+; ******************************************************
+;
+Monitor,LickInput,ShowLick
+;
+; ******************************************************
+; Trial Sequence Definition
+; ******************************************************
+; 
+Strobe,0,0
+;
+; Choose odor A or B
+; Before final choice, alternate several times so valve noise does not reveal choice.
+; Full sequence is (A)BABABA...BA(B), where (A) and (B) are optional.
+;
+IfGen,StartWithA,0
+Odor,Slave,OdorValveA
+EndGen,0,0
+;
+LoopGen,PairCount,0
+Odor,Slave,OdorValveB
+Odor,Slave,OdorValveA
+EndGen,0,0
+;
+IfGen,EndWithB,0
+Odor,Slave,OdorValveB
+EndGen,0,0
+;
+; Variable inter trial delay
+;
+Wait,InterTrialDelay,0
+;
+; Emit Begin Tone
+;
+Output,Tone1,1
+Wait,1000,0
+Output,Tone1,0
+;
+; Indicate S+/S-
+;
+IfGen,TrialCaseSPos,0
+Output,ShowSPosNeg,1
+EndGen,0,0
+;
+IfGen,TrialCaseSNeg,0
+Output,ShowSPosNeg,0
+EndGen,0,0
+;
+; Deliver the odor
+;
+Gate,Slave,VacValve
+Output,ShowVac,1
+;
+; Wait for a timeout or a lick
+;
+While,LickWaitDuration,0
+IfNotIn,LickInput,LickDetected
+EndWhile
+;
+; ******************************************************
+;
+; No lick detected
+;
+Label,NoLickDetected,0
+; ******************************************************
+;
+IfGen,TrialCaseSPos,0
+Output,ErrorTone,1
+EndGen,0,0
+;
+IfGen,TrialCaseSNeg,0
+Output,CorrectTone,1
+EndGen,0,0
+;
+Idle,0,0
+;
+; ******************************************************
+;
+; Lick detected
+;
+Label,LickDetected,0
+; ******************************************************
+;
+IfGen,TrialCaseSPos,0
+Gate,Slave,RewardPump
+Output,ShowPump,1
+Wait,RewardDuration,0
+UnGate,Slave,RewardPump
+Output,ShowPump,0
+EndGen,0,0
+;
+IfGen,TrialCaseSNeg,0
+Output,ErrorTone,1
+EndGen,0,0
+;
+Idle,0,0
+;
+; ******************************************************
+;
+; Manual Reward
+; Host computer forces sequencer to this state on demand
+;
+Label,ManualReward,0
+; ******************************************************
+Gate,Slave,RewardPump
+Output,ShowPump,1
+Wait,ManualRewardDuration,0
+UnGate,Slave,RewardPump
+Output,ShowPump,0
+;
+Idle,0,0

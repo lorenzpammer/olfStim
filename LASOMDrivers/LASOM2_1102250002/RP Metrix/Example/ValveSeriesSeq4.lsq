@@ -1,0 +1,113 @@
+; This is a comment
+; ValveSeriesSeq.lsq
+;
+; **********************************
+; Sequence file syntax
+; **********************************
+; Action Param1 Param2
+;
+; Wait Delay(ms)
+; Odor Slave OdorValveIndex
+; Dummy Slave
+; Gate Slave GateValveIndex
+; UnGate Slave GateValveIndex
+; Select Slave GateValveIndex
+; Arm Slave
+; Clear Slave
+; Strobe Mask
+; Param ParamName DefaultValue
+; Monitor Input Output
+; IfGen NonZero
+; EndGen
+; LoopGen RepeatCount
+; Output BitNum Activate
+; While Duration(ms)
+; EndWhile
+; Label LabelSymbol
+; IfNotIn BitNum LabelSymbol
+; IfIn BitNum LabelSymbol
+;
+; ******************************************************
+; Trial Parameters
+; These parameter definitions provide default values.
+; They are usually overridden with external definitions.
+; ******************************************************
+Param,InterTrialDelay,2000
+Param,ToneDuration,2000
+Param,LickWaitDuration,2000
+Param,RewardDuration,2000
+Param,TrialCaseSPos,1
+Param,TrialCaseSNeg,0
+Param,OdorValveA,1
+Param,OdorValveB,2
+Param,StartWithA,1
+Param,EndWithB,1
+Param,PairCount,2
+;
+; Only one of these should be non-zero
+;
+Param,TrialCaseSPos,1
+Param,TrialCaseSNeg,0
+;
+; End Trial Parameters
+;
+; *************************************************************
+; Configuration Parameters
+; These parameter definitions relate to physical configuration.
+; They are usually not overridden.
+; *************************************************************
+;
+; VacValve activates a 3-way valve to deliver the odor to the animal.
+; When inactive, a vacuum pump draws the scented air away form the animal.
+Param,VacValve,16
+;
+; RewardPump activates a water pump to provide a reward.
+Param,RewardPump,12
+;
+; Tone1 sounds at the beginning of a trial
+;
+Param,Tone1,$XLogicOut1
+Param,ErrorTone,$XLogicOut3		; sounds if animal did the wrong thing
+Param,CorrectTone,$XLogicOut4	; sounds if animal did the right thing
+;
+Param,ShowLick,$DigOut1
+Param,ShowVac,$DigOut2
+Param,ShowSPosNeg,$DigOut3
+Param,ShowPump,$XLogicOut2
+;
+Param,LickInput,$Beam1
+;
+Param,Slave1,1
+Param,Slave2,3
+;
+;
+; ******************************************************
+; Continuous Monitors
+; ******************************************************
+;
+;Monitor,LickInput,ShowLick
+;
+;
+; ******************************************************
+; Open the valve corresponding to the slave number
+; Not advised if actual odor vials are present!
+; ******************************************************
+;
+Odor,1,1
+Odor,2,2
+Odor,3,3
+Odor,4,4
+Odor,5,5
+Odor,6,6
+Odor,7,7
+Odor,8,8
+Odor,9,9
+Odor,10,10
+Odor,11,11
+;
+Gate,12,12
+Gate,13,13
+Gate,14,14
+Gate,15,15
+;
+Idle,0,0

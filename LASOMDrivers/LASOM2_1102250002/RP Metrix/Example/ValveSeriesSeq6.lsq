@@ -1,0 +1,119 @@
+; This is a comment
+; ValveSeriesSeq.lsq
+;
+; **********************************
+; Sequence file syntax
+; **********************************
+; Action Param1 Param2
+;
+; Wait Delay(ms)
+; Odor Slave OdorValveIndex
+; Dummy Slave
+; Gate Slave GateValveIndex
+; UnGate Slave GateValveIndex
+; Select Slave GateValveIndex
+; Arm Slave
+; Clear Slave
+; Strobe Mask
+; Param ParamName DefaultValue
+; Monitor Input Output
+; IfGen NonZero
+; EndGen
+; LoopGen RepeatCount
+; Output BitNum Activate
+; While Duration(ms)
+; EndWhile
+; Label LabelSymbol
+; IfNotIn BitNum LabelSymbol
+; IfIn BitNum LabelSymbol
+;
+; ******************************************************
+; Trial Parameters
+; These parameter definitions provide default values.
+; They are usually overridden with external definitions.
+; ******************************************************
+Param,InterTrialDelay,2000
+Param,ToneDuration,2000
+Param,LickWaitDuration,2000
+Param,RewardDuration,2000
+Param,TrialCaseSPos,1
+Param,TrialCaseSNeg,0
+Param,OdorValveA,1
+Param,OdorValveB,2
+Param,StartWithA,1
+Param,EndWithB,1
+Param,PairCount,2
+;
+; Only one of these should be non-zero
+;
+Param,TrialCaseSPos,1
+Param,TrialCaseSNeg,0
+;
+; End Trial Parameters
+;
+; *************************************************************
+; Configuration Parameters
+; These parameter definitions relate to physical configuration.
+; They are usually not overridden.
+; *************************************************************
+;
+; VacValve activates a 3-way valve to deliver the odor to the animal.
+; When inactive, a vacuum pump draws the scented air away form the animal.
+Param,VacValve,16
+;
+; RewardPump activates a water pump to provide a reward.
+Param,RewardPump,12
+;
+; Tone1 sounds at the beginning of a trial
+;
+Param,Tone1,$XLogicOut1
+Param,ErrorTone,$XLogicOut3		; sounds if animal did the wrong thing
+Param,CorrectTone,$XLogicOut4	; sounds if animal did the right thing
+;
+Param,ShowLick,$DigOut1
+Param,ShowVac,$DigOut2
+Param,ShowSPosNeg,$DigOut3
+Param,ShowPump,$XLogicOut2
+;
+Param,LickInput,$Beam1
+;
+Param,Slave1,1
+Param,Slave2,3
+;
+;
+; ******************************************************
+; Continuous Monitors
+; ******************************************************
+;
+;Monitor,LickInput,ShowLick
+;
+;
+; ******************************************************
+; Open the valve corresponding to the slave number
+; Not advised if actual odor vials are present!
+; ******************************************************
+;
+SetVar,$Var3,3
+SetVar,$Var4,4
+SetVar,$Var5,$Var3
+SetVar,$Var6,$Var4
+SetVar,$Var7,2
+AddVar,$Var7,5
+SetVar,$Var8,2
+AddVar,$Var8,$Var7
+SetVar,$Var1,1
+WhileAlways
+CompareVar,$Var1,11
+IfWasGE,@EndLoop1
+Call,@DoOdor
+AddVar,$Var1,1
+EndWhile
+;
+Label,@EndLoop1
+Dummy,1
+Idle
+;
+Routine,@DoOdor
+Odor,1,$Var1
+Wait,500
+Return	; This is the one and only return statement. Jump here if multiple returns are needed.

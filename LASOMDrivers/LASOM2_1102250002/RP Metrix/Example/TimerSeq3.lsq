@@ -1,0 +1,79 @@
+; This is a comment
+; TimerSeq1.lsq
+;
+; **********************************
+; Sequence file syntax
+; **********************************
+; Action Param1 Param2
+;
+; Wait Delay(ms)
+; Odor Slave OdorValveIndex
+; Dummy Slave
+; Gate Slave GateValveIndex
+; UnGate Slave GateValveIndex
+; Select Slave GateValveIndex
+; Arm Slave
+; Clear Slave
+; Strobe Mask
+; Param ParamName DefaultValue
+; Monitor Input Output
+; IfGen NonZero
+; EndGen
+; LoopGen RepeatCount
+; Output BitNum Activate
+; While Duration(ms)
+; EndWhile
+; Label LabelSymbol
+; IfNotIn BitNum LabelSymbol
+; IfIn BitNum LabelSymbol
+;
+; StartTimer TimerIndex
+; SinceTimer TimerIndex DelayIndex
+;
+; ClearLapse DelayIndex
+; AddLapse TimerIndex DelayIndex
+; CheckLapse DelayIndex Duration(ms)
+; IfLapse DelayIndex LabelSymbol
+;
+; StartDelay DelayIndex Duration(ms)
+; StopDelay DelayIndex
+; IfDelay DelayIndex LabelSymbol
+; InNotDelay DelayIndex LabelSymbol
+; PulseOut DelayIndex Output
+;
+; ******************************************************
+; Timer operations
+; ******************************************************
+;
+; ******************************************************
+; Trial Sequence Definition
+; ******************************************************
+; 
+Strobe,0
+Strobe,4
+;
+; $XLogicOut1 should come on after 300 ms
+; $XLogicOut2 should come on at 100 ms, and last for 123 ms
+Output,$XLogicOut1,0
+Output,$XLogicOut2,0
+Wait,100
+StartDelay,$Timer2,123
+PulseOut,$Timer2,$XLogicOut2
+IfNotDelay,$Timer2,DelayStartFailed
+Wait,200
+; During this wait, $XLogicOut2 should turn off automatically
+Output,$XLogicOut1,1
+IfDelay,$Timer2,DelayStopFailed
+;
+; End up here if all is OK
+;
+; Dump function in LoadBoard will show which branch was taken, based on which timer gets started.
+;
+StartTimer,$Timer3
+Idle,0,0
+Label,DelayStopFailed
+StartTimer,$Timer4
+Idle,0,0
+Label,DelayStartFailed
+StartTimer,$Timer5
+Idle,0,0
