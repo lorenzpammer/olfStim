@@ -28,7 +28,7 @@ if strncmp(instruction,'setUp',5)
     
     % Note panel
     h.sessionNotes.panel = uipanel('Parent',h.guiHandle,'Title','SessionNotes',...
-        'FontSize',12,'TitlePosition','centertop',...
+        'FontSize',8,'TitlePosition','centertop',...
         'Units','pixels','Position',panelPosition); % 'Position',[x y width height]
     
     % Push Button
@@ -45,12 +45,13 @@ if strncmp(instruction,'setUp',5)
     % Text Field (not editable)
     % Define position
     notesFieldPosition(3) = panelPosition(3) - 6;
-    notesFieldPosition(4) = panelPosition(4) - buttonPosition(2) - 3 - buttonPosition(4)+10;
+    notesFieldPosition(4) = panelPosition(4) - buttonPosition(2) - 3 - buttonPosition(4)+20;
     notesFieldPosition(1) = panelPosition(1) + 3;
-    notesFieldPosition(2) = buttonPosition(2) + buttonPosition(4)+10;
+    notesFieldPosition(2) = buttonPosition(2) + buttonPosition(4)+3;
     % Set up the non editable text field
     h.sessionNotes.textField = uicontrol('Style','text',...
-        'String','Use "Notes" button for opening and closing.','Units','pixels','Position',notesFieldPosition);
+        'String','Use "Notes" button for opening and closing.',...
+        'Units','pixels','Position',notesFieldPosition,'Fontsize',7);
     
     % Create new figure for note taking.
     h.sessionNotes.notesFigure = figure('Visible','off','Name','NotePad','Tag','NotePad','Position',[158,560,200,300]);

@@ -1,0 +1,71 @@
+; This is a comment
+; TimerSeq1.lsq
+;
+; **********************************
+; Sequence file syntax
+; **********************************
+; Action Param1 Param2
+;
+; Wait Delay(ms)
+; Odor Slave OdorValveIndex
+; Dummy Slave
+; Gate Slave GateValveIndex
+; UnGate Slave GateValveIndex
+; Select Slave GateValveIndex
+; Arm Slave
+; Clear Slave
+; Strobe Mask
+; Param ParamName DefaultValue
+; Monitor Input Output
+; IfGen NonZero
+; EndGen
+; LoopGen RepeatCount
+; Output BitNum Activate
+; While Duration(ms)
+; EndWhile
+; Label LabelSymbol
+; IfNotIn BitNum LabelSymbol
+; IfIn BitNum LabelSymbol
+;
+; StartTimer TimerIndex
+; SinceTimer TimerIndex DelayIndex
+;
+; ClearLapse DelayIndex
+; AddLapse TimerIndex DelayIndex
+; CheckLapse DelayIndex Duration(ms)
+; IfLapse DelayIndex LabelSymbol
+;
+; StartDelay DelayIndex Duration(ms)
+; StopDelay DelayIndex
+; IfDelay DelayIndex LabelSymbol
+; InNotDelay DelayIndex LabelSymbol
+; PulseOut DelayIndex Output
+;
+; ******************************************************
+; Timer operations
+; ******************************************************
+;
+; ******************************************************
+; Trial Sequence Definition
+; ******************************************************
+; 
+Strobe,2
+Output,1,1
+;
+StartTimer,$Timer2
+Wait,1
+SinceTimer,$Timer2,$Timer3
+; $Timer3 should be about 1 ms
+Output,1,0
+Wait,10
+;
+SinceTimer,$Timer2,$Timer4
+; $Timer4 should be about 11 ms
+Output,1,1
+Wait,100
+;
+SinceTimer,$Timer2,$Timer5
+; $Timer5 should be about 111 ms
+Output,1,0
+;
+Idle,0,0

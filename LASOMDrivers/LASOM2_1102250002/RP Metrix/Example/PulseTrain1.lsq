@@ -1,0 +1,47 @@
+; This is a comment
+; PulseTrain1.lsq
+;
+Call	@DefineTrains
+;
+;
+
+StartTrain	$Timer4		; Start the pulse train now, entering the first phase
+;IfTrain		$Timer4,@Train4StillRunning	; jump to the label if the pulse train has not finished
+;StopTrain	$Timer4		; Stop the pulse train now, set the output low.
+
+Odor,1,4
+Output,$XLogicOut3,0
+Output,$XLogicOut4,0
+EmitStatus
+Output,$XLogicOut3,1
+Wait,1000
+EmitStatus
+Wait,2000
+Output,$XLogicOut4,1
+Dummy,1
+Idle
+;
+
+Routine,@DefineTrains
+PulseTrain	$Timer4, $XLogicOut2
+PulseHigh	100	; high phase for 100 milliseconds
+PulseLow	50	; low for 50 milliseconds
+;
+Repeat		3		; repeat the following part 3 times
+PulseHigh	5		; high for 5 ms
+PulseLow	10		; low for 10 ms
+PulseHigh	15		; high for 15 ms
+PulseLow	25		; low for 25 ms
+EndRepeat			; end of (first) repeated part
+;
+PulseHigh	1
+PulseLow	3
+;
+Repeat		2		; another repeated part.
+PulseHigh	4
+PulseLow	4
+EndRepeat
+;
+PulseHigh	10
+EndTrain		; the output always goes low after the last phase, or if stopped early
+Return

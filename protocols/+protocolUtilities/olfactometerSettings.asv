@@ -109,7 +109,7 @@ if strncmp(instruction,'setUp',5)
         
         
         h.olfactometerSettings.panel = uipanel('Parent',h.guiHandle,'Title','Olfactometer Settings',...
-            'Tag','olfactometerSettingsPanel','FontSize',8,'TitlePosition','centertop',...
+            'Tag','olfactometerSettingsPanel','FontSize',12,'TitlePosition','centertop',...
             'Units','pixels','Position',panelPosition); % 'Position',[x y width height]
         
         %% Define positions for the controls:
@@ -140,7 +140,7 @@ if strncmp(instruction,'setUp',5)
         
         %% Define the size of the edit field ('edit') and its descriptor ('text')
         textHeight = 30; textWidth = 70;
-        editHeight = 20; editWidth = 50;
+        editHeight = 25; editWidth = 50;
         
         %% Graphical depiction of a sequence of events in a trial
         
@@ -197,7 +197,7 @@ if strncmp(instruction,'setUp',5)
             h.olfactometerSettings.text(userSettingNumber) = uicontrol('Parent',h.guiHandle,...
                 'Style','text','String',[olfactometerInstructions(settingNumber).name ' ' olfactometerInstructions(settingNumber).unit],...
                 'Position', position,'Tag',olfactometerInstructions(settingNumber).name,...
-                'Fontsize',7.5);
+                'Fontsize',8);
             
             % Field for editing the value of the setting:
             position = [positions{userSettingNumber}(1)+spacing positions{userSettingNumber}(2)+spacing editWidth editHeight];

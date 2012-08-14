@@ -63,9 +63,9 @@ if strmatch(instruction,'setUp')
     
     h.progress.figure = axes('Units','Pixels');
     figurePosition(1) = panelPosition(1)+5; % Set the x position of the progress figure
-    figurePosition(2) = panelPosition(2)+20; % Set the y position of the progress figure
+    figurePosition(2) = panelPosition(2)+15; % Set the y position of the progress figure
     figurePosition(3) = panelPosition(3)-10; % Set the width of the progress figure
-    figurePosition(4) = panelPosition(4)-37; % Set the height of the progress figure
+    figurePosition(4) = panelPosition(4)-30; % Set the height of the progress figure
     % Set up the figure where progress gets plotted
     set(h.progress.figure,'Ytick',[],'Xtick',(0:10000),'Fontsize',8)
     set(h.progress.figure,'Position',figurePosition)
@@ -84,12 +84,11 @@ if strmatch(instruction,'update')
     width=0.9;height = 0.5;
     rectangle('Position',[xPosition yPosition width height],'FaceColor',color); % plot rectangle in 
     if ~trialOdor.mixture % for normal odors
-        display = sprintf([trialOdor.odorName '\nc=' num2str(trialOdor.concentrationAtPresentation)]);
-        text(xPosition+0.03,yPosition+0.2,display,'Fontsize',8)
+        text(xPosition+0.03,yPosition+0.2,[{trialOdor.odorName} {trialOdor.concentrationAtPresentation}])
     else % for mixtures
         display{1} = [trialOdor.odorName{1} ' ' num2str(trialOdor.concentrationAtPresentation{1})];
-        display{2} = sprintf([trialOdor.odorName{2} '\nc=' num2str(trialOdor.concentrationAtPresentation{2})]);
-        text(xPosition+0.03,yPosition+0.2,display,'Fontsize',8)
+        display{2} = [trialOdor.odorName{2} ' ' num2str(trialOdor.concentrationAtPresentation{2})];
+        text(xPosition+0.03,yPosition+0.2,display)
     end
     if trialNum>10
         xlim([trialNum-10 trialNum] + 0.5)
