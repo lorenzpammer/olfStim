@@ -35,9 +35,7 @@ selectedProtocol = protocolChooserSubGui;
 
 
 %% Execute selected protocol
-functionHandle = str2func(selectedProtocol); % make string of selected protocol to function handle
+functionHandle = str2func([selectedProtocol '.' selectedProtocol]); % make string of selected protocol to function handle
 functionHandle(); % evaluate function handle, i.e. call function
 
 end
-
-

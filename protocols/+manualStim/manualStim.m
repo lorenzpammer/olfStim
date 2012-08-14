@@ -1,7 +1,12 @@
-function manualSessionProgrammingStim
+function manualStim
+% To do:
+% - Add possibility to change concentration for each trial.
+% - At the beginning of session set MFC flow rate, and close MFCs at the
+% end of session.
 %
-% lorenzpammer 2012/01
+% lorenzpammer 2011/09
 
+%% Set up needed variables
 
 global smell
 global olfactometerOdors
@@ -10,16 +15,24 @@ global trialNum
 % Extract the gui handle structure from the appdata of the figure:
 h=appdataManager('olfStimGui','get','h');
 
+%% Import function packages
+
+% Import all functions of the current stimulation protocol
+import manualStim.*
+import protocolUtilities.*
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Define variables
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % These variables have to be defined in every stimulation paradigm
 trialNum = 0;
-stimProtocol = 'manualSessionProgrammingStim';
+stimProtocol = 'manualStim';
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Set up common gui components for all stimulation paradigms
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% The order of setting up the components is important, because the
+% placement of the components is relative to other components.
 
 % 1. Progress panel
 h = progressPanel(h,'setUp'); % progressPanel is a function private to the stimulation protocols
@@ -50,10 +63,12 @@ h.protocolSpecificHandles = [];
 %% Set up gui components for particular stimulation paradigm
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%% Set up push buttons for triggering odor presentation
+
 % 2. Buttons for triggering odor presentation
 % Define positions:
 figurePosition = get(h.guiHandle,'Position');
-position = get(h.progressPanel,'Position');
+position = get(h.progress.panel,'Position');
 protocolChooserPosition = get(h.panelProtocolChooser,'Position');
 spacing = 3;
 pushButtonArea(1) =  protocolChooserPosition(1)+protocolChooserPosition(3) + 40; % X position to the right of protocol chooser panel
@@ -183,7 +198,6 @@ clear mixtures;clear activeSlaves;clear j
 % Write the structure h containing all handles for the figure as appdata:
 appdataManager('olfStimGui','set',h)
 
-
 end
 
 
@@ -196,6 +210,11 @@ global smell
 
 % Extract the gui handle structure from the appdata of the figure:
 h=appdataManager('olfStimGui','get','h');
+%% Import function packages
+
+% Import all functions of the current stimulation protocol
+import manualStim.*
+import protocolUtilities.*
 
 %% First save the current smell file to the temp folder in case anything happens.
 callingFunctionName = 'initOlfStim.m'; % Define the name of the initalizing function
@@ -216,16 +235,16 @@ trialNum = round(trialNum+1); % every time a odor is triggered a new trial is co
 % 1. extract the current olfactometerSettings. 
 %   This will update the global olfactometerSettings structure to the
 %   current instructions from the gui.
-olfactometerSettings(h,'get')
+olfactometerSettings(h,'get');
 
-% 2. extract the concentration offrom gui and update trialOdor
-trialOdor.concentrationAtPresentation = str2num(get(h.protocolSpecificHandles.concentration(trialOdor.slave,trialOdor.vial),'string'))
+% 2. extract the concentration of from gui and update trialOdor
+trialOdor.concentrationAtPresentation = str2num(get(h.protocolSpecificHandles.concentration(trialOdor.slave,trialOdor.vial),'string'));
 
 % 3. update the smell structure
  buildSmell('update',trialOdor,trialNum,stimProtocol); % update smell structure
 
 % 4. update the progress panel on the gui
- progressPanel(h,'update',trialOdor,trialNum)
+ progressPanel(h,'update',trialOdor,trialNum);
 
 % 5. star the new trial
 %   This will build the lsq file for the current trial, send the

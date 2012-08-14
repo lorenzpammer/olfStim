@@ -1,5 +1,5 @@
 function smell = startTrial(trialNum, smell)
-% startTrial(trialNum)
+% smell = startTrial(trialNum, smell)
 % This function assumes all information for the current trial are present
 % in smell and that these values are correct. From here on no more checking
 % whether numbers make sense or not. Will just result in errors or
@@ -30,11 +30,11 @@ smell.trial(trialNum).trialLsqFile = trialLsq;
 
 %% Update smell:
 if trialNum == 1
-    smell.olfactometerSettings.lasomID = invoke(lasomH,'GetID');
+%     smell.olfactometerSettings.lasomID = invoke(lasomH,'GetID');
     % - prompt LASOM to get the maximum flow rate of the Mfcs and write
     % into smell.olfactometerSettings
-    [smell.olfactometerSettings.flowRateMfcAir, units] = invoke(lasomH,'GetMfcCapacity',1);
-    [smell.olfactometerSettings.flowRateMfcN, units] = invoke(lasomH,'GetMfcCapacity',2);
+%     [smell.olfactometerSettings.flowRateMfcAir, units] = invoke(lasomH,'GetMfcCapacity',1);
+%     [smell.olfactometerSettings.flowRateMfcN, units] = invoke(lasomH,'GetMfcCapacity',2);
 end
 
 %% Send lsq file of the current trial to the LASOM

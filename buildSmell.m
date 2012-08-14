@@ -1,5 +1,5 @@
-function  buildSmell(instruction,trialOdor,trialNum,stimProtocol,protocolSpecificInfo)
-% buildSmell(instruction,trialOdor,trialNum,stimProtocol) creates or
+function  buildSmell(instruction,trialOdor,trialNum,stimProtocol,protocolSpecificInfo,varargin)
+% buildSmell(instruction,trialOdor,trialNum,stimProtocol,specificInfo,'PropertyName','PropertyValue') creates or
 % updates the smell structure.
 % The smell structure contains the relevant information about every trial
 % for odor presentation. However it does not contain accurate timing
@@ -9,6 +9,19 @@ function  buildSmell(instruction,trialOdor,trialNum,stimProtocol,protocolSpecifi
 % buildSmell is called from the stimulation protocol m-file, the function
 % can extract the name of the protocol and write it into the smell
 % structure.
+%
+% Possible properties:
+%     - 'trialNum': no propertyValue necessary.
+%     - 'stimProtocol': no propertyValue necessary.
+%     - 'time': no propertyValue necessary.
+%     - 'notes': no propertyValue necessary. Will extract notes
+%     automatically from gui.
+%     - 'olfactometerInstructions': no propertyValue necessary. Will
+%     extract instructions automatically from gui.
+%     - 'protocolSpecificInfo': no propertyValue necessary.
+%     - 'interTrialInterval': propertyValue necessary. Give intertrial
+%     interval in seconds.
+
 %
 % TO DO: 
 % - Get accurate timing information after trial from LASOM module and
@@ -20,6 +33,8 @@ function  buildSmell(instruction,trialOdor,trialNum,stimProtocol,protocolSpecifi
 % the recording software for each valve and for each trial into the smell structure.
 % - prompt LASOM to get the maximum flow rate of the Mfcs
 % - add intertrial interval information to each smell.trial
+% - Document for every field of smell, in which step of an olfactory
+% session it should be populated, updated etc.
 %
 % lorenzpammer 2011/09
 
@@ -59,11 +74,16 @@ end
     
 
 %% Update smell structure for every trial
+% 
 
 if strcmp(instruction,'update')
-    
     smell = updateSmellStructure(smell, trialOdor,trialNum,stimProtocol,protocolSpecificInfo);
 end
+
+if strcmp(instruction,'updateFields')
+     smell = updateFields(smell,trialNum,stimProtocol,protocolSpecificInfo,varargin);
+end
+
 
 end
 
@@ -91,6 +111,7 @@ global olfactometerInstructions
     smell.trial(1).trialNum = []; % Trial number in the current session
     smell.trial(1).stimProtocol = []; % which stimulation protocol was used for this session
     smell.trial(1).time = []; % time at time of start of a new trial (not the time of actual odor presentation)
+    smell.trial(1).interTrialInterval = 0; % First trial has a intertrial-interval of 0 seconds.
     smell.trial(1).notes = []; % Notes that are taken during the session will be saved here. Every trial the notes are extracted from the field and written into this field in form of a string.\
     smell.trial(1).flowRateMfcAir = [];
     smell.trial(1).flowRateMfcN = [];
@@ -133,17 +154,51 @@ global olfactometerInstructions
     smell.trial(trialNum).stimProtocol = stimProtocol;
     smell.trial(trialNum).time = clock; % This only gives an approximate time, as the odor might be presented to the animal multiple seconds later.
     smell.trial(trialNum).protocolSpecificInfo = protocolSpecificInfo;
-    try
-        smell.trial(trialNum).notes = get(h.sessionNotes.notesFigureField,'String'); % Extract text in the notes field.
-    catch
-%         dbstack
-        disp(': No session notes available. Setting field blank.')
-        smell.trial(trialNum).notes = [];
-    end
+    smell.trial(trialNum).notes = protocolUtilities.getUserNotes(h); % extract the notes 
     
     % olfactometerInstructions structure is updated in the
     % olfactometerSettings function prior to calling build smell. Now write
     % the updated instructions into the smell structure.
     smell.trial(trialNum).olfactometerInstructions = olfactometerInstructions;    
+
+end
+
+function smell = updateFields(smell,trialNum,stimProtocol,protocolSpecificInfo,varargin)
+
+global olfactometerOdors
+global olfactometerInstructions
+
+% Extract the gui handle structure from the appdata of the figure:
+    h=appdataManager('olfStimGui','get','h');
+
+%% Update the fields specified in varargin
+% varargin includes the information in the form
+% 'PropertyName','PropertyValue'
+
+if any(strcmpi('trialNum',varargin))
+    smell.trial(trialNum).trialNum = trialNum;
+end
+if any(strcmpi('stimProtocol',varargin))
+    smell.trial(trialNum).stimProtocol = stimProtocol;
+end
+if any(strcmpi('time',varargin))
+    smell.trial(trialNum).time = clock; % This only gives an approximate time, as the odor might be presented to the animal multiple seconds later.
+end
+if any(strcmpi('notes',varargin))
+    smell.trial(trialNum).notes = protocolUtilities.getUserNotes(h); % extract the notes 
+end
+if any(strcmpi('olfactometerInstructions',varargin))
+    smell.trial(trialNum).olfactometerInstructions = olfactometerInstructions;    
+end
+if any(strcmpi('protocolSpecificInfo',varargin))
+    smell.trial(trialNum).protocolSpecificInfo = protocolSpecificInfo;
+end
+if any(strcmpi('interTrialInterval',varargin))
+    index = find(strcmp('interTrialInterval',varargin));
+    value = varargin{index+1};
+    smell.trial(trialNum).interTrialInterval = value;
+end
+
+
 
 end

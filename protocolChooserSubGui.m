@@ -3,7 +3,6 @@ function selectedProtocol = protocolChooserSubGui
 % lorenzpammer 2011/09
 
 
-% global h
 global selectedProtocol
 
 % Extract the gui handle structure from the appdata of the figure:
@@ -48,9 +47,9 @@ counter=0;
 protocolFolderEntries = dir(path);
 for i = 1 : length(protocolFolderEntries)
     try
-        if strcmp(protocolFolderEntries(i).name(end-5:end),'Stim.m')
+        if strcmp(protocolFolderEntries(i).name(end-3:end),'Stim')
             counter=counter+1;
-            protocols{counter}=protocolFolderEntries(i).name(1:end-2);
+            protocols{counter}=protocolFolderEntries(i).name(2:end);
         end
     catch
     end
@@ -73,13 +72,14 @@ h.staticText.popup = uicontrol('Style','text','String','Select Protocol',...
 clear position; clear popupWidth;clear popupHeight;clear popupPosition;
 clear panelPosition;
 
-uiwait % keeps function active until start pushbutton is pressed
-
 %% Update h structure in the appdata
 
 % Write the structure h containing all handles for the figure as appdata:
 appdataManager('olfStimGui','set',h)
 
+
+%%
+uiwait % keeps function active until start pushbutton is pressed
 end
 
 %  Pop-up menu callback. Read the pop-up menu Value property to
@@ -88,8 +88,6 @@ end
 %  current_data because this function is nested at a lower level.
 function popup_menu_Callback(source,eventdata,h)
 global selectedProtocol
-%         global h
-
 
 %         Determine the selected data set.
 str = get(source, 'String');
@@ -110,7 +108,6 @@ end
 function startbutton_Callback(source,eventdata)
 % Determine the selected data set.
 global selectedProtocol
-
 
 if ~isempty(selectedProtocol)
     uiresume

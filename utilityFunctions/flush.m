@@ -19,7 +19,7 @@ clear
 clear all
 clear classes
 clear functions
-cleavars -global
+% cleavars -global
 clear global
 
 

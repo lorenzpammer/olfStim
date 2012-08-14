@@ -12,15 +12,30 @@ function cleanOlfactometerStim
 % lorenzpammer 2011/12
 %
 
-global smell;
-global olfactometerOdors;
-global olfactometerInstructions;
+%% Set up needed variables
+
+global smell
+global olfactometerOdors
+global trialNum
 
 % Extract the gui handle structure from the appdata of the figure:
 h=appdataManager('olfStimGui','get','h');
 
-%% Starting up
+%% Import function packages
 
+% Import all functions of the current stimulation protocol
+import cleanOlfactometerStim.*
+import protocolUtilities.*
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Define variables
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% These variables have to be defined in every stimulation paradigm
+% trialNum = 0;
+stimProtocol = 'cleanOlfactometerStim';
+
+
+%% Starting up
 
 % Set up the progress panel
 h=progressPanel(h,'setUp');
@@ -303,7 +318,7 @@ for i = 1 : length(smell.trial)
         ' in slave #' num2str(smell.trial(i).slave) '\n']);
     disp(message)
     
-    startTrial(i,smell);
+    smell = startTrial(i,smell);
 end
 
 delete(infoHandle.dynamicText);
@@ -311,7 +326,6 @@ infoHandle.dynamicText = text(xPosition+0.5,yPosition+0.4,'Finished cleaning','F
 
 end
 
-%%
 
 function continuePushButton_Callback(~,~)
 

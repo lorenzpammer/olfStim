@@ -3,12 +3,20 @@ function manualSessionProgrammingStim
 % lorenzpammer 2012/01
 
 
+%% Set up needed variables
+
 global smell
 global olfactometerOdors
 global trialNum
 
 % Extract the gui handle structure from the appdata of the figure:
 h=appdataManager('olfStimGui','get','h');
+
+%% Import function packages
+
+% Import all functions of the current stimulation protocol
+import manualSessionPorgammingStim.*
+import protocolUtilities.*
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Define variables
@@ -20,27 +28,34 @@ stimProtocol = 'manualSessionProgrammingStim';
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Set up common gui components for all stimulation paradigms
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% The order of setting up the components is important, because the
+% placement of the components is relative to other components.
 
-% 1. Progress panel
-h = progressPanel(h,'setUp'); % progressPanel is a function private to the stimulation protocols
-
-% 2. Button for closing the gui
+% 1. Button for closing the gui
 h = closeGui(h); %
 
-% 3. Notes field
-[~,h] = sessionNotes(h,'setUp'); % sessionNotes is a function private to the stimulation protocols. Sets up a panel with possibilities for note taking
+% 2. Notes field
+[~,h] = sessionNotes(h,'setUp'); % sessionNotes is a function in the protocolUtilities package. Sets up a panel with possibilities for note taking
 
-% % 4. Start session button % not necessary for the manualStim protocol
-% startSession;
+% 3. End session button
+h = quitSession(h); % endSession is a function in the protocolUtilities package. Sets up a functional button to end the session, save the smell structure, disconnect from LASOM etc.
 
-% 5. End session button
-h = quitSession(h); % endSession is a function private to the stimulation protocols. Sets up a functional button to end the session, save the smell structure, disconnect from LASOM etc.
+% 4. Start session button
+h = startSession(h,'manualSessionProgrammingStim.startSessionCallback');
 
-% % 6. Pause session button
-% pauseSession; % pauseSession is a function private to the stimulation protocols. Sets up a functional button to pause the session
-
-% 7. OlfactometerInstructions
+% 5. Olfactometer Settings
 h = olfactometerSettings(h,'setUp');
+
+% 6. Session Settings
+h = sessionSettingsPanel(h,1);
+
+% 7. Progress panel
+h = progressPanel(h,'setUp'); % progressPanel is a function in the protocolUtilities package
+
+% 6. Pause session button
+% pauseSession; % pauseSession is a function in the protocolUtilities package. Sets up a functional button to pause the session
+
+
 
 
 % Add protocol specific handles"
@@ -216,7 +231,7 @@ trialNum = round(trialNum+1); % every time a odor is triggered a new trial is co
 % 1. extract the current olfactometerSettings. 
 %   This will update the global olfactometerSettings structure to the
 %   current instructions from the gui.
-olfactometerSettings(h,'get');
+protocolUtilities.olfactometerSettings(h,'get');
 
 % 2. extract the concentration from gui and update trialOdor
 trialOdor.concentrationAtPresentation = str2num(get(h.protocolSpecificHandles.concentration(trialOdor.slave,trialOdor.vial),'string'));
@@ -225,7 +240,7 @@ trialOdor.concentrationAtPresentation = str2num(get(h.protocolSpecificHandles.co
  buildSmell('update',trialOdor,trialNum,stimProtocol); % update smell structure
 
 % 4. update the progress panel on the gui
- progressPanel(h,'update',trialOdor,trialNum,'Color',[0.5 0.5 0.5]); % 
+ protocolUtilities.progressPanel(h,'update',trialOdor,trialNum,'Color',[0.5 0.5 0.5]); % 
 
 
 end
@@ -236,13 +251,6 @@ warning('No odor present in this position of the olfactometer. If you want to us
 end
 
 
-function startSessionCallback(~,~)
-
-% 5. star the new trial
-%   This will build the lsq file for the current trial, send the
-%   instructions to the olfactometer and trigger the trial.
-smell = startTrial(trialNum, smell);
-end
 
 function closeGuiCallback
 uiresume(h.guiHandle)

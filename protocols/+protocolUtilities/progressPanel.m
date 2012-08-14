@@ -29,47 +29,46 @@ elseif nargin<4
     panelPosition =[5 position(4)-panelHeight panelWidth panelHeight]; % set the position vector for the progress panel
     color =  [1.0000    0.8000    0.2000];
 else
-    % Extract the 
-   index = find(strcmpi('position',varargin));
-   if ~isempty(index)
-       position = varargin{index+1};
-   else
+    % Extract the property names and values, provided as input by the user.
+    % If none are provided, define defaults.
+    index = find(strcmpi('position',varargin));
+    if ~isempty(index)
+        position = varargin{index+1};
+    else
+        % Define default position:
         position = get(h.guiHandle,'Position'); % get position of main gui window
-    panelWidth=position(3)-10; panelHeight = 100; % set the width and height of the progress panel
-    panelPosition =[5 position(4)-panelHeight panelWidth panelHeight]; % set the position vector for the progress panel
-   end
-   
-   index = find(strcmpi('color',varargin));
-   if ~isempty(index)
-       color = varargin{index+1};
-   else
-   % Define a default color, here orange:
-   color =  [1.0000    0.8000    0.2000];
-   end
+        panelWidth=position(3)-10; panelHeight = 100; % set the width and height of the progress panel
+        panelPosition =[5 position(4)-panelHeight panelWidth panelHeight]; % set the position vector for the progress panel
+    end
+    
+    index = find(strcmpi('color',varargin));
+    if ~isempty(index)
+        color = varargin{index+1};
+    else
+        % Define a default color, here orange:
+        color =  [1.0000    0.8000    0.2000];
+    end
 end
 
-if isempty(panelPosition)
-   
-end
 %% Setting up the progress panel
 % When setting up the gui the following lines are called
 if strmatch(instruction,'setUp')
     
     
     % Set up the progress panel
-    h.progressPanel = uipanel('Parent',h.guiHandle,'Title','Presented Odors',...
-        'FontSize',12,'TitlePosition','centertop',...
+    h.progress.panel = uipanel('Parent',h.guiHandle,'Title','Presented Odors',...
+        'Tag','progressPanel','FontSize',12,'TitlePosition','centertop',...
         'Units','pixels','Position',panelPosition); % 'Position',[x y width height] 
     
     
-    h.progressFigure = axes('Units','Pixels');
+    h.progress.figure = axes('Units','Pixels');
     figurePosition(1) = panelPosition(1)+5; % Set the x position of the progress figure
     figurePosition(2) = panelPosition(2)+15; % Set the y position of the progress figure
     figurePosition(3) = panelPosition(3)-10; % Set the width of the progress figure
     figurePosition(4) = panelPosition(4)-30; % Set the height of the progress figure
     % Set up the figure where progress gets plotted
-    set(h.progressFigure,'Ytick',[],'Xtick',(0:10000))
-    set(h.progressFigure,'Position',figurePosition)
+    set(h.progress.figure,'Ytick',[],'Xtick',(0:10000))
+    set(h.progress.figure,'Position',figurePosition)
     xlim([0.5 10.5]); ylim([0 1])
 end
 
