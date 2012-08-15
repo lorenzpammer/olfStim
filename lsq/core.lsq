@@ -35,20 +35,13 @@ Param, suctionValveIndex, 28			; the suction valve gates the suction around the 
 Param, humidityValveIndex, 27			; the humidity valve gates the delivery of humid air to the nose
 Param, startTrialTrigger, $DigIn1 		; defines line which when high, will start the trial
 Param, slaveIndex, 1                         ; defines from which slave module the valves are driven
-Param, outputIndex, 1;
 ;
 ;
 ; ------------------------------------------------------
 ; Trial Sequence Definition
 ; ------------------------------------------------------
 ;
-;WhileAlways
-;	IfIn,	startTrialTrigger, @startTrial
-;EndWhile
 ;
-;
-;Label, @startTrial
-;
-EmitStatus
 ; eof
+EmitStatus
 Idle,0,0

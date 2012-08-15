@@ -12,9 +12,8 @@ function trialLsq = buildTrialLsq(trialNum)
 % This function is called from startTrial.m
 %
 % TO DO:
-% - Fix how the digital outputs are triggered on LASOM. For now I'm using
-% the dummy output $DigOut1 but I think this can only be set to high or low
-% not to give out 8bit binary numbers.
+% - Fix how the digital outputs are triggered on LASOM. For now I hacked
+% the timestamp triggers into the lsq files. 
 % - Support presenting mixtures.
 %
 % lorenzpammer 2011/12
@@ -142,13 +141,13 @@ if smell.trial(trialNum).mixture == 0
                 % Start the timer in the beginning of the trial:
                 currentActionLsq = sprintf([';\nstartTimer, 2 ; Starts the timer for the trial \n' currentActionLsq]);
                 
-                % Add the command to send a timestamp:
-                sendTimestampLsq = fileread([lsqPath 'sendTimestamp.lsq']);
-                replacementString = num2str(smell.trial(trialNum).olfactometerInstructions(i).timeStampID);
-                sendTimestampLsq = replacePlaceHolderInLsq(sendTimestampLsq,'MYTIMESTAMP',replacementString);
-                % Add the command to send a timestamp to the
-                % currentActionLsq:
-                currentActionLsq = [currentActionLsq sendTimestampLsq];
+%                 % Add the command to send a timestamp:
+%                 sendTimestampLsq = fileread([lsqPath 'sendTimestamp.lsq']);
+%                 replacementString = num2str(smell.trial(trialNum).olfactometerInstructions(i).timeStampID);
+%                 sendTimestampLsq = replacePlaceHolderInLsq(sendTimestampLsq,'MYTIMESTAMP',replacementString);
+%                 % Add the command to send a timestamp to the
+%                 % currentActionLsq:
+%                 currentActionLsq = [currentActionLsq sendTimestampLsq];
                 
                 actionLsq = currentActionLsq;
                 
@@ -188,13 +187,13 @@ if smell.trial(trialNum).mixture == 0
                 
                 clear  replaceString replacementString timeLapseLsq
                 
-                % Add the command to send a timestamp:
-                sendTimestampLsq = fileread([lsqPath 'sendTimestamp.lsq']);
-                replacementString = num2str(smell.trial(trialNum).olfactometerInstructions(i).timeStampID);
-                sendTimestampLsq = replacePlaceHolderInLsq(sendTimestampLsq,'MYTIMESTAMP',replacementString);
-                % Add the command to send a timestamp to the
-                % currentActionLsq:
-                currentActionLsq = [currentActionLsq sendTimestampLsq];
+%                 % Add the command to send a timestamp:
+%                 sendTimestampLsq = fileread([lsqPath 'sendTimestamp.lsq']);
+%                 replacementString = num2str(smell.trial(trialNum).olfactometerInstructions(i).timeStampID);
+%                 sendTimestampLsq = replacePlaceHolderInLsq(sendTimestampLsq,'MYTIMESTAMP',replacementString);
+%                 % Add the command to send a timestamp to the
+%                 % currentActionLsq:
+%                 currentActionLsq = [currentActionLsq sendTimestampLsq];
                 
                 
                 % Append currentActionLsq to actionLsq

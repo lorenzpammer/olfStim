@@ -1,0 +1,8 @@
+;
+WhileAlways
+	IfIn,	startTrialTrigger, @startTrial
+EndWhile
+;
+;
+Label, @startTrial
+;
