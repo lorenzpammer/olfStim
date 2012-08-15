@@ -31,6 +31,10 @@ stimProtocol = 'manualSessionProgrammingStim';
 % The order of setting up the components is important, because the
 % placement of the components is relative to other components.
 
+% Check how many odors are used in order to decide whether to enlarge the gui.
+
+
+
 % 1. Button for closing the gui
 h = closeGui(h); %
 
@@ -44,10 +48,11 @@ h = quitSession(h); % endSession is a function in the protocolUtilities package.
 h = startSession(h,'manualSessionProgrammingStim.startSessionCallback');
 
 % 5. Olfactometer Settings
-h = olfactometerSettings(h,'setUp');
+h = olfactometerSettings(h,'setUp'); % sets up all controls the user has over the olfactometer (valve times, MFC flow rates)
 
 % 6. Session Settings
-h = sessionSettingsPanel(h,1);
+% All controls a user has over session parameters (inter trial interval etc)
+h = sessionSettingsPanel(h,1); % sessionSettingsPanel(h,guiEnlarge). 
 
 % 7. Progress panel
 h = progressPanel(h,'setUp'); % progressPanel is a function in the protocolUtilities package
