@@ -68,7 +68,7 @@ h.protocolSpecificHandles = [];
 % 2. Buttons for triggering odor presentation
 % Define positions:
 figurePosition = get(h.guiHandle,'Position');
-position = get(h.progressPanel,'Position');
+position = get(h.progress.panel,'Position');
 protocolChooserPosition = get(h.panelProtocolChooser,'Position');
 spacing = 3;
 pushButtonArea(1) =  protocolChooserPosition(1)+protocolChooserPosition(3) + 40; % X position to the right of protocol chooser panel

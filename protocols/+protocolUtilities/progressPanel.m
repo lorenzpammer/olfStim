@@ -61,7 +61,7 @@ if strmatch(instruction,'setUp')
         'Units','pixels','Position',panelPosition); % 'Position',[x y width height] 
     
     
-    h.progress.figure = axes('Units','Pixels');
+    h.progress.figure = axes('Parent',h.guiHandle,'Units','Pixels');
     figurePosition(1) = panelPosition(1)+5; % Set the x position of the progress figure
     figurePosition(2) = panelPosition(2)+20; % Set the y position of the progress figure
     figurePosition(3) = panelPosition(3)-10; % Set the width of the progress figure
@@ -69,7 +69,7 @@ if strmatch(instruction,'setUp')
     % Set up the figure where progress gets plotted
     set(h.progress.figure,'Ytick',[],'Xtick',(0:10000),'Fontsize',8)
     set(h.progress.figure,'Position',figurePosition)
-    xlim([0.5 10.5]); ylim([0 1])
+    xlim(h.progress.figure,[0.5 10.5]); ylim(h.progress.figure,[0 1])
 end
 
 
