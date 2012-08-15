@@ -3,8 +3,6 @@ function manualStim
 % - Add possibility to change concentration for each trial.
 % - At the beginning of session set MFC flow rate, and close MFCs at the
 % end of session.
-% - When user changes concentration for odor presentation. Check with the
-% mfcTotalFlow, whether this is achievable. If not, popupwindow.
 %
 % lorenzpammer 2011/09
 
@@ -143,7 +141,7 @@ for j = 1 : length(activeSlaves)
             odorCounter = odorCounter+1;
             h.protocolSpecificHandles.concentration(j,i) = uicontrol(h.guiHandle,'Style','edit',...
                 'String',olfactometerOdors.slave(j).sessionOdors(odorCounter).concentrationAtPresentation,...
-                'Units','pixels','Position',pushButtonPosition);
+                'Units','pixels','Position',pushButtonPosition,'Callback',{@concentrationEditCallback,j,i});
         end
         
         pushButtonPosition(1) = pushButtonPosition(1)+pushButtonWidth+spacing; % redefine pushButtonPosition for next loop iteration

@@ -43,6 +43,11 @@ function h = olfactometerSettings(h,instruction,additionalSettings,panelPosition
 global smell
 global olfactometerInstructions
 
+%% Import function packages
+
+% Import all functions of the current stimulation protocol
+import protocolUtilities.*
+
 
 %% Check inputs
 
@@ -227,6 +232,19 @@ if strncmp(instruction,'setUp',5)
         clear settingValue userSettingNumber settingNumber useCheckBox tagName relatedSettingIndex dependentOnSetting
         
         
+        % Set Callback function
+        % Get tag names:
+        for i = 1 : length(h.olfactometerSettings.edit)
+           tagNames{i} = get(h.olfactometerSettings.edit(i),'Tag');
+        end
+        % Find the index of the mfcTotalFlow field
+        index = find(strcmp('mfcTotalFlow',tagNames));
+        % Set the callback function for the field found:
+        set(h.olfactometerSettings.edit(index),'Callback',@mfcTotalFlowEditCallback);
+        clear tagNames index
+        
+        
+        
         % Color code the setting fields
         names = get(h.olfactometerSettings.edit,'Tag');
         
@@ -288,12 +306,7 @@ if strncmp(instruction,'get',3)
     % olfactometer.
 
     olfactometerInstructions = extractOlfactometerSettings(olfactometerInstructions,h);
-   
-   % Check whether user input makes sense. Otherwise throw an error and
-   % terminate the program.
-   fprintf('To do: check whether the times defined by the user make sense and \n whether the MFC flow rates are below the maximum flow rate.\n')
-   dbstack
-   
+
 end
 
 end
