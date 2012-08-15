@@ -1,6 +1,5 @@
 ; Cleaning the nose:
 Gate, slaveIndex, sniffingValveIndex     ; Opens the sniffing valve. The index is set in the core lsq file
-Output, $XlogicOut
 ;
 Wait, 2000				; Wait for 2000ms
 ;

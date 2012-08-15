@@ -11,7 +11,7 @@
 ; They are usually overridden with external definitions.
 ; ------------------------------------------------------
 ;
-Param, odorValveIndex, 2 		; odorVal2veIndex specifies two gating odor valves to be opened (N & air stream). Specified for each valve from host computer. range 1:9
+Param, odorValveIndex, 2 		; odorValveIndex specifies two gating odor valves to be opened (N & air stream). Specified for each valve from host computer. range 1:9
 Param, numberComponents, 1     ; number of components in the presented odorant. If only a single odor then equals 1.
 Param, trialNum, 1		; Number of the current trial
 ;
@@ -35,144 +35,13 @@ Param, suctionValveIndex, 28			; the suction valve gates the suction around the 
 Param, humidityValveIndex, 27			; the humidity valve gates the delivery of humid air to the nose
 Param, startTrialTrigger, $DigIn1 		; defines line which when high, will start the trial
 Param, slaveIndex, 1                         ; defines from which slave module the valves are driven
-Param, outputIndex, 
+Param, outputIndex, 1;
 ;
 ;
 ; ------------------------------------------------------
 ; Trial Sequence Definition
 ; ------------------------------------------------------
 ;
-WhileAlways
-	IfIn,	startTrialTrigger, @startTrial
-EndWhile
-;
-;
-Label, @startTrial
-;
-EmitStatus
-;
-startTimer, $Timer1 ; Starts the timer for the trial 
-;
-wait, 0 
-;
-Odor, slaveIndex, odorValveIndex		; Odor will open the specified two odor valves and will automatically trigger the dummy vial valves and thereby close the two dummy valves.
-;;
-Output, $DigOut1, 1 		; outputs the defined time stamp (P2) to the hardware output defined in (P1)
-;;
-WhileAlways 			; enter an indefinite loop. 
-CheckLapse, $Timer1, 3000	; Check whether the timer >= P2
-IfLapse, $Timer1, lapsedOut2		; If that's the case jump to the label indicated in P2.
-EndWhile
-;
-label, lapsedOut2
-;
-Gate, slaveIndex, finalValveIndex	; Triggers the final valve. The index is set in the core lsq file
-;;
-Output, $DigOut1, 3 		; outputs the defined time stamp (P2) to the hardware output defined in (P1)
-;;
-WhileAlways 			; enter an indefinite loop. 
-CheckLapse, $Timer1, 3250	; Check whether the timer >= P2
-IfLapse, $Timer1, lapsedOut3		; If that's the case jump to the label indicated in P2.
-EndWhile
-;
-label, lapsedOut3
-;
-UnGate, slaveIndex, exhaustValveIndex     ; Closes the exhaust valve. The index is set in the core lsq file
-;;
-Output, $DigOut1, 5 		; outputs the defined time stamp (P2) to the hardware output defined in (P1)
-;;
-WhileAlways 			; enter an indefinite loop. 
-CheckLapse, $Timer1, 3500	; Check whether the timer >= P2
-IfLapse, $Timer1, lapsedOut4		; If that's the case jump to the label indicated in P2.
-EndWhile
-;
-label, lapsedOut4
-;
-Gate, slaveIndex, sniffingValveIndex     ; Opens the sniffing valve. The index is set in the core lsq file
-Output, $XlogicOut
-;;
-Output, $DigOut1, 7 		; outputs the defined time stamp (P2) to the hardware output defined in (P1)
-;;
-WhileAlways 			; enter an indefinite loop. 
-CheckLapse, $Timer1, 5000	; Check whether the timer >= P2
-IfLapse, $Timer1, lapsedOut5		; If that's the case jump to the label indicated in P2.
-EndWhile
-;
-label, lapsedOut5
-;
-Dummy, slaveIndex           ; Dummy will open the dummy valve and close all odor valves
-;;
-Output, $DigOut1, 2 		; outputs the defined time stamp (P2) to the hardware output defined in (P1)
-;;
-WhileAlways 			; enter an indefinite loop. 
-CheckLapse, $Timer1, 5000	; Check whether the timer >= P2
-IfLapse, $Timer1, lapsedOut6		; If that's the case jump to the label indicated in P2.
-EndWhile
-;
-label, lapsedOut6
-;
-UnGate, slaveIndex, finalValveIndex	; Closes the final valve. The index is set in the core lsq file
-;;
-Output, $DigOut1, 4 		; outputs the defined time stamp (P2) to the hardware output defined in (P1)
-;;
-WhileAlways 			; enter an indefinite loop. 
-CheckLapse, $Timer1, 5000	; Check whether the timer >= P2
-IfLapse, $Timer1, lapsedOut7		; If that's the case jump to the label indicated in P2.
-EndWhile
-;
-label, lapsedOut7
-;
-Gate, slaveIndex, exhaustValveIndex     ; Opens the exhaust valve. The index is set in the core lsq file
-;;
-Output, $DigOut1, 6 		; outputs the defined time stamp (P2) to the hardware output defined in (P1)
-;;
-WhileAlways 			; enter an indefinite loop. 
-CheckLapse, $Timer1, 5000	; Check whether the timer >= P2
-IfLapse, $Timer1, lapsedOut8		; If that's the case jump to the label indicated in P2.
-EndWhile
-;
-label, lapsedOut8
-;
-UnGate, slaveIndex, sniffingValveIndex     ; Closes the sniffing valve. The index is set in the core lsq file
-;;
-Output, $DigOut1, 8 		; outputs the defined time stamp (P2) to the hardware output defined in (P1)
-;;
-WhileAlways 			; enter an indefinite loop. 
-CheckLapse, $Timer1, 9000	; Check whether the timer >= P2
-IfLapse, $Timer1, lapsedOut9		; If that's the case jump to the label indicated in P2.
-EndWhile
-;
-label, lapsedOut9
-;
-Gate, slaveIndex, humidityValveIndex	; Opens the humidity valve. The index is set in the core lsq file
-;;
-Output, $DigOut1, 9 		; outputs the defined time stamp (P2) to the hardware output defined in (P1)
-;;
-WhileAlways 			; enter an indefinite loop. 
-CheckLapse, $Timer1, 10000	; Check whether the timer >= P2
-IfLapse, $Timer1, lapsedOut10		; If that's the case jump to the label indicated in P2.
-EndWhile
-;
-label, lapsedOut10
-; Cleaning the nose:
-Gate, slaveIndex, sniffingValveIndex     ; Opens the sniffing valve. The index is set in the core lsq file
-Output, $XlogicOut
-;
-Wait, 2000				; Wait for 2000ms
-;
-UnGate, slaveIndex, sniffingValveIndex     ; Closes the sniffing valve. The index is set in the core lsq file
-;;
-Output, $DigOut1, 12 		; outputs the defined time stamp (P2) to the hardware output defined in (P1)
-;;
-WhileAlways 			; enter an indefinite loop. 
-CheckLapse, $Timer1, 12000	; Check whether the timer >= P2
-IfLapse, $Timer1, lapsedOut11		; If that's the case jump to the label indicated in P2.
-EndWhile
-;
-label, lapsedOut11
-;
-UnGate, slaveIndex, humidityValveIndex	; Closes the humidity valve. The index is set in the core lsq file
-;;
-Output, $DigOut1, 10 		; outputs the defined time stamp (P2) to the hardware output defined in (P1)
-;
+Output, $XLogicOut3, 0 		; outputs the defined time stamp (P2) to the hardware output defined in (P1)
+Dummy,1
 Idle,0,0

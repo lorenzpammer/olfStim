@@ -59,31 +59,20 @@ elseif strcmp(instruction,'sendLsqToLasom')
         error(errormsg)
         clear errormsg
     end
+    % Clear old sequence
     lsqFilePath = varargin{1};
-    % Clear old sequence:
     success = invoke(lasomH, 'ClearSequence');
     if success ~= 0
         error('Could not clear old sequence on LASOM.')
     end
-    % Send new sequence defined by it's location on the hard drive to the
-    % LASOM
-    success = invoke(lasomH, 'ParseSeqFile', lsqFilePath);
-    if success ~= 0
-        error('Could not send trial sequence LASOM.')
-    end
-    % Compile the new sequence:
-    success = invoke(lasomH, 'CompileSequence');
-    if success ~= 0
-        error('Could not compile trial sequence.')
-    end
+    invoke(lasomH, 'ParseSeqFile', lsqFilePath) 
+    invoke(lasomH, 'CompileSequence')
 
     
 elseif strcmp(instruction,'loadAndRunSequencer')
     % Load the sequencer and run it:
-    success = invoke(lasomH, 'LoadAndRunSequencer',0);
-    if success ~= 0
-        error('Could not start sequencer with new sequence file.')
-    end
+    invoke(lasomH, 'LoadAndRunSequencer',0) 
+    
 
 elseif strcmp(instruction,'setMfcFlowRate')
     if isempty(varargin{1}) || isempty(lasomH)

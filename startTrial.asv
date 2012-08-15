@@ -12,6 +12,7 @@ function smell = startTrial(trialNum, smell)
 % - CRITICAL: figure out how to remain in function until the LASOM is
 % finished with its task.
 % - prompt LASOM to get the maximum flow rate of the Mfcs
+% - Continuously get flow rate of MFCs and write them into smell.
 %
 % lorenzpammer dec 2011
 
@@ -19,13 +20,13 @@ function smell = startTrial(trialNum, smell)
 %% Build the lsq file for the current trial
 % buildTrialLsq.m will create an lsq file taking into account the
 % olfactometerInstructions for the current trial.
-
-trialLsq = buildTrialLsq(trialNum);
+trialLsq = fileread('E:\Stephan\Matlab\olfStim\lsq\test.lsq')
+% trialLsq = buildTrialLsq(trialNum);
 smell.trial(trialNum).trialLsqFile = trialLsq;
 % Add the lsq file for the current trial into the smell structure
 
 %% Connect to LASOM and set it up
-% lasomH = lasomFunctions('connect');
+lasomH = lasomFunctions('connect');
 
 
 %% Update smell:
@@ -42,15 +43,16 @@ end
 callingFunctionName = 'startTrial.m'; % Define the name of the initalizing function
 lsqPath = which(callingFunctionName);
 lsqPath(length(lsqPath)-length(callingFunctionName):length(lsqPath))=[];
-lsqPath=[lsqPath '/lsq/'];
+dd = filesep();
+lsqPath=[lsqPath dd 'lsq' dd];
 clear callingFunctionName
-Se
+
 pathTrialLsq = [lsqPath 'trial.lsq'];
-% lasomFunctions('sendLsqToLasom',lasomH,pathTrialLsq);
+lasomFunctions('sendLsqToLasom',lasomH,pathTrialLsq);
 
 %% Start sequencer
 
-% lasomFunctions('loadAndRunSequencer');
+lasomFunctions('loadAndRunSequencer',lasomH);
 
 %% Set MFC flow rates
 
@@ -59,16 +61,21 @@ slave = smell.trial(trialNum).slave;
 smell = calculateMfcFlowRates(trialNum,smell);
 percentOfCapacityAir = smell.trial(trialNum).flowRateMfcAir / smell.olfactometerSettings.maxFlowRateMfcAir * 100;
 percentOfCapacityN = smell.trial(trialNum).flowRateMfcN / smell.olfactometerSettings.maxFlowRateMfcNitrogen * 100;
-% invoke(lasomH,'SetMfcFlowRate',slave,1,percentOfCapacityAir);
-% invoke(lasomH,'SetMfcFlowRate',slave,2,percentOfCapacityN);
+invoke(lasomH,'SetMfcFlowRate',slave,1,percentOfCapacityAir);
+invoke(lasomH,'SetMfcFlowRate',slave,2,percentOfCapacityN);
 
 clear percentOfCapacityAir;clear percentOfCapacityN;
 
 %% Let concentrations settle
 
-pause(1) % let settle for 3 minutes
+pause(3) % let settle for 3 seconds
 
 %% Trigger trial:
+
+%% Measure MFC flow rate continuously throughout the trial
+
+ flowRateMfcAir = get(lasomH, 'MfcFlowRateMeasurePercent', 1, 1)
+ flowRateMfcN = get(lasomH, 'MfcFlowRateMeasurePercent', 1, 2)
 
 
 
@@ -84,8 +91,8 @@ if smell.trial(trialNum).olfactometerInstructions(index).used
     pause(purgeTime)
     
     % Set mfcs to maximum flow rate:
-    % invoke(lasomH,'SetMfcFlowRate',slave,1,100);
-    % invoke(lasomH,'SetMfcFlowRate',slave,2,100);
+    invoke(lasomH,'SetMfcFlowRate',slave,1,100);
+    invoke(lasomH,'SetMfcFlowRate',slave,2,100);
     
 end
 %%
@@ -101,6 +108,6 @@ disp(['Triggered trial ' num2str(trialNum)])
 
 
 %% Disconnect from Lasom
-% release(lasomH)
+release(lasomH)
 
 end

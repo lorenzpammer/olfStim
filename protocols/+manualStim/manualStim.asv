@@ -4,7 +4,7 @@ function manualStim
 % - At the beginning of session set MFC flow rate, and close MFCs at the
 % end of session.
 % - When user changes concentration for odor presentation. Check with the
-% mfcTotalFlow, whether this is achievable. If not, popupwindow.
+% mfcTotalFlow, whether this is a
 %
 % lorenzpammer 2011/09
 

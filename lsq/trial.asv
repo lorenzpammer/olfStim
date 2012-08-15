@@ -11,7 +11,7 @@
 ; They are usually overridden with external definitions.
 ; ------------------------------------------------------
 ;
-Param, odorValveIndex, 1 		; odorValveIndex specifies two gating odor valves to be opened (N & air stream). Specified for each valve from host computer. range 1:9
+Param, odorValveIndex, 2 		; odorValveIndex specifies two gating odor valves to be opened (N & air stream). Specified for each valve from host computer. range 1:9
 Param, numberComponents, 1     ; number of components in the presented odorant. If only a single odor then equals 1.
 Param, trialNum, 1		; Number of the current trial
 ;
@@ -42,13 +42,7 @@ Param, outputIndex, 1;
 ; Trial Sequence Definition
 ; ------------------------------------------------------
 ;
-;WhileAlways
-;	IfIn,	startTrialTrigger, @startTrial
-;EndWhile
-;
-;
-;Label, @startTrial
-;
-EmitStatus
-; eof
+Output, $XLogicOut7, 1 		; outputs the defined time stamp (P2) to the hardware output defined in (P1)
+Odor,1,3
+wait,3000
 Idle,0,0
