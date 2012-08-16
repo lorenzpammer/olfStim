@@ -37,11 +37,18 @@ function h = olfactometerSettings(h,instruction,additionalSettings,panelPosition
 % odor presentation time - default 1s
 %
 % To do:
+% - Let user define how the digital timestamps are sent from the
+% olfactometer.
 %
 % lorenzpammer 2011/09
 
 global smell
 global olfactometerInstructions
+
+%% Import function packages
+
+% Import all functions of the current stimulation protocol
+import protocolUtilities.*
 
 
 %% Check inputs
@@ -75,14 +82,25 @@ if strncmp(instruction,'setUp',5)
     
     %% Set up olfactometerInstructions structure
     
-    olfactometerInstructions = struct('name',{'mfcTotalFlow' 'powerGatingValve' 'unpowerGatingValve' ,...
+%     olfactometerInstructions = struct('name',{'mfcTotalFlow' 'powerGatingValve' 'unpowerGatingValve' ,...
+%         'powerFinalValve' 'unpowerFinalValve' 'closeSuctionValve' 'openSuctionValve',...
+%         'openSniffingValve' 'closeSniffingValve' 'powerHumidityValve' 'unpowerHumidityValve',...
+%         'purge' 'cleanNose' 'startOnExternalTrigger'},...
+%         'value',cell(1,14),...
+%         'unit',{ 'l/m' 's' 's' 's' 's' 's' 's' 's' 's' 's' 's' 's' 's' 'type'},...
+%         'userSettingNumber',[],...
+%         'used',{1 1 1 1 1 0 0 1 1 0 0 1 1 1},...
+%         'timeStampID',[]);
+%     
+
+ olfactometerInstructions = struct('name',{'mfcTotalFlow' 'powerGatingValve' 'unpowerGatingValve' ,...
         'powerFinalValve' 'unpowerFinalValve' 'closeSuctionValve' 'openSuctionValve',...
         'openSniffingValve' 'closeSniffingValve' 'powerHumidityValve' 'unpowerHumidityValve',...
         'purge' 'cleanNose'},...
         'value',cell(1,13),...
         'unit',{ 'l/m' 's' 's' 's' 's' 's' 's' 's' 's' 's' 's' 's' 's'},...
         'userSettingNumber',[],...
-        'used',1,...
+        'used',{1 1 1 1 1 0 0 1 1 0 0 1 1},...
         'timeStampID',[]);
     
     %% Hard code time stamp code for the different events
@@ -94,6 +112,7 @@ if strncmp(instruction,'setUp',5)
     
     
     if strcmp(instruction,'setUp')
+        
         %% Define panelPosition if it wasn't defined in inputs
         if nargin < 4
             sessionNotesPanel = get(h.sessionNotes.panel,'Position');
@@ -109,38 +128,44 @@ if strncmp(instruction,'setUp',5)
         
         
         h.olfactometerSettings.panel = uipanel('Parent',h.guiHandle,'Title','Olfactometer Settings',...
-            'Tag','olfactometerSettingsPanel','FontSize',12,'TitlePosition','centertop',...
+            'Tag','olfactometerSettingsPanel','FontSize',8,'TitlePosition','centertop',...
             'Units','pixels','Position',panelPosition); % 'Position',[x y width height]
         
         %% Define positions for the controls:
         % Total of 14 possible positions in the panel: 2x7
         
-        positions = cell(2,7); % One cell for each of the 12 positions in the panel
-        width = panelPosition(3) / 7;
-        height = (panelPosition(4)-15) / 2; % -10 because the text of the panel is included in the height
+        numberOfColumns = ceil(length(olfactometerInstructions)/2);
+        numberOfRows = 2;
         
-        counter = 0;
-        for i = 1 : 2 : numel(positions)
-            counter = counter+1;
-            positions{i} = [panelPosition(1) + (counter-1)*width,...
-                panelPosition(2) + height,...
-                width, height];
-        end
-        counter = 0;
-        for i = 2 : 2 : numel(positions)
-            counter = counter+1;
-            positions{i} = [panelPosition(1) + (counter-1)*width,...
-                panelPosition(2),...
-                width, height];
+        positions = cell(numberOfRows,numberOfColumns); % One cell for each of the x positions in the panel
+        width = panelPosition(3) / numberOfColumns;
+        height = (panelPosition(4)-15) / numberOfRows; % -10 because the text of the panel is included in the height
+        
+        
+        
+        for j = 1 : numberOfRows
+            counter = 0;
+            for i = j : numberOfRows : length(olfactometerInstructions)
+                counter = counter+1;
+                tempYPosition = panelPosition(2) + (height*(length(numberOfRows) - j));
+                positions{i} = [panelPosition(1) + (counter-1)*width,...
+                    tempYPosition,...
+                    width, height];
+                
+                
+                
+            end
         end
         clear counter; clear width; clear height
         
-        
+         positions{i} = [panelPosition(1) + (counter-1)*width,...
+                    panelPosition(2) + height,...
+                    width, height];
         
         
         %% Define the size of the edit field ('edit') and its descriptor ('text')
         textHeight = 30; textWidth = 70;
-        editHeight = 25; editWidth = 50;
+        editHeight = 20; editWidth = 50;
         
         %% Graphical depiction of a sequence of events in a trial
         
@@ -197,7 +222,7 @@ if strncmp(instruction,'setUp',5)
             h.olfactometerSettings.text(userSettingNumber) = uicontrol('Parent',h.guiHandle,...
                 'Style','text','String',[olfactometerInstructions(settingNumber).name ' ' olfactometerInstructions(settingNumber).unit],...
                 'Position', position,'Tag',olfactometerInstructions(settingNumber).name,...
-                'Fontsize',8);
+                'Fontsize',7.5);
             
             % Field for editing the value of the setting:
             position = [positions{userSettingNumber}(1)+spacing positions{userSettingNumber}(2)+spacing editWidth editHeight];
@@ -225,6 +250,19 @@ if strncmp(instruction,'setUp',5)
         end
         
         clear settingValue userSettingNumber settingNumber useCheckBox tagName relatedSettingIndex dependentOnSetting
+        
+        
+        % Set Callback function
+        % Get tag names:
+        for i = 1 : length(h.olfactometerSettings.edit)
+           tagNames{i} = get(h.olfactometerSettings.edit(i),'Tag');
+        end
+        % Find the index of the mfcTotalFlow field
+        index = find(strcmp('mfcTotalFlow',tagNames));
+        % Set the callback function for the field found:
+        set(h.olfactometerSettings.edit(index),'Callback',@mfcTotalFlowEditCallback);
+        clear tagNames index
+        
         
         
         % Color code the setting fields
@@ -288,12 +326,7 @@ if strncmp(instruction,'get',3)
     % olfactometer.
 
     olfactometerInstructions = extractOlfactometerSettings(olfactometerInstructions,h);
-   
-   % Check whether user input makes sense. Otherwise throw an error and
-   % terminate the program.
-   fprintf('To do: check whether the times defined by the user make sense and \n whether the MFC flow rates are below the maximum flow rate.\n')
-   dbstack
-   
+
 end
 
 end

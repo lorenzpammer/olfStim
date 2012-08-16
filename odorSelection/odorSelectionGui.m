@@ -479,7 +479,7 @@ try
     olfactometerOdors.sessionOdors = [olfactometerOdors.sessionOdors olfactometerOdors.mixtures.sessionOdors];
     
 catch
-    warning('No mixtures were chosen to be presented.')
+    disp('No mixtures were chosen to be presented.')
 end
 
 

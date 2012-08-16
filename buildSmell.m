@@ -124,7 +124,8 @@ global olfactometerInstructions
     
     % Field for storing the event log from the LASOM after the execution of
     % the trial:
-    smell.trial(1).lasomEventLog = [];
+    smell.trial(1).lasomEventLog.flowRateMfcAir = [];
+    smell.trial(1).lasomEventLog.flowRateMfcN = [];
     % Field for storing the lsq file (lasom sequencer script) for each
     % trial:
     smell.trial(1).trialLsqFile = []; 

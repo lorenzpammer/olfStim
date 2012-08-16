@@ -28,7 +28,7 @@ timeStampIDs(2).timeStampValue = '0001';
 
 timeStampIDs(7).name = 'unpowerFinalValve';
 % timeStampIDs(7).timeStampValue = 4;
-timeStampIDs(7).timeStampValue = '0001'
+timeStampIDs(7).timeStampValue = '0001';
 
 timeStampIDs(3).name = 'closeSuctionValve';
 % timeStampIDs(3).timeStampValue = 5;

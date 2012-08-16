@@ -2,6 +2,6 @@
 WhileAlways 			; enter an indefinite loop. 
 SinceTimer, 2, 3        ; Find relative time since start of timer
 CheckLapse, 3, MYVAL	; Check whether the timer >= P2
-IfLapse, 3, lapsedOut		; If that's the case jump to the label indicated in P2.
+IfLapse, 3, @lapsedOut		; If that's the case jump to the label indicated in P2.
 EndWhile
 ;

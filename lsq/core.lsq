@@ -42,11 +42,10 @@ Param, slaveIndex, 1                         ; defines from which slave module t
 ; ------------------------------------------------------
 ;
 WhileAlways
-IfIn,DigIn1,@startTrial
-
+IfIn, $DigIn1, @startTrial
 EndWhile
 ;
-label, startTrial
+label, @startTrial
 ;
 ; eof
 EmitStatus

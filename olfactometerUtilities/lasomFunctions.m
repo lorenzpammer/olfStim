@@ -39,13 +39,21 @@ end
 %% extablish connection to LASOM
 
 if strcmp(instruction,'checkConnection')
-    dbstack
-    disp(': Checking connection not yet programmed.')
+   lasomH = actxcontrol('LASOMX.LASOMXCtrl.1');
+    success = invoke(lasomH, 'DevOpen', 0, 1);
+    if success == 0
+        pause(2)
+        disp('Connecting to LASOM successful.')
+        release(lasomH)
+    else
+         error('Could not connect to LASOM.')
+    end
+    
     
 
 elseif strcmp(instruction,'connect')
     lasomH = actxcontrol('LASOMX.LASOMXCtrl.1');
-    success = invoke(lasomH, 'DevOpen', 0, 1);
+    success = invoke(lasomH, 'DevOpen', 0, 0);
     if success ~= 0
         error('Could not connect to LASOM.')
     end

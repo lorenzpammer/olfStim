@@ -123,7 +123,6 @@ if smell.trial(trialNum).mixture == 0
             continue % to next iteration of for loop
         end
         
-        
         % If the action is used:
         if smell.trial(trialNum).olfactometerInstructions(i).used
             
@@ -176,7 +175,7 @@ if smell.trial(trialNum).mixture == 0
                 clear waitTime
                 
                 % Now change the label to jump to, when it lapses out:
-                replaceString = 'lapsedOut';
+                replaceString = '@lapsedOut';
                 replacementString = [replaceString num2str(actionNumber)];
                 timeLapseLsq = replacePlaceHolderInLsq(timeLapseLsq,replaceString,replacementString);
                 
