@@ -1,8 +1,7 @@
 ;
 WhileAlways
-	IfIn,	startTrialTrigger, @startTrial
+IfIn, $DigIn1, @startTrial
 EndWhile
 ;
-;
-Label, @startTrial
+label, @startTrial
 ;

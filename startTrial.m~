@@ -60,7 +60,7 @@ percentOfCapacityN = smell.trial(trialNum).flowRateMfcN / smell.olfactometerSett
 invoke(lasomH,'SetMfcFlowRate',slave,1,percentOfCapacityAir);
 invoke(lasomH,'SetMfcFlowRate',slave,2,percentOfCapacityN);
 
-clear percentOfCapacityAir percentOfCapacityN
+clear percentOfCapacityAir;clear percentOfCapacityN;
 
 %% Start sequencer
 
@@ -98,9 +98,9 @@ start(mfcMeasureTimer)
         % and write the returned values into the smell structure:
         measurementNo = get(mfcMeasureTimer,'TasksExecuted');
         smell.trial(trialNum).lasomEventLog.flowRateMfcAir(2,measurementNo) = ...
-            get(lasomH, 'MfcFlowRateMeasurePercent', slave, 1);
+            get(lasomH, 'MfcFlowRateMeasurePercent', 1, 1);
         smell.trial(trialNum).lasomEventLog.flowRateMfcN(2,measurementNo) = ...
-            get(lasomH, 'MfcFlowRateMeasurePercent', slave, 2);
+            get(lasomH, 'MfcFlowRateMeasurePercent', 1, 2);
     end
     function measureMfcFlowStopped(varargin)
         % At the end of the trial, after last measurement of mfc flow, jump
@@ -130,10 +130,9 @@ if smell.trial(trialNum).olfactometerInstructions(index).used
     
 end
 
-% Callback functions of timer:
     function purgeOlfactometer(varargin)
         % At the timepoint defined by purge time, jump into this callback
-        % function and set mfcs to maximum flow rate: 
+        % set mfcs to maximum flow rate: 
         invoke(lasomH,'SetMfcFlowRate',slave,1,100);
         invoke(lasomH,'SetMfcFlowRate',slave,2,100);
     end
@@ -141,6 +140,8 @@ end
         stop(purgeTimer)
         delete(purgeTimer)
     end
+
+
 
 %% Wait until Sequencer is finished
 % Sequencer file (lsq) ends with the command 'EmitStatus' this results in

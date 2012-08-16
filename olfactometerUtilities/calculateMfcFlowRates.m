@@ -59,13 +59,13 @@ end
 
 % Give warning, if the Nitrogen Mfc is set to less than 1% of its maximal
 % flow rate, as it becomes inaccurate around that point
-if flowRateMfcN < smell.olfactometerSettings.maxFlowRateMfcNitrogen/100
+if flowRateMfcN < smell.olfactometerSettings.maxFlowRateMfcNitrogen/50
     if strmatch(errorType,'error')
-        warningmsg = sprintf('The Nitrogen MFC is set to less than 1%% of its maximal flow rate.\nAs the MFC isn''t accurate below 1%% flow rate, please consider diluting the odorant.')
+        warningmsg = sprintf('The Nitrogen MFC is set to less than 2%% of its maximal flow rate.\nAs the MFC isn''t accurate below 2%% flow rate, please consider diluting the odorant.')
         warning(warningmsg)
         clear warningmsg;
     elseif strmatch(errorType,'popUp')
-        selection = warndlg('Nitrogen MFC is set to less than 1% of its maximal flow rate.As the MFC isn''t accurate below 1% flow rate, please consider diluting the odorant.',...
+        selection = warndlg('Nitrogen MFC is set to less than 2% of its maximal flow rate.As the MFC isn''t accurate below 2% flow rate, please consider diluting the odorant.',...
             'Concentration too low',...
             'OK');
     end
