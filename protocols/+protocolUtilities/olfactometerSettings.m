@@ -37,6 +37,8 @@ function h = olfactometerSettings(h,instruction,additionalSettings,panelPosition
 % odor presentation time - default 1s
 %
 % To do:
+% - Let user define how the digital timestamps are sent from the
+% olfactometer.
 %
 % lorenzpammer 2011/09
 
@@ -83,11 +85,11 @@ if strncmp(instruction,'setUp',5)
     olfactometerInstructions = struct('name',{'mfcTotalFlow' 'powerGatingValve' 'unpowerGatingValve' ,...
         'powerFinalValve' 'unpowerFinalValve' 'closeSuctionValve' 'openSuctionValve',...
         'openSniffingValve' 'closeSniffingValve' 'powerHumidityValve' 'unpowerHumidityValve',...
-        'purge' 'cleanNose'},...
-        'value',cell(1,13),...
-        'unit',{ 'l/m' 's' 's' 's' 's' 's' 's' 's' 's' 's' 's' 's' 's'},...
+        'purge' 'cleanNose' 'startOnExternalTrigger'},...
+        'value',cell(1,14),...
+        'unit',{ 'l/m' 's' 's' 's' 's' 's' 's' 's' 's' 's' 's' 's' 's' 'type'},...
         'userSettingNumber',[],...
-        'used',1,...
+        'used',{1 1 1 1 1 0 0 1 1 0 0 1 1 1},...
         'timeStampID',[]);
     
     %% Hard code time stamp code for the different events
@@ -99,6 +101,7 @@ if strncmp(instruction,'setUp',5)
     
     
     if strcmp(instruction,'setUp')
+        
         %% Define panelPosition if it wasn't defined in inputs
         if nargin < 4
             sessionNotesPanel = get(h.sessionNotes.panel,'Position');
@@ -120,23 +123,22 @@ if strncmp(instruction,'setUp',5)
         %% Define positions for the controls:
         % Total of 14 possible positions in the panel: 2x7
         
-        positions = cell(2,7); % One cell for each of the 12 positions in the panel
-        width = panelPosition(3) / 7;
-        height = (panelPosition(4)-15) / 2; % -10 because the text of the panel is included in the height
+        numberOfColumns = ceil(length(olfactometerInstructions)/2);
+        numberOfRows = 2;
         
-        counter = 0;
-        for i = 1 : 2 : numel(positions)
-            counter = counter+1;
-            positions{i} = [panelPosition(1) + (counter-1)*width,...
-                panelPosition(2) + height,...
-                width, height];
-        end
-        counter = 0;
-        for i = 2 : 2 : numel(positions)
-            counter = counter+1;
-            positions{i} = [panelPosition(1) + (counter-1)*width,...
-                panelPosition(2),...
-                width, height];
+        positions = cell(numberOfRows,numberOfColumns); % One cell for each of the x positions in the panel
+        width = panelPosition(3) / numberOfColumns;
+        height = (panelPosition(4)-15) / numberOfRows; % -10 because the text of the panel is included in the height
+        
+        
+        for j = 1 : numberOfRows
+            counter = 0;
+            for i = j : numberOfRows : length(olfactometerInstructions)
+                counter = counter+1;
+                positions{i} = [panelPosition(1) + (counter-1)*width,...
+                    panelPosition(2) + height,...
+                    width, height];
+            end
         end
         clear counter; clear width; clear height
         

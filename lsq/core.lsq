@@ -41,6 +41,12 @@ Param, slaveIndex, 1                         ; defines from which slave module t
 ; Trial Sequence Definition
 ; ------------------------------------------------------
 ;
+WhileAlways
+IfIn,DigIn1,@startTrial
+
+EndWhile
+;
+label, startTrial
 ;
 ; eof
 EmitStatus

@@ -53,6 +53,7 @@ h = olfactometerSettings(h,'setUp'); % sets up all controls the user has over th
 % 6. Session Settings
 % All controls a user has over session parameters (inter trial interval etc)
 h = sessionSettingsPanel(h,1); % sessionSettingsPanel(h,guiEnlarge). 
+h = sessionSettings(h,'setUp','interTrialInterval')
 
 % 7. Progress panel
 h = progressPanel(h,'setUp'); % progressPanel is a function in the protocolUtilities package

@@ -8,6 +8,8 @@ function initOlfStim
 % - Check how many slaves are connected. Depending on this build the
 % odorSelectionGui.
 % - Possibility to give digital triggers at arbitrary time points.
+% - Change all paths from the unix way to an operating system independent
+% way using filesep()
 %
 % lorenzpammer 2011/07
 
