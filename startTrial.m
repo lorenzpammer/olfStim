@@ -81,7 +81,7 @@ measurementInterval = 0.1; % measurement interval in seconds
 % Define timepoints when Mfc flow rate should be measured. Measure every
 % 100 ms, from the start of the trial (0s) to 3 seconds after the last
 % action.
-measurementPoints = 0:0.1:timeOfLastAction+3; 
+measurementPoints = 0:measurementInterval:timeOfLastAction+3; 
 smell.trial(trialNum).lasomEventLog.flowRateMfcAir(1,:) = measurementPoints;
 smell.trial(trialNum).lasomEventLog.flowRateMfcN(1,:) = measurementPoints;
 
@@ -90,7 +90,8 @@ mfcMeasureTimer = timer('ExecutionMode','fixedRate','Period',measurementInterval
     'StartDelay',0,'TasksToExecute',length(measurementPoints),...
     'TimerFcn',@measureMfcFlowRate,'StopFcn',@measureMfcFlowStopped);
 
-start(mfcMeasureTimer)
+% Start the timer, only once the sequencer received the trial start signal.
+% Check for this with another timer (readLasomStatusTimer - see below)
 
 % Callback functions of timer:
     function measureMfcFlowRate(varargin)
@@ -107,7 +108,6 @@ start(mfcMeasureTimer)
         % into this function and stop the timer.
         stop(mfcMeasureTimer)
         delete(mfcMeasureTimer)
-        release(lasomH)
     end
 
 clear measurementPoints index olfactometerTimes timeOfLastAction measurementInterval
@@ -121,14 +121,9 @@ purgeTime = smell.trial(trialNum).olfactometerInstructions(index).value;
 
 % if the purge is used, set the mfc flow rate at the time defined as the
 % purge time point:
-if smell.trial(trialNum).olfactometerInstructions(index).used
-    
-    purgeTimer = timer('ExecutionMode','singleShot','StartDelay',purgeTime,...
-        'TimerFcn',@purgeOlfactometer,'StopFcn',@purgeTimerStopped)
-    
-    start(purgeTimer)
-    
-end
+purgeTimer = timer('ExecutionMode','singleShot','StartDelay',purgeTime,...
+    'TimerFcn',@purgeOlfactometer,'StopFcn',@purgeTimerStopped)
+
 
 % Callback functions of timer:
     function purgeOlfactometer(varargin)
@@ -142,16 +137,65 @@ end
         delete(purgeTimer)
     end
 
-%% Wait until Sequencer is finished
+%% Read status messages coming from LASOM
 % Sequencer file (lsq) ends with the command 'EmitStatus' this results in
 % the sequencer queuing a status message to the USB host. Here the function
 % waits until receiving that message. Then continue.
-% For now write the release command in the stop function of the mfc
-% measurement.
+
+readStatusInterval = 0.001; % measurement interval in seconds 1000Hz
+
+% Set up the timer, and its callbacks for measuring the mfc flow
+readLasomStatusTimer = timer('ExecutionMode','fixedRate','Period',readStatusInterval,...
+    'StartDelay',0,'TasksToExecute',Inf,'BusyMode','drop',...
+    'TimerFcn',@readLasomStatusUntilTrialStart);
+
+start(readLasomStatusTimer)
+
+uiwait % keeps function active until uiresume is called (once sequencer is idle)
 
 
+% Callback functions of timer:
+    function readLasomStatusUntilTrialStart(varargin)
+        % Every 1 ms, jump into this function and read the last emitted
+        % status:
+        lasomStatus = invoke(lasomH,'GetSeqUpdateEnable');
+        startVariableStatus = invoke(lasomH,'SeqUpdateVarState',1);
+        
+        if lasomStatus == 1 && startVariableStatus == 1;
+            % If the variable with index 1 ($Var1) is set to 1, this means
+            % the sequencer has started to execute the trial (eg after
+            % exiting the initial whileloop).
+            %
+            start(mfcMeasureTimer)
+            if smell.trial(trialNum).olfactometerInstructions(index).used
+                start(purgeTimer)
+            end
+            set(readLasomStatusTimer,'Period',0.1); % Once the trial started read statuses at a rate of 10 Hz
+            set(readLasomStatusTimer,'TimerFcn',@readLasomStatusAfterTrialStart);
+            sprintf('Trial %d started.\n',trialNum)
+        end
+    end
 
-%% Disconnect from Lasom
-
+    function readLasomStatusAfterTrialStart(varargin)
+        lasomStatus = invoke(lasomH,'GetSeqUpdateEnable');
+        startVariableStatus = invoke(lasomH,'SeqUpdateVarState',1);
+        if lasomStatus == 0 && startVariableStatus == 0
+            % At the end of the trial, after last measurement of mfc flow, jump
+            % into this function and stop the timer.
+            
+            % returns a 5 if the sequencer is idle.
+            stop(readLasomStatusTimer)
+            delete(readLasomStatusTimer)
+            % Disconnect from Lasom
+            while isvalid(mfcMeasureTimer) || isvalid(purgeTimer)
+                pause(0.05); % wait and do nothing until the two other timers are finished.
+            end
+            release(lasomH)
+            sprintf('Executed trial %d successfully.\n',trialNum)
+            uiresume;
+        end
+    end
+end
+    
 
 end
