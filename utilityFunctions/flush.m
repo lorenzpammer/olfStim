@@ -15,6 +15,7 @@ if isstruct(h)
     delete(h.guiHandle)
 end
 % close all;
+delete(timerfindall)
 clear
 clear all
 clear classes

@@ -11,9 +11,10 @@
 ; They are usually overridden with external definitions.
 ; ------------------------------------------------------
 ;
-Param, odorValveIndex, 2 		; odorValveIndex specifies two gating odor valves to be opened (N & air stream). Specified for each valve from host computer. range 1:9
+Param, odorValveIndex, 3 		; odorValveIndex specifies two gating odor valves to be opened (N & air stream). Specified for each valve from host computer. range 1:9
 Param, numberComponents, 1     ; number of components in the presented odorant. If only a single odor then equals 1.
-Param, trialNum, 2		; Number of the current trial
+Param, trialNum, 3		; Number of the current trial
+Param, startTrialTrigger, $DigIn1 		; defines line which when high, will start the trial
 ;
 ; ------------------------------------------------------
 ; Session Parameters
@@ -33,9 +34,16 @@ Param, finalValveIndex, 31              ; the final valve is the valve in front 
 Param, sniffingValveIndex, 32			; the sniffing valve is the valve which gates the suction of air through the nose
 Param, suctionValveIndex, 28			; the suction valve gates the suction around the delivery tube
 Param, humidityValveIndex, 27			; the humidity valve gates the delivery of humid air to the nose
-Param, startTrialTrigger, $DigIn1 		; defines line which when high, will start the trial
 Param, slaveIndex, 1                         ; defines from which slave module the valves are driven
 ;
+;
+; ------------------------------------------------------
+; Setup Variables
+; These variables are set to a specific value and changed during the
+; sequence of actions, which allows the host computer to monitor progress.
+; ------------------------------------------------------
+;
+SetVar, $Var1, 0                        ; 
 ;
 ; ------------------------------------------------------
 ; Trial Sequence Definition
@@ -46,6 +54,8 @@ IfIn, $DigIn1, @startTrial
 EndWhile
 ;
 label, @startTrial
+SetVar, $Var1, 1    ; Causes the sequencer to update the status, about the value of $Var1
+EmitStatus          ; Causes the sequencer to emit the updated status to the host computer. This way the host computer knows, when the trial starts.
 ;
 ;
 startTimer, 2 ; Starts the timer for the trial 
@@ -124,5 +134,6 @@ Wait, 2000				; Wait for 2000ms
 ;
 UnGate, slaveIndex, sniffingValveIndex     ; Closes the sniffing valve. The index is set in the core lsq file
 ;
-EmitStatus
+SetVar, $Var1, 0    ; Set $Var1 back to initial state indicating end of trial
+EmitStatus          ; Send the new status of $Var1 to the host
 Idle,0,0
