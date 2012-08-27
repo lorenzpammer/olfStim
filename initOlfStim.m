@@ -10,6 +10,7 @@ function initOlfStim
 % - Possibility to give digital triggers at arbitrary time points.
 % - Change all paths from the unix way to an operating system independent
 % way using filesep()
+% - Make it possible to use more than 9 odor vials in the olfactometer.
 %
 % lorenzpammer 2011/07
 
@@ -17,7 +18,7 @@ global smell % smell is the data structure containing all information relevant t
 global olfactometerOdors % olfactometerOdors is a data structure, that contains information about which odors are loaded into the olfactometer
 
 %% Check whether connection can be made to the olfactometer
-lasomFunctions('checkConnection');
+% lasomFunctions('checkConnection');
 
 %% User has to define which odors are loaded into olfactometer
 % start by opening the odorSelectionGui. User has to define which odorants

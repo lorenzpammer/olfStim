@@ -138,6 +138,31 @@ for j = 1 : length(activeSlaves)
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     odorCounter=0;
+    % create the text saying which slave:
+    h.protocolSpecificHandles.staticText.concentration(j) = uicontrol(h.guiHandle,'Style','text','String','Concentrations','Position',textPosition);
+    usedVials = [olfactometerOdors.slave(j).sessionOdors(:).vial];
+    for i = 1 : 9 % go through every position of the olfactometer
+        
+        if sum(ismember(usedVials,i))>0.1 % checks whether there is an odor vial in the current (i) position of the olfactometer
+            odorCounter = odorCounter+1;
+            h.protocolSpecificHandles.concentration(j,i) = uicontrol(h.guiHandle,'Style','edit',...
+                'String',olfactometerOdors.slave(j).sessionOdors(odorCounter).concentrationAtPresentation,...
+                'Units','pixels','Position',pushButtonPosition,'Callback',{@concentrationEditCallback,j,i});
+        end
+        
+        pushButtonPosition(1) = pushButtonPosition(1)+pushButtonWidth+spacing; % redefine pushButtonPosition for next loop iteration
+        
+    end
+    
+    % Redefine pushButtonPosition for next slave
+    pushButtonPosition(1) = pushButtonArea(1);
+    pushButtonPosition(2) = pushButtonPosition(2) - pushButtonPosition(4) - 3;
+    textPosition(2) = pushButtonPosition(2) + 5;
+    
+    
+    
+     
+    odorCounter=0;
     % create the text declaring the row of concentration edit fields
     h.protocolSpecificHandles.staticText.concentration(j) = uicontrol(h.guiHandle,'Style','text','String','Concentrations','Position',textPosition);
     usedVials = [olfactometerOdors.slave(j).sessionOdors(:).vial];

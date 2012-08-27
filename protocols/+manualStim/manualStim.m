@@ -132,15 +132,23 @@ for j = 1 : length(activeSlaves)
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     odorCounter=0;
-    % create the text saying which slave:
+    % create the text declaring the row of concentration edit fields
     h.protocolSpecificHandles.staticText.concentration(j) = uicontrol(h.guiHandle,'Style','text','String','Concentrations','Position',textPosition);
     usedVials = [olfactometerOdors.slave(j).sessionOdors(:).vial];
-    for i = 1 : 9 % go through every position of the olfactometer
+    for i = 1 : 9 % go through every vial of the olfactometer
         
         if sum(ismember(usedVials,i))>0.1 % checks whether there is an odor vial in the current (i) position of the olfactometer
             odorCounter = odorCounter+1;
+            % Calculate the maximum possible concentration given the MFC
+            % flow rates, the user defined total flow and the dilution of
+            % the odorant in the vial.
+            settingNames = get(h.olfactometerSettings.text,'Tag');
+            settingIndex = strcmp('mfcTotalFlow',settingNames);
+            totalFlow = str2num(get(h.olfactometerSettings.edit(settingIndex),'String'));
+            maximumPossibleConcentration = smell.olfactometerSettings.maxFlowRateMfcNitrogen / totalFlow * smell.olfactometerOdors.slave(j).sessionOdors(odorCounter).odorantDilution;
+            % Set up the fields, and append the gui handle structure
             h.protocolSpecificHandles.concentration(j,i) = uicontrol(h.guiHandle,'Style','edit',...
-                'String',olfactometerOdors.slave(j).sessionOdors(odorCounter).concentrationAtPresentation,...
+                'String',maximumPossibleConcentration,...
                 'Units','pixels','Position',pushButtonPosition,'Callback',{@concentrationEditCallback,j,i});
         end
         
