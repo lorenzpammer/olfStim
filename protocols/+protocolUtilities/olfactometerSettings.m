@@ -173,23 +173,6 @@ if strncmp(instruction,'setUp',5)
         h.olfactometerSettings.trialSeqButton = uicontrol(h.guiHandle,'Position',position,'String','Trial Seq',...
             'Callback',@trialSeqButton); % give input to function handle: 'Callback',{@trialSeqButton, olfactometerInstructions}
         
-        position = get(h.guiHandle,'Position');
-        position = [(position(1:3) - [0 160 0]) 130];
-        h.olfactometerSettings.trialSeqFig = figure('Position',position,'menubar','none',...
-            'Visible','off','Name','Sequence of events in a trial'); %'CloseRequestFcn',@close_trialSeqFig
-        
-        h.olfactometerSettings.trialSeqGraph = axes('Units','Pixels');
-        position(1) = 5; % x
-        position(2) = 35; % y
-        position(3) = position(3)-10; %
-        position(4) = position(4)-40;
-        set(h.olfactometerSettings.trialSeqGraph,'Ytick',[],'Position',position)
-        xlabel(h.olfactometerSettings.trialSeqGraph,'Seconds');
-        ylim([0 10])
-        
-        position = [position(3)-35 5 33 20];
-        h.olfactometerSettings.help = uicontrol('Position',position,'String','Help',...
-            'Callback',@helpButton_Callback);
         
         %% Define the options which can be set to control the olfactometer
         
@@ -335,7 +318,6 @@ end
 
 function olfactometerInstructions = extractOlfactometerSettings(olfactometerInstructions,h)
 
-
 % Extract field from gui and update olfactometerInstructions structure
 % As not all necessary olfactometer settings are present in the gui, these numbers allow cross referencing
 pointersToGui = [olfactometerInstructions(:).userSettingNumber]; 
@@ -369,12 +351,34 @@ h=appdataManager('olfStimGui','get','h');
 
 %%
 % switch graphical trialSequence figure from visible to non visible and
-% back when clicking the button
-if strncmp(get(h.olfactometerSettings.trialSeqFig,'Visible'),'on',2)
-    set(h.olfactometerSettings.trialSeqFig,'Visible','off');
-elseif strncmp(get(h.olfactometerSettings.trialSeqFig,'Visible'),'off',3)
-    set(h.olfactometerSettings.trialSeqFig,'Visible','on');
-    cla(gca(h.olfactometerSettings.trialSeqFig));
+% % back when clicking the button
+ try ishandle(h.olfactometerSettings.trialSeqFig);
+    close(h.olfactometerSettings.trialSeqFig);
+ catch 
+%     set(h.olfactometerSettings.trialSeqFig,'Visible','on');
+%     cla(gca(h.olfactometerSettings.trialSeqFig));
+    
+%% Set up the figure
+
+        position = get(h.guiHandle,'Position');
+        position = [(position(1:3) - [0 160 0]) 130];
+        h.olfactometerSettings.trialSeqFig = figure('Position',position,'menubar','none',...
+            'Visible','on','Name','Sequence of events in a trial'); %'CloseRequestFcn',@close_trialSeqFig
+        
+        h.olfactometerSettings.trialSeqGraph = axes('Units','Pixels');
+        position(1) = 5; % x
+        position(2) = 35; % y
+        position(3) = position(3)-10; %
+        position(4) = position(4)-40;
+        set(h.olfactometerSettings.trialSeqGraph,'Ytick',[],'Position',position)
+        xlabel(h.olfactometerSettings.trialSeqGraph,'Seconds');
+        ylim([0 10])
+        
+        position = [position(3)-35 5 33 20];
+        h.olfactometerSettings.help = uicontrol('Position',position,'String','Help',...
+            'Callback',@helpButton_Callback);
+        
+    %% Plot the trial structure
     
     olfactometerInstructions = extractOlfactometerSettings(olfactometerInstructions,h);
        
@@ -582,8 +586,11 @@ elseif strncmp(get(h.olfactometerSettings.trialSeqFig,'Visible'),'off',3)
     xlim([0 max(cell2mat(value))+1])
     
     clear axisHandle
-end
+ end
 
+%% Update h structure in the appdata
+% Write the structure h containing all handles for the figure as appdata:
+appdataManager('olfStimGui','set',h);
 end
 
 
@@ -606,13 +613,5 @@ clear callingFunctionName; clear path;
 % Write the structure h containing all handles for the figure as appdata:
 appdataManager('olfStimGui','set',h)
 end
- 
-
-function close_helpSchematicWindow(~,~)
-% set(h.olfactometerSettings.helpSchematicWindow,'Visible','off'
-% close(gcf)
-end
-
-
       
 %% Add subfunctions to add additional settings
