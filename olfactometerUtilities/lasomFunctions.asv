@@ -40,18 +40,21 @@ end
 
 if strcmp(instruction,'checkConnection')
    lasomH = actxcontrol('LASOMX.LASOMXCtrl.1');
-    success = invoke(lasomH, 'DevOpen', 0, 1);
-    if success ~= 0
-        error('Could not connect to LASOM.')
+    success = invoke(lasomH, 'DevOpen', 0, 1); % invoke(lasomH, 'DevOpen',???, show/notShow the debugWindow)
+    if success == 0
+        pause(2)
+        disp('Connecting to LASOM successful.')
+        delete(lasomH)
+    else
+         error('Could not connect to LASOM.')
     end
-    wait(1)
-    disp('off')
-    release(lasomH)
+    
     
 
 elseif strcmp(instruction,'connect')
     lasomH = actxcontrol('LASOMX.LASOMXCtrl.1');
-    success = invoke(lasomH, 'DevOpen', 0, 1);
+    release(lasomH)
+    success = invoke(lasomH, 'DevOpen', 0, 0); % invoke(lasomH, 'DevOpen',???, show/notShow the debugWindow)
     if success ~= 0
         error('Could not connect to LASOM.')
     end
