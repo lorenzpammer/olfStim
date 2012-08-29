@@ -230,7 +230,7 @@ h=appdataManager('olfStimGui','get','h');
 callingFunctionName = 'initOlfStim.m'; % Define the name of the initalizing function
 olfStimPath = which(callingFunctionName);
 olfStimPath(length(olfStimPath)-length(callingFunctionName):length(olfStimPath))=[];
-olfStimPath=[olfStimPath '/temp/'];
+olfStimPath=[olfStimPath filesep 'temp' filesep];
 clear callingFunctionName
 
 defaultTitle = [datestr(date,'yyyy.mm.dd') '_smell_temp'];

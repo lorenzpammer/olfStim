@@ -40,7 +40,7 @@ clear colorMatrix
 callingFunctionName = 'initOlfStim.m'; % Define the name of the initalizing function in the highest
 path = which(callingFunctionName);
 path(length(path)-length(callingFunctionName):length(path))=[];
-path=[path '/protocols'];
+path=[path filesep 'protocols'];
 clear callingFunctionName
 
 counter=0;

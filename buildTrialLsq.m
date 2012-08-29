@@ -27,7 +27,7 @@ global smell
 callingFunctionName = 'startTrial.m'; % Define the name of the initalizing function
 lsqPath = which(callingFunctionName);
 lsqPath(length(lsqPath)-length(callingFunctionName):length(lsqPath))=[];
-lsqPath=[lsqPath '/lsq/'];
+lsqPath=[lsqPath filesep 'lsq' filesep];
 clear callingFunctionName
 
 coreLsq = fileread([lsqPath 'core.lsq']); % read in the core lsq file (a text file)
