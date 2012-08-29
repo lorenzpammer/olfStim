@@ -87,20 +87,18 @@ delete(timerfindall);
 settingNames = {smell.trial(trialNum).olfactometerInstructions.name};
 index = ~strcmp('mfcTotalFlow',settingNames);
 olfactometerTimes = [smell.trial(trialNum).olfactometerInstructions(index).value];
-timeOfLastAction = max(olfactometerTimes);
-measurementInterval = 0.1; % measurement interval in seconds
+measurementInterval = 0.5; % measurement interval in seconds
 slave = smell.trial(trialNum).slave;
 % Define timepoints when Mfc flow rate should be measured. Measure every
 % 100 ms, from the start of the trial (0s) to 3 seconds after the last
 % action.
-measurementPoints = 0:measurementInterval:timeOfLastAction+3; 
-smell.trial(trialNum).lasomEventLog.flowRateMfcAir(1,:) = measurementPoints;
-smell.trial(trialNum).lasomEventLog.flowRateMfcN(1,:) = measurementPoints;
+% measurementPoints = 0:measurementInterval:timeOfLastAction+3; 
 
 % Set up the timer, and its callbacks for measuring the mfc flow
 mfcMeasureTimer = timer('ExecutionMode','fixedRate','Period',measurementInterval,...
-    'StartDelay',0,'TasksToExecute',length(measurementPoints),...
-    'TimerFcn',{@measureMfcFlowRate,lasomH,slave},'StopFcn',@measureMfcFlowStopped);
+    'StartDelay',0,'TasksToExecute',Inf,...
+    'TimerFcn',{@measureMfcFlowRate,lasomH,slave},'StopFcn',@measureMfcFlowStopped,...
+    'BusyMode','error','ErrorFcn',@measureMfcErrorFcn);
 
 % Start the timer, only once the sequencer received the trial start signal.
 % Check for this with another timer (readLasomStatusTimer - see below)
@@ -110,9 +108,15 @@ mfcMeasureTimer = timer('ExecutionMode','fixedRate','Period',measurementInterval
         % Every 100 ms, jump into this function measure the mfc flow rates
         % and write the returned values into the smell structure:
         measurementNo = get(mfcMeasureTimer,'TasksExecuted');
-        measuredFlowRateMfcAir(measurementNo) = ...
+        elapsedTime = toc(get(mfcMeasureTimer,'UserData'));
+        smell.trial(trialNum).lasomEventLog.flowRateMfcAir(1,measurementNo) = ...
+            elapsedTime;
+        smell.trial(trialNum).lasomEventLog.flowRateMfcN(1,measurementNo) = ...
+            elapsedTime;
+        
+        smell.trial(trialNum).lasomEventLog.flowRateMfcAir(2,measurementNo) = ...
             get(lasomH, 'MfcFlowRateMeasurePercent', slave, 1);
-        measuredFlowRateMfcN(measurementNo) = ...
+        smell.trial(trialNum).lasomEventLog.flowRateMfcN(2,measurementNo) = ...
             get(lasomH, 'MfcFlowRateMeasurePercent', slave, 2);
         disp('measuring flow')
     end
@@ -121,8 +125,16 @@ mfcMeasureTimer = timer('ExecutionMode','fixedRate','Period',measurementInterval
         % into this function and stop the timer.
         stop(mfcMeasureTimer);
         delete(mfcMeasureTimer);
-                disp('mfcMeasure timer stopped')
-
+        disp('mfcMeasure timer stopped')
+        
+    end
+    function measureMfcErrorFcn(~,~)
+        % Need to put add an error function for this timer, because the MFC
+        % measuring can take longer than the defined measurement interval,
+        % and then has to be stopped, as it would result overloading the
+        % computer and a lot of unwanted behavior.
+        warning('Can''t fulfill MFC measuring requests at the set interval. Giving up.')
+        stop(mfcMeasureTimer)
     end
 
 clear measurementPoints index olfactometerTimes timeOfLastAction measurementInterval
@@ -189,6 +201,8 @@ uiwait % keeps function active until uiresume is called (once sequencer is idle)
             if smell.trial(trialNum).olfactometerInstructions(index).used
                 start(purgeTimer);
             end
+            ticID = tic;
+            set(mfcMeasureTimer,'UserData',ticID);
             start(mfcMeasureTimer);
             
             stop(readLasomStatusTimer)
@@ -216,9 +230,13 @@ uiwait % keeps function active until uiresume is called (once sequencer is idle)
             delete(readLasomStatusTimer)
             disp('readLasomStatusTimer timer stopped')
             % Disconnect from Lasom
-%             while isvalid(mfcMeasureTimer) || isvalid(purgeTimer)
+%             while  || isvalid(purgeTimer)
 %                 pause(0.05); % wait and do nothing until the two other timers are finished.
 %             end
+              
+              if isvalid(mfcMeasureTimer)
+                  stop(mfcMeasureTimer)
+              end
 %             release(lasomH)
             sprintf('Executed trial %d successfully.\n',trialNum)
             uiresume;
