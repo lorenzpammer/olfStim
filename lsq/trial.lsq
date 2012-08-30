@@ -30,8 +30,8 @@ Param, debug, 0				; in the debug mode the program will output several control s
 ; They are usually not overridden.
 ; ------------------------------------------------------
 ;
-Param, finalValveIndex, 31              ; the final valve is the valve in front of the animal switching between the clean air & the odor.
-Param, sniffingValveIndex, 32			; the sniffing valve is the valve which gates the suction of air through the nose
+Param, finalValveIndex, 32              ; the final valve is the valve in front of the animal switching between the clean air & the odor.
+Param, sniffingValveIndex, 31			; the sniffing valve is the valve which gates the suction of air through the nose
 Param, suctionValveIndex, 28			; the suction valve gates the suction around the delivery tube
 Param, humidityValveIndex, 27			; the humidity valve gates the delivery of humid air to the nose
 Param, slaveIndex, 1                         ; defines from which slave module the valves are driven
@@ -49,17 +49,18 @@ SetVar, $Var1, 0                        ;
 ; Trial Sequence Definition
 ; ------------------------------------------------------
 ;
-wait, 1
+wait, 1000
 SetVar, $Var1, 1    ; Causes the sequencer to update the status, about the value of $Var1
 EmitStatus          ; Causes the sequencer to emit the updated status to the host computer. This way the host computer knows, when the trial starts.
 ;
 ;
-wait,2
+wait,5000
 ;
-Gate, slaveIndex, finalValveIndex	; Triggers the final valve. The index is set in the core lsq file
+Gate, 1, 32	; Triggers the final valve. The index is set in the core lsq file
 Output, $XLogicOut1, 1			;
 ;
-wait,2;
+wait,2000;
+UnGate, 1, 32	; Triggers the final valve. The index is set in the core lsq file
 SetVar, $Var1, 0    ; Set $Var1 back to initial state indicating end of trial
 EmitStatus          ; Send the new status of $Var1 to the host
 Idle,0,0

@@ -53,7 +53,7 @@ if strcmp(instruction,'checkConnection')
 
 elseif strcmp(instruction,'connect')
     lasomH = actxcontrol('LASOMX.LASOMXCtrl.1');
-    success = invoke(lasomH, 'DevOpen', 0, 0); % invoke(lasomH, 'DevOpen',???, show/notShow the debugWindow)
+    success = invoke(lasomH, 'DevOpen', 0, 1); % invoke(lasomH, 'DevOpen',???, show/notShow the debugWindow)
     if success ~= 0
         error('Could not connect to LASOM.')
     end
@@ -67,7 +67,7 @@ elseif strcmp(instruction,'sendLsqToLasom')
         error(errormsg)
         clear errormsg
     end
-    lsqFilePath = varargin{1};
+    pathTrialLsq = varargin{1};
     % Clear old sequence:
     success = invoke(lasomH, 'ClearSequence');
     if success ~= 0
@@ -75,7 +75,7 @@ elseif strcmp(instruction,'sendLsqToLasom')
     end
     % Send new sequence defined by it's location on the hard drive to the
     % LASOM
-    success = invoke(lasomH, 'ParseSeqFile', lsqFilePath);
+    success = invoke(lasomH, 'ParseSeqFile', pathTrialLsq);
     if success ~= 0
         error('Could not send trial sequence LASOM.')
     end
@@ -88,7 +88,7 @@ elseif strcmp(instruction,'sendLsqToLasom')
     
 elseif strcmp(instruction,'loadAndRunSequencer')
     % Load the sequencer and run it:
-    success = invoke(lasomH, 'LoadAndRunSequencer',0);
+    success = invoke(lasomH, 'LoadAndRunSequencer',1);
     if success ~= 0
         error('Could not start sequencer with new sequence file.')
     end

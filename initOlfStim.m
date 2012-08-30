@@ -18,7 +18,7 @@ global smell % smell is the data structure containing all information relevant t
 global olfactometerOdors % olfactometerOdors is a data structure, that contains information about which odors are loaded into the olfactometer
 
 %% Check whether connection can be made to the olfactometer
-% lasomFunctions('checkConnection');
+lasomFunctions('checkConnection');
 
 %% User has to define which odors are loaded into olfactometer
 % start by opening the odorSelectionGui. User has to define which odorants
