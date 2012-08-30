@@ -603,7 +603,7 @@ h=appdataManager('olfStimGui','get','h');
 callingFunctionName = 'initOlfStim.m'; % Define the name of the initalizing function in the highest
 path = which(callingFunctionName);
 path(length(path)-length(callingFunctionName):length(path))=[];
-path=[path '/Documentation/Olfactometer_Schematic.tif'];
+path=[path filesep 'Documentation'filesep 'Olfactometer_Schematic.tif'];
 helpImage = imread(path);
 h.olfactometerSettings.helpSchematicWindow = figure('ToolBar','none','Name','Layout & nomenclature','MenuBar','none');
 imshow(helpImage,'Border','tight')

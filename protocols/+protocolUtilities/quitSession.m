@@ -35,7 +35,7 @@ global smell
 callingFunctionName = 'initOlfStim.m'; % Define the name of the initalizing function
 olfStimPath = which(callingFunctionName);
 olfStimPath(length(olfStimPath)-length(callingFunctionName):length(olfStimPath))=[];
-olfStimPath=[olfStimPath '/data/'];
+olfStimPath=[olfStimPath filesep 'data' filesep];
 clear callingFunctionName
 
 defaultTitle = [datestr(date,'yyyy.mm.dd') '_smell'];
