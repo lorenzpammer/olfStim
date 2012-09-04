@@ -160,21 +160,20 @@ readLasomStatusTimer = timer('ExecutionMode','fixedRate','Period',readStatusInte
     'TimerFcn',{@readLasomStatusUntilTrialStart,lasomH,trialNum,smell},'StopFcn',{@trialStarted,lasomH,trialNum,smell});
 
 start(readLasomStatusTimer)
-% 
-%  pause(20);
-% if isvalid(readLasomStatusTimer)
-%  disp('stopped lasom timer from timeout')
-%     stop(readLasomStatusTimer)
-%     release(lasomH)
-% end
-% if isvalid(mfcMeasureTimer)
-%  disp('stopped mfc timer from timeout')
-%     stop(mfcMeasureTimer)
-%     release(lasomH)
-% end
 
-wait(readLasomStatusTimer) % keeps function active until uiresume is called (once sequencer is idle)
-delete(readLasomStatusTimer)
+ pause(20);
+if isvalid(readLasomStatusTimer)
+ disp('stopped lasom timer from timeout')
+    stop(readLasomStatusTimer)
+    release(lasomH)
+end
+if isvalid(mfcMeasureTimer)
+ disp('stopped mfc timer from timeout')
+    stop(mfcMeasureTimer)
+    release(lasomH)
+end
+% uiwait % keeps function active until uiresume is called (once sequencer is idle)
+
 
 %% Callback functions of timer:
     function readLasomStatusUntilTrialStart(obj,event,lasomH,trialNum,smell)
@@ -217,10 +216,11 @@ delete(readLasomStatusTimer)
                startVariableStatus == 0
             % At the end of the trial, jump into this function and stop the timer.
             stop(readLasomStatusTimer)
+            delete(readLasomStatusTimer)
             disp('readLasomStatusTimer timer stopped')
             
-            % If purging is used by the user, set mfcs to maximum flow rate
-            % at the end of the trial:
+            % If purging is 
+            % function and set mfcs to maximum flow rate: 
             settingNames = {smell.trial(trialNum).olfactometerInstructions.name};
             index = find(strcmp('purge',settingNames));
             if smell.trial(trialNum).olfactometerInstructions(index).used
@@ -229,13 +229,11 @@ delete(readLasomStatusTimer)
                 sprintf('Purging olfactometer\n')
             end
             
-            % Stop measuring the Mfc flow:
             stop(mfcMeasureTimer)
             
-            % Release the connection to the olfactometer
             release(lasomH)
-            
             sprintf('Executed trial %d successfully.\n',trialNum)
+            uiresume;
         end
     end
     function readLasomStatusErrorFcn(~,~)
