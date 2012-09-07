@@ -1,4 +1,4 @@
-function smell = startTrialTesting(trialNum, smell)
+function startTrialTesting(trialNum, smell)
 % smell = startTrial(trialNum, smell)
 % This function assumes all information for the current trial are present
 % in smell and that these values are correct. From here on no more checking
@@ -29,6 +29,8 @@ clear callingFunctionName
 trialLsq = fileread([lsqPath 'trial.lsq']);
 
 %% Connect to LASOM and set it up
+release(COM.LASOMX_LASOMXCtrl_1)
+delete(COM.LASOMX_LASOMXCtrl_1)
 lasomH = lasomFunctions('connect');
 
 %% Update smell:
@@ -80,6 +82,9 @@ lasomFunctions('loadAndRunSequencer',lasomH);
 %% Prepare for timer action
 
 % Delete all old timers
+try
+    stop(timerfindall);
+end
 delete(timerfindall);
 
 
@@ -151,7 +156,7 @@ clear measurementPoints index olfactometerTimes timeOfLastAction measurementInte
 % the sequencer queuing a status message to the USB host. Here the function
 % waits until receiving that message. Then continue.
 
-readStatusInterval = 1; % measurement interval in seconds 1000Hz
+readStatusInterval = 1.5; % measurement interval in seconds 1000Hz
 
 % Set up the timer, and its callbacks for measuring the mfc flow
 readLasomStatusTimer = timer('ExecutionMode','fixedRate','Period',readStatusInterval,...
@@ -160,7 +165,7 @@ readLasomStatusTimer = timer('ExecutionMode','fixedRate','Period',readStatusInte
     'TimerFcn',{@readLasomStatusUntilTrialStart,lasomH,trialNum,smell},'StopFcn',{@trialStarted,lasomH,trialNum,smell});
 
 start(readLasomStatusTimer)
-% 
+
 %  pause(20);
 % if isvalid(readLasomStatusTimer)
 %  disp('stopped lasom timer from timeout')
@@ -172,9 +177,9 @@ start(readLasomStatusTimer)
 %     stop(mfcMeasureTimer)
 %     release(lasomH)
 % end
+% 
 
-wait(readLasomStatusTimer) % keeps function active until uiresume is called (once sequencer is idle)
-delete(readLasomStatusTimer)
+% wait(readLasomStatusTimer) % keeps function active until uiresume is called (once sequencer is idle)
 
 %% Callback functions of timer:
     function readLasomStatusUntilTrialStart(obj,event,lasomH,trialNum,smell)
@@ -182,11 +187,12 @@ delete(readLasomStatusTimer)
         % status:
         measurementNo = get(readLasomStatusTimer,'TasksExecuted');
         
-        smell.trial(trialNum).lasomEventLog.lasomStatus(measurementNo) = invoke(lasomH,'SeqUpdateEnable');
-        smell.trial(trialNum).lasomEventLog.startVariableStatus(measurementNo) = invoke(lasomH,'SeqUpdateVarState',1);
+        lasomStatus = invoke(lasomH,'SeqUpdateEnable')
+        startVariableStatus = invoke(lasomH,'SeqUpdateVarState',1)
+%         disp('reading')
         
-        if smell.trial(trialNum).lasomEventLog.lasomStatus(measurementNo) == 1 && ...
-                smell.trial(trialNum).lasomEventLog.startVariableStatus(measurementNo) == 1;
+        if lasomStatus == 1 && ...
+                startVariableStatus == 1;
             % If the variable with index 1 ($Var1) is set to 1, this means
             % the sequencer has started to execute the trial (eg after
             % exiting the initial whileloop).
@@ -234,7 +240,8 @@ delete(readLasomStatusTimer)
             
             % Release the connection to the olfactometer
             release(lasomH)
-            
+            delete(readLasomStatusTimer)
+
             sprintf('Executed trial %d successfully.\n',trialNum)
         end
     end
