@@ -55,7 +55,6 @@ EmitStatus          ; Causes the sequencer to emit the updated status to the hos
 wait, 3000
 Gate,slaveIndex,32
 wait, 3000
-Ungate,slaveIndex,32
 wait,2000
 SetVar, $Var1, 0    ; Set $Var1 back to initial state indicating end of trial
 EmitStatus          ; Send the new status of $Var1 to the host
