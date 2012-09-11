@@ -11,8 +11,8 @@ function h = olfactometerSettings(h,instruction,additionalSettings,panelPosition
 % or 'get' - which is called at the beginning of every trial from the
 % stimulation protocol functions, before calling buildSmell('update') and
 % commands are sent to the LASOM. The instruction 'get' will cause the
-% function to extract all values from the user defineable settings and give
-% them as an output in the olfactometerInstructions structure. Also it will
+% function to extract all values from the user defineable settings and
+% update the global olfactometerInstructions structure. Also it will
 % check whether the times defined by the user make sense and whether the
 % MFC flow rates are below the maximum flow rate.
 %
@@ -39,10 +39,10 @@ function h = olfactometerSettings(h,instruction,additionalSettings,panelPosition
 % To do:
 % - Let user define how the digital timestamps are sent from the
 % olfactometer.
+% - Let user define new valves to be used. 
 %
 % lorenzpammer 2011/09
 
-global smell
 global olfactometerInstructions
 
 %% Import function packages
@@ -78,7 +78,7 @@ end
 
 %% Set up panel and all settings
 
-if strncmp(instruction,'setUp',5)
+if strcmp(instruction,'setUp') || strcmp(instruction,'setUpStructure')
     
     %% Set up olfactometerInstructions structure
     
@@ -179,7 +179,8 @@ if strncmp(instruction,'setUp',5)
         % Order of Olfactometer settings fields
         %     {'mfcTotalFlow' 'powerGatingValve' 'unpowerGatingValve' ,...
         %     'powerFinalValve' 'unpowerFinalValve' 'closeSuctionValve' 'openSuctionValve',...
-        %     'openSniffingValve' 'closeSniffingValve' 'powerHumidityValve' 'unpowerHumidityValve',...
+        %     'openSniffingValve' 'closeSniffingValve' 'powerHumidityValve'
+        %     'unpowerHumidityValve',...
         %          'purge' 'cleanNose'}
         settingValue = [1 0 5 3 5 3.25 5 3.5 5 9 12 NaN 10]; % value for the different settings (in the according units)
         useEditField = logical([1 1 1 1 1 1 1 1 1 1 1 0 1]); % whether or not an editing field should be added to the gui for each setting

@@ -11,8 +11,8 @@ function h = olfactometerSettings(h,instruction,additionalSettings,panelPosition
 % or 'get' - which is called at the beginning of every trial from the
 % stimulation protocol functions, before calling buildSmell('update') and
 % commands are sent to the LASOM. The instruction 'get' will cause the
-% function to extract all values from the user defineable settings and give
-% them as an output in the olfactometerInstructions structure. Also it will
+% function to extract all values from the user defineable settings and
+% update the global olfactometerInstructions structure. Also it will
 % check whether the times defined by the user make sense and whether the
 % MFC flow rates are below the maximum flow rate.
 %
@@ -39,10 +39,10 @@ function h = olfactometerSettings(h,instruction,additionalSettings,panelPosition
 % To do:
 % - Let user define how the digital timestamps are sent from the
 % olfactometer.
+% - Let user define new valves to be used. 
 %
 % lorenzpammer 2011/09
 
-global smell
 global olfactometerInstructions
 
 %% Import function packages
@@ -78,7 +78,7 @@ end
 
 %% Set up panel and all settings
 
-if strncmp(instruction,'setUp',5)
+if strcmp(instruction,'setUp') || strcmp(instruction,'setUpStructure')
     
     %% Set up olfactometerInstructions structure
     
@@ -179,9 +179,10 @@ if strncmp(instruction,'setUp',5)
         % Order of Olfactometer settings fields
         %     {'mfcTotalFlow' 'powerGatingValve' 'unpowerGatingValve' ,...
         %     'powerFinalValve' 'unpowerFinalValve' 'closeSuctionValve' 'openSuctionValve',...
-        %     'openSniffingValve' 'closeSniffingValve' 'powerHumidityValve' 'unpowerHumidityValve',...
+        %     'openSniffingValve' 'closeSniffingValve' 'powerHumidityValve'
+        %     'unpowerHumidityValve',...[
         %          'purge' 'cleanNose'}
-        settingValue = [1 0 5 3 5 3.25 5 3.5 5 9 12 5 10]; % value for the different settings (in the according units)
+        settingValue = [1 0 5 3 5 3.25 5 3.5 5 9 12 NaN 10]; % value for the different settings (in the according units)
         useEditField = logical([1 1 1 1 1 1 1 1 1 1 1 0 1]); % whether or not an editing field should be added to the gui for each setting
         useCheckBox = logical([0 1 0 1 0 1 0 1 0 1 0 1 1]); % whether or not a checkbox indicating used/non-used should be added to the gui
         dependentOnSetting = {0 0 'powerGatingValve' 0 'powerFinalValve' 0 ... % on which setting (written as a string) a given setting (sequence) is dependent.
@@ -205,10 +206,12 @@ if strncmp(instruction,'setUp',5)
                 'Fontsize',7.5);
             
             % Field for editing the value of the setting:
-            position = [positions{userSettingNumber}(1)+spacing positions{userSettingNumber}(2)+spacing editWidth editHeight];
-            h.olfactometerSettings.edit(userSettingNumber) = uicontrol('Parent',h.guiHandle,...
-                'Style','edit','String',num2str(olfactometerInstructions(settingNumber).value),'Position', position,...
-                'Tag',olfactometerInstructions(settingNumber).name);
+            if useEditField(settingNumber)
+                position = [positions{userSettingNumber}(1)+spacing positions{userSettingNumber}(2)+spacing editWidth editHeight];
+                h.olfactometerSettings.edit(userSettingNumber) = uicontrol('Parent',h.guiHandle,...
+                    'Style','edit','String',num2str(olfactometerInstructions(settingNumber).value),'Position', position,...
+                    'Tag',olfactometerInstructions(settingNumber).name);
+            end
             
             % Check field whether to use the valve or not:
             if useCheckBox(settingNumber)
@@ -216,6 +219,13 @@ if strncmp(instruction,'setUp',5)
                 h.olfactometerSettings.check(userSettingNumber) = uicontrol('Parent',h.guiHandle,... % check to define whether the final valve should be used
                     'Style','checkbox','String','','Value',olfactometerInstructions(settingNumber).used,'Position', position,...
                     'Tag',olfactometerInstructions(settingNumber).name);
+                % if there's  a setting for which only the checkbox is set
+                % change the position.
+                if ~useEditField(settingNumber)
+                    position = [positions{userSettingNumber}(1)+editWidth/2 positions{userSettingNumber}(2)+(editHeight/2) 15 15];
+                   set(h.olfactometerSettings.check(userSettingNumber),'Position', position);
+                end
+                
             end
             
             
@@ -268,11 +278,11 @@ if strncmp(instruction,'setUp',5)
         index1(i) = strmatch('powerHumidityValve',names);
         index2(i) = strmatch('unpowerHumidityValve',names);
         
-        i = 6;
-        index1(i) = strmatch('purge',names);
-        index2(i) = 0;
+%         i = 6;
+%         index1(i) = strmatch('purge',names);
+%         index2(i) = 0;
         
-        i = 7;
+        i = 6;
         index1(i) = strmatch('cleanNose',names);
         index2(i) = 0;
         
@@ -326,7 +336,13 @@ for i = 1 : length(h.olfactometerSettings.edit)
     % finds the corresponding olfactometerInstructions index to the current gui field
     indexStruct2GuiField = find(pointersToGui==i); 
     if ~isempty(indexStruct2GuiField)
-        olfactometerInstructions(indexStruct2GuiField).value = str2num(get(h.olfactometerSettings.edit(i),'String')); % entry in the field is a string therefore change to number
+        
+        % Extract whether the timepoint of triggering the current action:
+        % only if there is a edit field for the current action in the
+        % olfactometer settings update the olfactometerInstructions
+        if h.olfactometerSettings.edit(i) ~= 0
+            olfactometerInstructions(indexStruct2GuiField).value = str2num(get(h.olfactometerSettings.edit(i),'String')); % entry in the field is a string therefore change to number
+        end
         
         % Extract whether the current valve should be used:
         % only if there is a checkbox for the current field in the
@@ -558,15 +574,15 @@ h=appdataManager('olfStimGui','get','h');
     end
     value{i} = olfactometerInstructions(uhv).value;
     
-    i=6;
-    index = strcmp('purge',settingsName);
-    color = get(h.olfactometerSettings.edit(index),'BackgroundColor');
-    if olfactometerInstructions(purge).used == 1
-    plot(axisHandle,[0 olfactometerInstructions(purge).value olfactometerInstructions(purge).value 100],[i i i+0.5 i+0.5],'-k','Linewidth',1.5,'Color',color)
-    end
-    value{i} = olfactometerInstructions(purge).value;
+%     i=6;
+%     index = strcmp('purge',settingsName);
+%     color = get(h.olfactometerSettings.edit(index),'BackgroundColor');
+%     if olfactometerInstructions(purge).used == 1
+%     plot(axisHandle,[0 olfactometerInstructions(purge).value olfactometerInstructions(purge).value 100],[i i i+0.5 i+0.5],'-k','Linewidth',1.5,'Color',color)
+%     end
+%     value{i} = olfactometerInstructions(purge).value;
     
-    i=7;
+    i=6;
     index = strcmp('cleanNose',settingsName);
     color = get(h.olfactometerSettings.edit(index),'BackgroundColor');
     xvalues = 0;
