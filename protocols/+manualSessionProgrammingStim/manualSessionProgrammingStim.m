@@ -1,6 +1,9 @@
 function manualSessionProgrammingStim
 %
-% lorenzpammer 2012/01
+%
+% TO DO:
+% - when importing an old smell structure, clear all information which 
+% lorenzpammer august 2012
 
 
 %% Set up needed variables
@@ -54,16 +57,14 @@ h = olfactometerSettings(h,'setUp'); % sets up all controls the user has over th
 % All controls a user has over session parameters (inter trial interval etc)
 h = sessionSettingsPanel(h,1); % sessionSettingsPanel(h,guiEnlarge). 
 usedSettingNames = {'scientist' 'animalName' 'interTrialInterval'};
-h = sessionSettings(h,'setUp',usedSettingNames)
+h = sessionSettings(h,'setUp',usedSettingNames);
 clear usedSettingNames;
 
 % 7. Progress panel
 h = progressPanel(h,'setUp'); % progressPanel is a function in the protocolUtilities package
 
-% 6. Pause session button
+% 8. Pause session button
 % pauseSession; % pauseSession is a function in the protocolUtilities package. Sets up a functional button to pause the session
-
-
 
 
 % Add protocol specific handles"
@@ -209,7 +210,7 @@ clear pushButtonWidth; clear pushButtonHeight;clear i
 clear position;clear pushButtonPosition; clear spacing; clear usedVials;
 clear mixtures;clear activeSlaves;clear j
 
-% uiwait(h.guiHandle)
+
 %% Update h structure in the appdata
 % Write the structure h containing all handles for the figure as appdata:
 appdataManager('olfStimGui','set',h)
@@ -228,6 +229,11 @@ global smell
 % Extract the gui handle structure from the appdata of the figure:
 h=appdataManager('olfStimGui','get','h');
 
+%% Import function packages
+
+% Import all utility functions
+import protocolUtilities.*
+
 %% First save the current smell file to the temp folder in case anything happens.
 callingFunctionName = 'initOlfStim.m'; % Define the name of the initalizing function
 olfStimPath = which(callingFunctionName);
@@ -240,7 +246,7 @@ extendedPath = [olfStimPath defaultTitle '.mat'];
 save(extendedPath,'smell')
 clear olfStimPath defaultTitle
 
-%% Now trigger the trial
+%% Now extract all the information for the trial, and write it into smell
 
 trialNum = round(trialNum+1); % every time a odor is triggered a new trial is counted
 
@@ -252,10 +258,14 @@ protocolUtilities.olfactometerSettings(h,'get');
 % 2. extract the concentration from gui and update trialOdor
 trialOdor.concentrationAtPresentation = str2num(get(h.protocolSpecificHandles.concentration(trialOdor.slave,trialOdor.vial),'string'));
 
-% 3. update the smell structure
+% 3. extract the current sessionSettings & write the updated version in the
+% appdata of the gui
+sessionSettings(h,'get');
+
+% 4. update the smell structure
  buildSmell('update',trialOdor,trialNum,stimProtocol); % update smell structure
 
-% 4. update the progress panel on the gui
+% 5. update the progress panel on the gui
  protocolUtilities.progressPanel(h,'update',trialOdor,trialNum,'Color',[0.5 0.5 0.5]); % 
 
 

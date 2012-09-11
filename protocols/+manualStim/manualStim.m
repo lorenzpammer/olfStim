@@ -34,26 +34,35 @@ stimProtocol = 'manualStim';
 % The order of setting up the components is important, because the
 % placement of the components is relative to other components.
 
-% 1. Progress panel
-h = progressPanel(h,'setUp'); % progressPanel is a function private to the stimulation protocols
 
-% 2. Button for closing the gui
+
+% 1. Button for closing the gui
 h = closeGui(h); %
 
-% 3. Notes field
-[~,h] = sessionNotes(h,'setUp'); % sessionNotes is a function private to the stimulation protocols. Sets up a panel with possibilities for note taking
+% 2. Notes field
+[~,h] = sessionNotes(h,'setUp'); % sessionNotes is a function in the protocolUtilities package. Sets up a panel with possibilities for note taking
 
-% % 4. Start session button % not necessary for the manualStim protocol
-% startSession;
+% 3. End session button
+h = quitSession(h); % endSession is a function in the protocolUtilities package. Sets up a functional button to end the session, save the smell structure, disconnect from LASOM etc.
 
-% 5. End session button
-h = quitSession(h); % endSession is a function private to the stimulation protocols. Sets up a functional button to end the session, save the smell structure, disconnect from LASOM etc.
+% % 4. Start session button % not necessary for manualStim
+% h = startSession(h,'manualSessionProgrammingStim.startSessionCallback');
 
-% % 6. Pause session button
-% pauseSession; % pauseSession is a function private to the stimulation protocols. Sets up a functional button to pause the session
+% 5. Olfactometer Settings
+h = olfactometerSettings(h,'setUp'); % sets up all controls the user has over the olfactometer (valve times, MFC flow rates)
 
-% 7. OlfactometerInstructions
-h = olfactometerSettings(h,'setUp');
+% 6. Session Settings
+% All controls a user has over session parameters (inter trial interval etc)
+h = sessionSettingsPanel(h,1); % sessionSettingsPanel(h,guiEnlarge). 
+usedSettingNames = {'scientist' 'animalName'};
+h = sessionSettings(h,'setUp',usedSettingNames);
+clear usedSettingNames;
+
+% 7. Progress panel
+h = progressPanel(h,'setUp'); % progressPanel is a function in the protocolUtilities package
+
+% 8. Pause session button % not necessary for manualStim
+% pauseSession; % pauseSession is a function in the protocolUtilities package. Sets up a functional button to pause the session
 
 
 % Add protocol specific handles"

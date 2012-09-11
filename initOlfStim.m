@@ -27,11 +27,11 @@ global olfactometerOdors % olfactometerOdors is a data structure, that contains 
 
 olfactometerOdors = odorSelectionGui;
 
-%% Set up smell structure
-buildSmell('setUp');
-
 %% Set up basic gui
 setUpMainGui;
+
+%% Set up smell structure
+buildSmell('setUp');
 
 %% Next start the gui for controlling 
 selectedProtocol = protocolChooserSubGui;

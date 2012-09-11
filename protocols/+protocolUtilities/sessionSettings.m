@@ -1,6 +1,6 @@
-function [h, sessionInstructions] = sessionSettings(h,instruction,usedSettingNames,varargin)
+function h = sessionSettings(h,instruction,usedSettingNames,varargin)
 %  [h,sessionInstructions] = sessionSettings(h,instruction,usedSettingNames)
-% 
+%
 % instruction is either 'setUp' - when building the gui at the beginning of
 % a session this option will all the user defineable
 % settings to the gui.
@@ -19,9 +19,9 @@ function [h, sessionInstructions] = sessionSettings(h,instruction,usedSettingNam
 %       - 'scientist'
 %       - 'animalName'
 %       - 'interTrialInterval'
-% 
-% 
-% 
+%
+%
+%
 % lorenzpammer september 2012
 
 %% Check inputs
@@ -35,14 +35,18 @@ if nargin < 2
 end
 
 if nargin < 3
-    if strncmp(instruction, 'setUp',5) || strncmp(instruction,'get',3) || strncmp(instruction,'setUpStructure',3)
+    if strncmp(instruction, 'setUp',5) || strcmp(instruction,'get') || strcmp(instruction,'setUpStructure')
         % Fine
     else
         error('First input to the function must be a string "setUp", "setUpStructure" or "get". See the help.')
     end
+    
+    if strcmp(instruction, 'setUp')
+        error('Third input to function, "usedSettingNames" must be a cell array of strings.')
+    end
 end
 
-if nargin < 4
+if nargin < 4 && strcmp(instruction, 'setUp')
     % if additional settings are specified but not correctly, give errors.
     if ~iscell(usedSettingNames)
         error('Third input to function, "usedSettingNames" must be a cell array of strings.')
@@ -58,10 +62,10 @@ if strcmp(instruction,'setUp') || strcmp(instruction,'setUpStructure')
     % Create the sessionInstructions structure
     sessionInstructions = struct('name',{'scientist' 'animalName',...
         'interTrialInterval'},...
-        'value',{'' '' 30},...
+        'value',{'' '' ''},...
         'unit',{ 'ID' 'ID' 's'},...
         'userSettingNumber',[],...
-        'used',{logical(0) logical(0) logical(0)});  % for every setting put the default of not used, depending on which settings were provided in usedSettingNames, this will be overridden below.
+        'used',{false false false});  % for every setting put the default of not used, depending on which settings were provided in usedSettingNames, this will be overridden below.
     
     
     
@@ -75,7 +79,7 @@ if strcmp(instruction,'setUp') || strcmp(instruction,'setUpStructure')
         for i = 1: length(usedSettingNames)
             index = find(strcmp(usedSettingNames{i}, {sessionInstructions.name}));
             if ~isempty(index)
-                sessionInstructions(index).used = logical(1); % If the setting provided in the inputs to the function exists, mark that it is used.
+                sessionInstructions(index).used = true; % If the setting provided in the inputs to the function exists, mark that it is used.
             else
                 error(['The provided setting "' usedSettingNames{i} '" isn''t configured. Change to an existing setting or add a new setting in sessionSettings.m.'])
                 % setting doesn't exist in sessionInstructions structure.
@@ -142,7 +146,7 @@ if strcmp(instruction,'setUp') || strcmp(instruction,'setUpStructure')
             % Set up the user controls for the current setting in the GUI:
             
             % Text label:
-            position = [positions{userSettingNumber}(1)+spacing positions{userSettingNumber}(2)+20 textWidth textHeight];
+            position = [positions{userSettingNumber}(1)+spacing positions{userSettingNumber}(2)+15 textWidth textHeight];
             h.sessionSettings.text(userSettingNumber) = uicontrol('Parent',h.guiHandle,...
                 'Style','text','String',[sessionInstructions(settingNumber).name ' ' sessionInstructions(settingNumber).unit],...
                 'Position', position,'Tag',sessionInstructions(settingNumber).name,...
@@ -166,9 +170,10 @@ if strcmp(instruction,'setUp') || strcmp(instruction,'setUpStructure')
                 % change the position.
                 if ~useEditField(settingNumber)
                     position = [positions{userSettingNumber}(1)+editWidth/2 positions{userSettingNumber}(2)+(editHeight/2) 15 15];
-                    set(h.olfactometerSettings.check(userSettingNumber),'Position', position);
+                    set(h.sessionSettings.check(userSettingNumber),'Position', position);
                 end
-                
+            else
+                h.sessionSettings.check(userSettingNumber) = false;
             end
             
             
@@ -176,7 +181,59 @@ if strcmp(instruction,'setUp') || strcmp(instruction,'setUpStructure')
         
         
     end
+end
+
+
+
+%% Extract the information
+% If function is called with 'get' as instruction
+
+if strcmp(instruction,'get')
     
+    % Extract the sessionInstructions structure from the appdata of the figure:
+    sessionInstructions=appdataManager('olfStimGui','get','sessionInstructions');
     
+    % Extract the session settings from the gui:
+    sessionInstructions = extractSessionSettings(h,sessionInstructions);
     
+end
+
+
+
+%% Update sessionInstructions structure in the appdata
+% Write the structure h containing all handles for the figure as appdata:
+appdataManager('olfStimGui','set',sessionInstructions);
+
+
+end
+
+function sessionInstructions = extractSessionSettings(h,sessionInstructions)
+
+% Extract field from gui and update sessionInstructions structure
+% As not all necessary session settings are present in the gui, these numbers allow cross referencing
+pointersToGui = [sessionInstructions.userSettingNumber]; 
+for i = 1 : length(pointersToGui)
+    % finds the corresponding sessionInstructions index to the current gui field
+    indexStruct2GuiField = find(pointersToGui==i); 
+    if ~isempty(indexStruct2GuiField)
+        
+        % Extract whether the timepoint of triggering the current action:
+        % only if there is a edit field for the current action in the
+        % olfactometer settings update the sessionInstructions
+        if h.sessionSettings.edit(i) ~= 0
+            sessionInstructions(indexStruct2GuiField).value = get(h.sessionSettings.edit(i),'String'); % entry in the field is a string therefore change to number
+        end
+        
+        % Extract whether the current valve should be used:
+        % only if there is a checkbox for the current field in the
+        % olfactometer settings update the sessionInstructions
+        if h.sessionSettings.check(i) ~= 0 % settings fields which don't have a possibility to check have a 0 entry
+            sessionInstructions(indexStruct2GuiField).used = get(h.sessionSettings.check(i),'Value');
+        end
+        
+    else
+        error(['sessionInstructions structure has no matching entry for field # ' num2str(i)])
+    end
+end
+clear pointersToGui; clear indexStruct2GuiField;
 end

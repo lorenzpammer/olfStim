@@ -170,11 +170,6 @@ global olfactometerInstructions
 
 % Extract the gui handle structure from the appdata of the figure:
     h=appdataManager('olfStimGui','get','h');
-    
-%% Import function packages
-
-% Import all utility functions
-import protocolUtilities.*
 
 %%
     smell.trial(trialNum).odorName = []; % to set up a new struct array (1xtrialNum)
@@ -195,13 +190,11 @@ import protocolUtilities.*
     % the updated instructions into the smell structure.
     smell.trial(trialNum).olfactometerInstructions = olfactometerInstructions;
     
+    
     % sessionInstructions structure is updated in the
     % sessionSettings function prior to calling build smell. Now write
     % the updated instructions into the smell structure.
-    sessionSettings(h,'get'); % Create structure and write into appdata
-    % Extract the sessionInstructions structure from the appdata of the figure:
-    sessionInstructions=appdataManager('olfStimGui','get','sessionInstructions');
-    smell.trial(trialNum).sessionInstructions = sessionInstructions;
+    smell.trial(trialNum).olfactometerInstructions = olfactometerInstructions;
 
 end
 
@@ -240,6 +233,7 @@ if any(strcmpi('interTrialInterval',varargin))
     value = varargin{index+1};
     smell.trial(trialNum).interTrialInterval = value;
 end
+
 
 
 end
