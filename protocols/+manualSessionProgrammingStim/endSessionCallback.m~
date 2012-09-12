@@ -12,10 +12,10 @@ global trialNum
 % Extract the gui handle structure from the appdata of the figure:
 h=appdataManager('olfStimGui','get','h');
 
-%% Delete the non-executed trials from the progress figure
+%% Delete the 
 
 numberOfNotExecutedTrials = length(smell.trial) - trialNum;
-protocolUtilities.progressPanel(h,'remove',[],[],'numberOfTrialsToRemove',numberOfNotExecutedTrials);
+progressPanel(h,'remove',[],[],'numberOfTrialsToRemove',numberOfNotExecutedTrials)
 
 
 %% Delete entries from smell

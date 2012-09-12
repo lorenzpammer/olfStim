@@ -104,18 +104,18 @@ end
 
 if strmatch(instruction,'remove')
     % Extract relevant properties 
-    index = find(strcmpi('numberOfTrialsToRemove',varargin));
+    index = find(strcmpi('color',varargin));
     if ~isempty(index)
-        numberOfTrialsToRemove = varargin{index+1};
+        color = varargin{index+1};
     else
-        error('Number of trials which should be removed from the progress figure are not specified.')
+        % Define a default color, here orange:
+        error('Number of trials which should be remove
     end
+    
     
     plottedProgress = get(h.progress.figure,'Children');
     % The first children in the axes have been constructed last. Each
-    % plotted trial consists of two entities: the rectangle and the string.
-    % Delete both (=> multiply the number by 2)
-    delete(plottedProgress(1:numberOfTrialsToRemove*2));
+    delete(plottedProgress(1:numberOfNotExecutedTrials*2);
     
 end
 

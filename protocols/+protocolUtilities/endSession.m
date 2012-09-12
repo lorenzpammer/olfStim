@@ -1,7 +1,9 @@
 function h = endSession(h,callbackFunctionName,buttonPosition)
 % endSession(h,callbackFunctionName,buttonPosition)
-% This function will end the execution of the startSessionCallback.
-% It will delete all 
+% This function will create an end session button in the lower right corner
+% of the gui. Pressing the button will end the execution of the
+% startSessionCallback. It will also remove all smell trials which have not been executed
+% at the timepoint endSession Button was pressed.
 %
 % lorenzpammer september 2012
 
