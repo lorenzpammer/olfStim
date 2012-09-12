@@ -25,7 +25,7 @@ function  buildSmell(instruction,trialOdor,trialNum,stimProtocol,protocolSpecifi
 % NOTICE: If you want to add a new field to smell, remember to check:
 % - If the new field will be populated during a trial with information
 % about a trial, or in general if there's a for loop somewhere populating
-% it, consider to clear the contents of the field in the
+% it, remember to append the removeHistoricalTrialDataFromSmell.m clear the contents of the field in the
 % importSmellStructureForSession.m function. Otherwise if there's old data
 % in the fields there might be problems overwriting them in a
 % manualSessionProgramming stimulation protocol session.
@@ -130,6 +130,7 @@ import protocolUtilities.*
     
     odorFields = fields(olfactometerOdors.sessionOdors(1));
     smell.trial(1) = cell2struct(cell(length(odorFields),1),odorFields,1); % all fields for each used odor are written to the smell structure: odorName,iupacName,CASNumber,producingCompany,odorantPurity,state,odorantDilution,dilutedIn,concentrationAtPresentation,inflectionPointResponseCurve,slave,vial,mixture,sessionOdorNumber
+    smell.trial(1).isSequence = []; % Whether multiple different odors are presented sequentially within one trial.
     smell.trial(1).trialNum = []; % Trial number in the current session
     smell.trial(1).stimProtocol = []; % which stimulation protocol was used for this session
     smell.trial(1).time = []; % time at time of start of a new trial (not the time of actual odor presentation)
@@ -170,6 +171,11 @@ global olfactometerInstructions
 
 % Extract the gui handle structure from the appdata of the figure:
     h=appdataManager('olfStimGui','get','h');
+    
+%% Import function packages
+
+% Import all utility functions
+import protocolUtilities.*
 
 %%
     smell.trial(trialNum).odorName = []; % to set up a new struct array (1xtrialNum)
@@ -190,11 +196,13 @@ global olfactometerInstructions
     % the updated instructions into the smell structure.
     smell.trial(trialNum).olfactometerInstructions = olfactometerInstructions;
     
-    
     % sessionInstructions structure is updated in the
     % sessionSettings function prior to calling build smell. Now write
     % the updated instructions into the smell structure.
-    smell.trial(trialNum).olfactometerInstructions = olfactometerInstructions;
+    sessionSettings(h,'get'); % Create structure and write into appdata
+    % Extract the sessionInstructions structure from the appdata of the figure:
+    sessionInstructions=appdataManager('olfStimGui','get','sessionInstructions');
+    smell.trial(trialNum).sessionInstructions = sessionInstructions;
 
 end
 
@@ -233,7 +241,6 @@ if any(strcmpi('interTrialInterval',varargin))
     value = varargin{index+1};
     smell.trial(trialNum).interTrialInterval = value;
 end
-
 
 
 end

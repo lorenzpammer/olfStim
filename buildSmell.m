@@ -25,10 +25,10 @@ function  buildSmell(instruction,trialOdor,trialNum,stimProtocol,protocolSpecifi
 % NOTICE: If you want to add a new field to smell, remember to check:
 % - If the new field will be populated during a trial with information
 % about a trial, or in general if there's a for loop somewhere populating
-% it, consider to clear the contents of the field in the
-% importSmellStructureForSession.m function. Otherwise if there's old data
-% in the fields there might be problems overwriting them in a
-% manualSessionProgramming stimulation protocol session.
+% it incrementally, remember to append the
+% removeHistoricalTrialDataFromSmell.m to clear the contents of the field.
+% Otherwise if there's old data in the fields there might be problems
+% overwriting them in a manualSessionProgramming stimulation protocol session. 
 %
 %
 %

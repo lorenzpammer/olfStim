@@ -2,6 +2,8 @@ function endSessionCallback(~,~,callbackFunctionName)
 %
 % This function will remove all smell trials which have not been executed
 % at the timepoint endSession Button was pressed.
+% 
+% lorenzpammer september 2012
 
 
 %%
