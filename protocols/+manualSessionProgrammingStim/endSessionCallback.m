@@ -1,5 +1,6 @@
 function endSessionCallback(~,~,callbackFunctionName)
-% endSessionCallback(~,~) is an external function called 
+% This function doesn't do anything. Only startSessionCallback will check
+% whether the Togglebutton has been pressed.
 
 
 %%

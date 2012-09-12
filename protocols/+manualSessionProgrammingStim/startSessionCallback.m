@@ -11,8 +11,20 @@ h=appdataManager('olfStimGui','get','h');
 
 %% Set up some variables
 stimProtocol = 'manualSessionProgrammingStim';
-trialNum = 1; % reset trialNum to 1
 functionHandle = str2func(callbackFunctionName);
+
+%% Do a couple of checks:
+
+% In case smell wasn't loaded correctly or not setup, ie no information for
+% the trials is present, throw a warning and exit the function, set
+% everything as it was before.
+if length(smell.trial) == 1 && isempty(smell.trial(1).odorName)
+    warning(sprintf('No instructions to execute on, are available for this session. \n Check whether you created a session sequence or loaded an old session sequence.'))
+    % Reset the toggle button to the original settings.
+    set(h.startSession,'String','Start session','backgroundcolor',[0 1 0],'Value',0,...
+        'Callback',{functionHandle,callbackFunctionName});
+    return % exit the function
+end
 
 %% Change the startSession button to the Pause button.
 % If the start session button is pressed again (=toggle off) the sequential
@@ -21,22 +33,51 @@ functionHandle = str2func(callbackFunctionName);
 set(h.startSession,'backgroundcolor',[1 0 0],'String','Pause','Callback','')
 
 
-%%
-if get(h.startSession,'Value') == 1
+%% Start executing one trial after the other:
+
+if get(h.startSession,'Value') == 1 % if the startSessionButton is pressed
+    
+    trialNum = 1; % reset trialNum to 1
+    
+    % Go through every trial:
     for i = trialNum : length(smell.trial)
         
         %% Pause the execution if user pressed the button again
+        
         if get(h.startSession,'Value') == 0
             set(h.startSession,'backgroundcolor',[0 1 0],'String','Continue')
-            counter = 0;
+            disp('Session paused.')
             while get(h.startSession,'Value') == 0
-                disp('waiting')
-                counter = counter +1;
                 pause(2)
+                % If the user presses the end session button after pressing
+                % the pause button, end session.
+                if get(h.endSession,'Value') == 1
+                    % Set button back to ground state.
+                    set(h.startSession,'String','Start session','backgroundcolor',[0 1 0],'Value',0,...
+                        'Callback',{functionHandle,callbackFunctionName})
+                    set(h.endSession,'Value',0)
+                    disp('Session terminated by user.')
+                    return % exit the function
+                end
             end
+            disp('Continuing session.')
             set(h.startSession,'backgroundcolor',[1 0 0],'String','Pause')
         end
-        disp(['doing trial ' num2str(i)])
+        
+        %% Stop the execution of the session if End session button has been pressed
+        
+        if get(h.endSession,'Value') == 1
+            % Set button back to ground state.
+            set(h.startSession,'String','Start session','backgroundcolor',[0 1 0],'Value',0,...
+                'Callback',{functionHandle,callbackFunctionName})
+            set(h.endSession,'Value',0)
+            disp('Session terminated by user.')
+            return % exit the function
+        end
+        
+        %% Execute the current trial
+        
+        disp(['Started trial ' num2str(i)])
         trialNum = smell.trial(i).trialNum; % every time a odor is triggered a new trial is counted
         %
         %     %% First save the current smell file to the temp folder in case anything happens.
@@ -66,10 +107,8 @@ if get(h.startSession,'Value') == 1
         %     %   instructions to the olfactometer and trigger the trial.
         %      smell = startTrial(trialNum, smell);
         
-        % % Wait for the value defined in interTrialInterval until doing the next
-        % loop iteration.
-        
-        
+        % % Wait for a time period, defined in interTrialInterval until
+        % doing the next loop iteration.
         if trialNum < length(smell.trial) % don't do it for the last trial
             index = strmatch('interTrialInterval',{smell.trial(trialNum+1).sessionInstructions.name});
             if isempty(index)
