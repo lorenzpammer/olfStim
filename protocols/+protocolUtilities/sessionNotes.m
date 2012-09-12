@@ -16,13 +16,13 @@ if strncmp(instruction,'setUp',5)
     if nargin < 3
         % Define position for notes in respect to other panels in the gui
         stimProtocolPosition = get(h.panelProtocolChooser,'Position');
-        closeGuiButtonPosition = get(h.closeGuiButton,'Position');
+        quitButtonPosition = get(h.quitSession,'Position');
         panelPosition(1) = stimProtocolPosition(1);
-        panelPosition(2) = closeGuiButtonPosition(2) + closeGuiButtonPosition(4) + 5;
+        panelPosition(2) = quitButtonPosition(2) + quitButtonPosition(4) + 5;
         panelPosition(3) = stimProtocolPosition(3);
         panelPosition(4) = stimProtocolPosition(2) - panelPosition(2) - 10;
     end
-    clear stimProtocolPosition;clear closeGuiButtonPosition
+    clear stimProtocolPosition;clear quitButtonPosition
     
     %%
     

@@ -36,14 +36,11 @@ stimProtocol = 'manualStim';
 
 
 
-% 1. Button for closing the gui
-h = closeGui(h); %
+% 3. End session button
+h = quitSession(h); % endSession is a function in the protocolUtilities package. Sets up a functional button to end the session, save the smell structure, disconnect from LASOM etc.
 
 % 2. Notes field
 [~,h] = sessionNotes(h,'setUp'); % sessionNotes is a function in the protocolUtilities package. Sets up a panel with possibilities for note taking
-
-% 3. End session button
-h = quitSession(h); % endSession is a function in the protocolUtilities package. Sets up a functional button to end the session, save the smell structure, disconnect from LASOM etc.
 
 % % 4. Start session button % not necessary for manualStim
 % h = startSession(h,'manualSessionProgrammingStim.startSessionCallback');

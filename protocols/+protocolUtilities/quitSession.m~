@@ -8,9 +8,9 @@ function h = quitSession(h,buttonPosition)
 %% 
 if nargin < 2
     stimProtocolPosition = get(h.panelProtocolChooser,'Position');
-    guiPosition = get(h.guiHandle,'Position');
+    
     spacing = 5;
-    buttonHeight = 25; 
+    buttonHeight = stimProtocolPosition(2) -; 
     buttonWidth = stimProtocolPosition(3);
     buttonPosition(1) = stimProtocolPosition(1);
     buttonPosition(2) = spacing;

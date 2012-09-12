@@ -117,7 +117,12 @@ if strcmp(instruction,'setUp') || strcmp(instruction,'setUpStructure')
         if nargin < 4
             sessionNotesPanel = get(h.sessionNotes.panel,'Position');
             figurePosition = get(h.guiHandle,'Position');
-            quitSessionPosition = get(h.quitSession,'Position');
+            try
+                endSessionPosition = get(h.endSession,'Position');
+                subtractDistance = endSessionPosition(
+            catch
+                
+            end
             spacing = 3;
             panelPosition(1) = sessionNotesPanel(1) + sessionNotesPanel(3) + spacing;
             panelPosition(2) = spacing;
@@ -180,7 +185,7 @@ if strcmp(instruction,'setUp') || strcmp(instruction,'setUpStructure')
         %     {'mfcTotalFlow' 'powerGatingValve' 'unpowerGatingValve' ,...
         %     'powerFinalValve' 'unpowerFinalValve' 'closeSuctionValve' 'openSuctionValve',...
         %     'openSniffingValve' 'closeSniffingValve' 'powerHumidityValve'
-        %     'unpowerHumidityValve',...[
+        %     'unpowerHumidityValve',...
         %          'purge' 'cleanNose'}
         settingValue = [1 0 5 3 5 3.25 5 3.5 5 9 12 NaN 10]; % value for the different settings (in the according units)
         useEditField = logical([1 1 1 1 1 1 1 1 1 1 1 0 1]); % whether or not an editing field should be added to the gui for each setting

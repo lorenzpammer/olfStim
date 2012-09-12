@@ -2,6 +2,7 @@ function manualSessionProgrammingStim
 %
 %
 % TO DO:
+% - Check how many odors are used in order to decide whether to enlarge the gui.
 % - when importing an old smell structure, clear all information which 
 % lorenzpammer august 2012
 
@@ -36,16 +37,14 @@ stimProtocol = 'manualSessionProgrammingStim';
 
 % Check how many odors are used in order to decide whether to enlarge the gui.
 
-
-
-% 1. Button for closing the gui
-h = closeGui(h); %
+% 1. Quit session button
+h = quitSession(h); % endSession is a function in the protocolUtilities package. Sets up a functional button to end the session, save the smell structure, disconnect from LASOM etc.
 
 % 2. Notes field
 [~,h] = sessionNotes(h,'setUp'); % sessionNotes is a function in the protocolUtilities package. Sets up a panel with possibilities for note taking
 
 % 3. End session button
-h = quitSession(h); % endSession is a function in the protocolUtilities package. Sets up a functional button to end the session, save the smell structure, disconnect from LASOM etc.
+h = endSession(h,'manualSessionProgrammingStim.endSessionCallback');
 
 % 4. Start session button
 h = startSession(h,'manualSessionProgrammingStim.startSessionCallback');
@@ -64,7 +63,8 @@ clear usedSettingNames;
 h = progressPanel(h,'setUp'); % progressPanel is a function in the protocolUtilities package
 
 % 8. Pause session button
-% pauseSession; % pauseSession is a function in the protocolUtilities package. Sets up a functional button to pause the session
+% h = pauseSession(h,'setUp','manualSessionProgrammingStim.pauseSessionCallback'); % pauseSession is a function in the protocolUtilities package. Sets up a functional button to pause the session
+
 
 
 % Add protocol specific handles"
@@ -267,7 +267,6 @@ sessionSettings(h,'get');
 
 % 5. update the progress panel on the gui
  protocolUtilities.progressPanel(h,'update',trialOdor,trialNum,'Color',[0.5 0.5 0.5]); % 
-
 
 end
 

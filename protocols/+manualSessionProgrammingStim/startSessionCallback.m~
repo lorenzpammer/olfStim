@@ -1,24 +1,21 @@
-function startSessionCallback(~,~,callbackFunctionName)
+function startSessionCallback(~,~)
 % startSessionCallback(~,~) is an external function called 
 
 
 %%
 global smell
-global trialNum
 
 % Extract the gui handle structure from the appdata of the figure:
 h=appdataManager('olfStimGui','get','h');
 
 %% Set up some variables
 stimProtocol = 'manualSessionProgrammingStim';
-trialNum = 1; % reset trialNum to 1
-functionHandle = str2func(callbackFunctionName);
+trialNum = 1;
 
 %% Change the startSession button to the Pause button.
 % If the start session button is pressed again (=toggle off) the sequential
-% execution of trials will be pause. Also clear the callbackfunction, as
-% this should only be called once.
-set(h.startSession,'backgroundcolor',[1 0 0],'String','Pause','Callback','')
+% execution of trials will be pause.
+set(h.startSession,'backgroundcolor',[1 0 0],'String','Pause')
 
 
 %%
@@ -27,7 +24,7 @@ if get(h.startSession,'Value') == 1
         
         %% Pause the execution if user pressed the button again
         if get(h.startSession,'Value') == 0
-            set(h.startSession,'backgroundcolor',[0 1 0],'String','Continue')
+            set(h.startSession,'backgroundcolor',[0 1 0],'String','Continue',')
             counter = 0;
             while get(h.startSession,'Value') == 0
                 disp('waiting')
@@ -84,8 +81,7 @@ if get(h.startSession,'Value') == 1
         else
             fprintf('Last trial in programmed sequence was reached. Session ended successfully.\n')
             % Set button back to ground state.
-            set(h.startSession,'String','Start session','backgroundcolor',[0 1 0],'Value',0,...
-                'Callback',{functionHandle,callbackFunctionName})
+            set(h.startSession,'String','Start session','backgroundcolor',[0 1 0],'Value',0)
             break
         end
         

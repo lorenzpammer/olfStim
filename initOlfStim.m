@@ -3,14 +3,16 @@ function initOlfStim
 % stimulation. The action goes on in the called functions.
 % 
 % To Do:
-% - Check whether connection with olfactometer can be established, whether
-% MFCs are present. 
+% - Check whether MFCs are connected to LASOM board.
 % - Check how many slaves are connected. Depending on this build the
 % odorSelectionGui.
 % - Possibility to give digital triggers at arbitrary time points.
+% - 
 % - Change all paths from the unix way to an operating system independent
 % way using filesep()
 % - Make it possible to use more than 9 odor vials in the olfactometer.
+% - Add the possibility to present multiple odors & multiple mixtures
+% within one trial.
 %
 % lorenzpammer 2011/07
 

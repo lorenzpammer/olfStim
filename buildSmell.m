@@ -130,6 +130,7 @@ import protocolUtilities.*
     
     odorFields = fields(olfactometerOdors.sessionOdors(1));
     smell.trial(1) = cell2struct(cell(length(odorFields),1),odorFields,1); % all fields for each used odor are written to the smell structure: odorName,iupacName,CASNumber,producingCompany,odorantPurity,state,odorantDilution,dilutedIn,concentrationAtPresentation,inflectionPointResponseCurve,slave,vial,mixture,sessionOdorNumber
+    smell.trial(1).isSequence = []; % Whether multiple different odors are presented sequentially within one trial.
     smell.trial(1).trialNum = []; % Trial number in the current session
     smell.trial(1).stimProtocol = []; % which stimulation protocol was used for this session
     smell.trial(1).time = []; % time at time of start of a new trial (not the time of actual odor presentation)

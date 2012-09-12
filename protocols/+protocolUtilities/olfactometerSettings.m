@@ -117,11 +117,16 @@ if strcmp(instruction,'setUp') || strcmp(instruction,'setUpStructure')
         if nargin < 4
             sessionNotesPanel = get(h.sessionNotes.panel,'Position');
             figurePosition = get(h.guiHandle,'Position');
-            quitSessionPosition = get(h.quitSession,'Position');
+            try
+                endSessionPosition = get(h.endSession,'Position');
+                subtractDistance = endSessionPosition(3);
+            catch
+                subtractDistance = 0;
+            end
             spacing = 3;
             panelPosition(1) = sessionNotesPanel(1) + sessionNotesPanel(3) + spacing;
             panelPosition(2) = spacing;
-            panelPosition(3) = figurePosition(3) - sessionNotesPanel(1) - sessionNotesPanel(3) - quitSessionPosition(3) - spacing*3;
+            panelPosition(3) = figurePosition(3) - sessionNotesPanel(1) - sessionNotesPanel(3) - subtractDistance - spacing*3;
             panelPosition(4) = sessionNotesPanel(2) + sessionNotesPanel(4);
         end
         clear sessionNotesPanel;clear figurePosition;clear quitSessionPosition;
