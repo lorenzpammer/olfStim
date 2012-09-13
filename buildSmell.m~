@@ -190,7 +190,7 @@ import protocolUtilities.*
     for i = 1 : length(trialOdorFields)
         smell.trial(trialNum) = setfield(smell.trial(trialNum),trialOdorFields{i},getfield(trialOdor,trialOdorFields{i})); 
     end
-    smell.trial(trialNum).isSequence = false;
+    smell.trial(trialNum).isSequence = false
     smell.trial(trialNum).trialNum = trialNum;
     smell.trial(trialNum).stimProtocol = stimProtocol;
     smell.trial(trialNum).time = clock; % This only gives an approximate time, as the odor might be presented to the animal multiple seconds later.
@@ -287,5 +287,9 @@ if any(strcmpi('animalName',fieldsToUpdate))
     index = strmatch('animalName', {sessionInstructions.name});
     smell.trial(trialNum).sessionInstructions(index).value = sessionInstructions(index).value;
 end
+
+
+        
+
 
 end

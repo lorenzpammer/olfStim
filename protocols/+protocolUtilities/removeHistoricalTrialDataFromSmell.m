@@ -13,11 +13,11 @@ function smell = removeHistoricalTrialDataFromSmell(smell)
 
 %%
 for i = 1 : length(smell.trial)
+    smell.trial(i).stimProtocol = [];
     smell.trial(i).time = [];
     smell.trial(i).notes = [];
     smell.trial(i).flowRateMfcAir = [];
     smell.trial(i).flowRateMfcN = [];
-    smell.trial(i).olfactometerInstructions = [];
     
     settingNames = {smell.trial(1).sessionInstructions.name};
     index = strmatch('scientist',settingNames);
