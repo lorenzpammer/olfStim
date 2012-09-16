@@ -135,8 +135,8 @@ function varargout = odorSelectionGui_OutputFcn(hObject, eventdata, handles)
         olfactometerOdors.sessionOdors(i).sessionOdorNumber = i;
         currentOdorSlave = olfactometerOdors.sessionOdors(i).slave;
         currentOdorVial = olfactometerOdors.sessionOdors(i).vial;
-        index = find([olfactometerOdors.slave(currentOdorSlave).sessionOdors.vial]==currentOdorVial);
-        olfactometerOdors.slave(currentOdorSlave).sessionOdors(index).sessionOdorNumber = i;
+        index = find(olfactometerOdors.slave(currenOdorSlave).sessionOdors.vial==currentOdorVial)
+        olfactometerOdors.slave(olfactometerOdors.sessionOdors(i).slave).sessionOdors(
     end
     varargout{1} = olfactometerOdors; % define output of the gui
     

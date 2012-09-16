@@ -86,7 +86,7 @@ if strmatch(instruction,'update')
     xPosition = trialNum-0.45;
     yPosition = 0.25;
     width=0.9;height = 0.5;
-    rectangle('Position',[xPosition yPosition width height],'FaceColor',color); % plot rectangle in 
+    rectangle('Parent',h.progress.figure,'Position',[xPosition yPosition width height],'FaceColor',color); % plot rectangle in 
     if ~trialOdor.mixture % for normal odors
         display = sprintf([trialOdor.odorName '\nc=' num2str(trialOdor.concentrationAtPresentation)]);
         text(xPosition+0.03,yPosition+0.2,display,'Fontsize',8)

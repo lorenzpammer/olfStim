@@ -1,5 +1,8 @@
 function startSessionCallback(~,~,callbackFunctionName)
-% startSessionCallback(~,~) is an external function called
+% startSessionCallback(~,~) is a callback function called when pressing the
+% startSession button.
+%
+% lorenzpammer september 2012
 
 
 %%
@@ -90,7 +93,7 @@ if get(h.startSession,'Value') == 1 % if the startSessionButton is pressed
         callingFunctionName = 'initOlfStim.m'; % Define the name of the initalizing function
         olfStimPath = which(callingFunctionName);
         olfStimPath(length(olfStimPath)-length(callingFunctionName):length(olfStimPath))=[];
-        olfStimPath=[olfStimPath filesep 'temp' filesep];
+        olfStimPath=[olfStimPath filesep 'User Data' filesep 'temp' filesep];
         clear callingFunctionName
         
         defaultTitle = [datestr(date,'yyyy.mm.dd') '_smell_temp'];

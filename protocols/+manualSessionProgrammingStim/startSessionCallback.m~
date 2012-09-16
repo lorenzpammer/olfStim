@@ -1,5 +1,8 @@
 function startSessionCallback(~,~,callbackFunctionName)
-% startSessionCallback(~,~) is an external function called
+% startSessionCallback(~,~) is a callback function called when pressing the
+% startSession button.
+%
+% lorenzpammer september 
 
 
 %%
@@ -100,11 +103,11 @@ if get(h.startSession,'Value') == 1 % if the startSessionButton is pressed
         
         %% Now trigger the trial
         
-        
         trialOdor = smell.trial(trialNum);
         
         % 3. Update certain smell fields:
-        buildSmell('updateFields',[],trialNum,stimProtocol,[],'notes','stimProtocol','time','interTrialInterval',interTrialInterval)
+        buildSmell('updateFields',[],trialNum,stimProtocol,[],...
+            'notes','stimProtocol','time','scientist','animalName')
         
         % 4. update the progress panel on the gui
         protocolUtilities.progressPanel(h,'update',trialOdor,trialNum);
@@ -112,7 +115,7 @@ if get(h.startSession,'Value') == 1 % if the startSessionButton is pressed
         % 5. star the new trial
         %   This will build the lsq file for the current trial, send the
         %   instructions to the olfactometer and trigger the trial.
-        smell = startTrial(trialNum, smell);
+%         smell = startTrial(trialNum, smell);
         
         % % Wait for a time period, defined in interTrialInterval until
         % doing the next loop iteration.

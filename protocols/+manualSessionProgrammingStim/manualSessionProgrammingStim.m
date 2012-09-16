@@ -49,12 +49,18 @@ h = endSession(h,'manualSessionProgrammingStim.endSessionCallback');
 % 4. Start session button
 h = startSession(h,'manualSessionProgrammingStim.startSessionCallback');
 
+% 5. Save session instructions button
+h = saveSequenceOfTrialsInstructions(h,'protocolUtilities.saveSequenceOfTrialsInstructionsCallback');
+
+% 6. Load session instructions button
+h = loadSequenceOfTrialsInstructions(h,'protocolUtilities.loadSequenceOfTrialsInstructionsCallback');
+
 % 5. Olfactometer Settings
 h = olfactometerSettings(h,'setUp'); % sets up all controls the user has over the olfactometer (valve times, MFC flow rates)
 
 % 6. Session Settings
 % All controls a user has over session parameters (inter trial interval etc)
-h = sessionSettingsPanel(h,1); % sessionSettingsPanel(h,guiEnlarge). 
+h = sessionSettingsPanel(h,0); % sessionSettingsPanel(h,guiEnlarge). 
 usedSettingNames = {'scientist' 'animalName' 'interTrialInterval'};
 h = sessionSettings(h,'setUp',usedSettingNames);
 clear usedSettingNames;
@@ -238,7 +244,7 @@ import protocolUtilities.*
 callingFunctionName = 'initOlfStim.m'; % Define the name of the initalizing function
 olfStimPath = which(callingFunctionName);
 olfStimPath(length(olfStimPath)-length(callingFunctionName):length(olfStimPath))=[];
-olfStimPath=[olfStimPath filesep 'temp' filesep];
+olfStimPath=[olfStimPath filesep 'User Data' filesep 'temp' filesep];
 clear callingFunctionName
 
 defaultTitle = [datestr(date,'yyyy.mm.dd') '_smell_temp'];

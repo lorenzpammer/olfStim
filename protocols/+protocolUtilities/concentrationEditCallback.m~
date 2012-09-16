@@ -21,7 +21,7 @@ import protocolUtilities.*
 pseudoSmell = smell;
 index = find([pseudoSmell.olfactometerOdors.slave(slave).sessionOdors(:).vial]==vialNumber);
 currentOdor = pseudoSmell.olfactometerOdors.slave(slave).sessionOdors(index);
-currentOdorFields = fields(pseudoSmell.olfactometerOdors.slave(slave).sessionOdors(index));
+currentOdorFields = fields(pseudoSmell.olfactometerOdors.slave(slave).sessionOdors(vialNumber));
 for i = 1 : length(currentOdorFields)
     pseudoSmell.trial(1) = setfield(pseudoSmell.trial(1),currentOdorFields{i},getfield(currentOdor,currentOdorFields{i}));
 end

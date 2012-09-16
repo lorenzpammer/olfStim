@@ -50,7 +50,7 @@ h = olfactometerSettings(h,'setUp'); % sets up all controls the user has over th
 
 % 6. Session Settings
 % All controls a user has over session parameters (inter trial interval etc)
-h = sessionSettingsPanel(h,1); % sessionSettingsPanel(h,guiEnlarge). 
+h = sessionSettingsPanel(h,0); % sessionSettingsPanel(h,guiEnlarge). 
 usedSettingNames = {'scientist' 'animalName'};
 h = sessionSettings(h,'setUp',usedSettingNames);
 clear usedSettingNames;
@@ -234,7 +234,7 @@ import protocolUtilities.*
 callingFunctionName = 'initOlfStim.m'; % Define the name of the initalizing function
 olfStimPath = which(callingFunctionName);
 olfStimPath(length(olfStimPath)-length(callingFunctionName):length(olfStimPath))=[];
-olfStimPath=[olfStimPath filesep 'temp' filesep];
+olfStimPath=[olfStimPath filesep 'User Data' filesep 'temp' filesep];
 clear callingFunctionName
 
 defaultTitle = [datestr(date,'yyyy.mm.dd') '_smell_temp'];

@@ -117,10 +117,19 @@ if strcmp(instruction,'setUp') || strcmp(instruction,'setUpStructure')
         if nargin < 4
             sessionNotesPanel = get(h.sessionNotes.panel,'Position');
             figurePosition = get(h.guiHandle,'Position');
-            try
-                endSessionPosition = get(h.endSession,'Position');
-                subtractDistance = endSessionPosition(3);
-            catch
+            if isfield(h,'endSession')
+                rightButtonPosition = get(h.endSession,'Position');
+                subtractDistance = rightButtonPosition(3);
+            elseif isfield(h,'startSession')
+                rightButtonPosition = get(h.startSession,'Position');
+                subtractDistance = rightButtonPosition(3);
+            elseif isfield(h,'saveSessionInstructions')
+                rightButtonPosition = get(h.saveSessionInstructions,'Position');
+                subtractDistance = rightButtonPosition(3);
+            elseif isfield(h,'loadSessionInstructions')
+                rightButtonPosition = get(h.loadSessionInstructions,'Position');
+                subtractDistance = rightButtonPosition(3);
+            else
                 subtractDistance = 0;
             end
             spacing = 3;

@@ -27,7 +27,7 @@ h=appdataManager('olfStimGui','get','h');
 % trialLsq = buildTrialLsq(trialNum);
 % 
 % % Add the lsq file for the current trial into the smell structure:
-% smell.trial(trialNum).trialLsqFile = trialLsq;
+smell.trial(trialNum).trialLsqFile = trialLsq;
 % 
 % 
 
@@ -38,7 +38,7 @@ lsqPath = which(callingFunctionName);
 lsqPath(length(lsqPath)-length(callingFunctionName):length(lsqPath))=[];
 lsqPath=[lsqPath filesep 'lsq' filesep];
 clear callingFunctionName
-trialLsq = fileread([lsqPath 'trial.lsq']);
+% trialLsq = fileread([lsqPath 'trial.lsq']);
 
 %% Connect to LASOM and set it up
 % lasomH = lasomFunctions('connect');
