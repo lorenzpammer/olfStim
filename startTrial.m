@@ -18,13 +18,13 @@ function smell = startTrial(trialNum, smell)
 % lorenzpammer dec 2011
 %%
 % Extract the gui handle structure from the appdata of the figure:
-h=appdataManager('olfStimGui','get','h');
+% h=appdataManager('olfStimGui','get','h');
 
 
 %% Build the lsq file for the current trial
 % buildTrialLsq.m will create an lsq file taking into account the
 % olfactometerInstructions for the current trial.
-% trialLsq = buildTrialLsq(trialNum);
+trialLsq = buildTrialLsq(trialNum,smell);
 % 
 % % Add the lsq file for the current trial into the smell structure:
 smell.trial(trialNum).trialLsqFile = trialLsq;
@@ -67,9 +67,9 @@ clear callingFunctionName
 % 
 % 
 % %% Set MFC flow rates
-% 
+% % 
 % slave = smell.trial(trialNum).slave;
-% smell = calculateMfcFlowRates(trialNum,smell);
+% smell = calculateMfcFlowRates(trialNum,smell,'error');
 % percentOfCapacityAir = smell.trial(trialNum).flowRateMfcAir / smell.olfactometerSettings.maxFlowRateMfcAir * 100;
 % percentOfCapacityN = smell.trial(trialNum).flowRateMfcN / smell.olfactometerSettings.maxFlowRateMfcNitrogen * 100;
 % invoke(lasomH,'SetMfcFlowRate',slave,1,percentOfCapacityAir);

@@ -1,6 +1,6 @@
-function trialLsq = buildTrialLsq(trialNum)
+function trialLsq = buildTrialLsq(trialNum,smell)
 
-% trialLsq = buildTrialLsq(trialNum)
+% trialLsq = buildTrialLsq(trialNum,smell)
 %   will construct an LSQ file for the current trial using the information
 %   from the smell structure for the current trial. It returns the lsq file
 %   for the current trial and saves it in the /lsq folder in the olfStim
@@ -17,9 +17,6 @@ function trialLsq = buildTrialLsq(trialNum)
 % - Support presenting mixtures.
 %
 % lorenzpammer 2011/12
-
-global smell
-
 
 
 %% Build the lsq file for this trial

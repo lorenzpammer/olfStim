@@ -139,7 +139,7 @@ import protocolUtilities.*
     smell.trial(1).trialNum = []; % Trial number in the current session
     smell.trial(1).stimProtocol = []; % which stimulation protocol was used for this session
     smell.trial(1).time = []; % time at time of start of a new trial (not the time of actual odor presentation)
-    smell.trial(1).interTrialInterval = 0; % First trial has a intertrial-interval of 0 seconds.
+%     smell.trial(1).interTrialInterval = 0; % First trial has a intertrial-interval of 0 seconds.
     smell.trial(1).notes = []; % Notes that are taken during the session will be saved here. Every trial the notes are extracted from the field and written into this field in form of a string.\
     smell.trial(1).flowRateMfcAir = [];
     smell.trial(1).flowRateMfcN = [];

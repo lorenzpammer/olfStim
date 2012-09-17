@@ -36,6 +36,11 @@ ratio = smell.trial(trialNum).olfactometerInstructions(index).value / totalFlow;
 flowRateMfcN = flowRateMfcN * ratio;
 flowRateMfcAir = flowRateMfcAir * ratio;
 
+% Round the flow rates to 5 digits
+flowRateMfcAir = round(flowRateMfcAir*10e5)/10e5;
+flowRateMfcN = round(flowRateMfcN*10e5)/10e5;
+
+
 % Check if the desired flow rates can be reached given the maximum flow
 % rates of the MFCs. If not give an error:
 if flowRateMfcN > smell.olfactometerSettings.maxFlowRateMfcNitrogen || ...
