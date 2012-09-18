@@ -47,7 +47,6 @@ elseif strcmp(instruction,'get')
         varargout{i} = getappdata(handle, varargin{i});
     end
 elseif strcmp(instruction,'clear')
-    
     rmappdata(handle,getappdata(handle));
 end
     

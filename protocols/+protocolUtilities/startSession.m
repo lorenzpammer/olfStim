@@ -26,8 +26,8 @@ function h = startSession(h,callbackFunctionName,buttonPosition)
     %% Set up Start session button
     
     h.startSession = uicontrol('Parent',h.guiHandle,'Style','togglebutton',...
-        'String','Start session','Units','pixels','Position',buttonPosition,...
-        'backgroundcolor',[0 1 0],'Callback',{functionHandle,callbackFunctionName});
+        'backgroundcolor',[0 1 0],'String','Start session','Units','pixels',...
+        'Position',buttonPosition,'Callback',{functionHandle,callbackFunctionName});
 
 
 end

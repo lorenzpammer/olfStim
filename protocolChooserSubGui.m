@@ -1,9 +1,7 @@
-function selectedProtocol = protocolChooserSubGui
+function protocolChooserSubGui
 
 % lorenzpammer 2011/09
 
-
-global selectedProtocol
 
 % Extract the gui handle structure from the appdata of the figure:
 h=appdataManager('olfStimGui','get','h');
@@ -24,16 +22,11 @@ buttonWidth = 70;buttonHeight = 25;
 buttonPosition(1) = panelPosition(1) + (panelPosition(3)/2) - buttonWidth/2;
 buttonPosition(2) = panelPosition(2) +3;
 buttonPosition(3:4) = [buttonWidth,buttonHeight];
-h.start    = uicontrol('Style','pushbutton',...
-    'String','Start','Units','pixels','Position',buttonPosition,'Callback',@startbutton_Callback);
+h.startWithSelectedProtocol  = uicontrol('Style','pushbutton','backgroundcolor',[0 1 0],...
+    'String','Start','Units','pixels','Position',buttonPosition,'Callback',{@startbutton_Callback});
 % Following commands set up a 3D matrix: 3 entries for every pixel of the
 % pushbutton. [0 1 0] in RGB is green
-colorMatrix(:,:,1) = zeros(buttonHeight,buttonWidth);
-colorMatrix(:,:,2) = ones(buttonHeight,buttonWidth);
-colorMatrix(:,:,3) = zeros(buttonHeight,buttonWidth);
-set(h.start,'CData',colorMatrix) % set color of push button to color defined in colorMatrix
 clear buttonHeight;clear buttonWidth;clear buttonPosition;
-clear colorMatrix
 
 % Define path to protocols relatively to the initiation function for
 % olfactometer control software
@@ -77,7 +70,6 @@ clear panelPosition;
 % Write the structure h containing all handles for the figure as appdata:
 appdataManager('olfStimGui','set',h)
 
-
 %%
 uiwait % keeps function active until start pushbutton is pressed
 end
@@ -87,12 +79,11 @@ end
 %  current data. This callback automatically has access to
 %  current_data because this function is nested at a lower level.
 function popup_menu_Callback(source,eventdata,h)
-global selectedProtocol
 
 %         Determine the selected data set.
 str = get(source, 'String');
 val = get(source,'Value');
-selectedProtocol = str{val};
+tempSelectedProtocol = str{val};
 clear str;clear val;
 %         % Set current data to the selected data set.
 %         switch str{val};
@@ -103,12 +94,17 @@ clear str;clear val;
 %             case 'Sinc' % User selects Sinc.
 %                 current_data = sinc_data;
 %         end
+appdataManager('olfStimGui','set',tempSelectedProtocol)
 end
 
-function startbutton_Callback(source,eventdata)
-% Determine the selected data set.
-global selectedProtocol
+function startbutton_Callback(~,~)
 
+h=appdataManager('olfStimGui','get','h');
+
+% Extract selected protocol 
+selectedProtocol = appdataManager('olfStimGui','get','tempSelectedProtocol');
+rmappdata(h.guiHandle,'tempSelectedProtocol')
+% Determine the selected data set.
 if ~isempty(selectedProtocol)
     uiresume
 else
@@ -116,5 +112,14 @@ else
 end
 %         functionHandle = str2func(selectedProtocol);
 %         functionHandle();
+
+% Set selected protocol 
+appdataManager('olfStimGui','set',selectedProtocol);
+
+% This is a bit of a hack, but necessary, because otherwise the
+% selectedProtocol in appdata could be incorrect. At some point one could
+% change this in a way, that if Start is pressed for the second time, a new
+% session with the selected protocol is started.
+set(h.startWithSelectedProtocol,'Callback','');
 end
 

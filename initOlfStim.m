@@ -36,8 +36,9 @@ setUpMainGui;
 buildSmell('setUp');
 
 %% Next start the gui for controlling 
-selectedProtocol = protocolChooserSubGui;
-
+protocolChooserSubGui;
+% Extract selected protocol from appdata:
+selectedProtocol=appdataManager('olfStimGui','get','selectedProtocol');
 
 %% Execute selected protocol
 functionHandle = str2func([selectedProtocol '.' selectedProtocol]); % make string of selected protocol to function handle

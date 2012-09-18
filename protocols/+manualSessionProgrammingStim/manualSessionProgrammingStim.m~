@@ -72,7 +72,7 @@ h = progressPanel(h,'setUp'); % progressPanel is a function in the protocolUtili
 % h = pauseSession(h,'setUp','manualSessionProgrammingStim.pauseSessionCallback'); % pauseSession is a function in the protocolUtilities package. Sets up a functional button to pause the session
 
 % 9. Clear seq button
-h = clearSessionDataButton(h,'protocolUtilities.clearSessionDataCallback');
+
 
 
 

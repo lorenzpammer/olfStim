@@ -1,9 +1,14 @@
 function  buildSmell(instruction,trialOdor,trialNum,stimProtocol,protocolSpecificInfo,varargin)
-% buildSmell(instruction,trialOdor,trialNum,stimProtocol,specificInfo,'PropertyName','PropertyValue') creates or
+% buildSmell(instruction,trialOdor,trialNum,stimProtocol,protocolSpecificInfo,varargin) creates or
 % updates the smell structure.
 % The smell structure contains the relevant information about every trial
 % for odor presentation. However it does not contain accurate timing
 % information.
+%
+% Instruction:
+% - 'setUp'
+% - 'update'
+% - 'updateFields'
 %
 % stimProtocol does not have to be given as an input argument. If
 % buildSmell is called from the stimulation protocol m-file, the function
@@ -81,6 +86,9 @@ elseif ~isempty(strmatch('update',instruction)) && nargin<5
     protocolSpecificInfo = []; % if no data is handed to the function for protocolSpecific Information this is set empty.
 end
 
+if nargin< 5
+    protocolSpecificInfo =[];
+end
 
 
 %% Set up smell structure
