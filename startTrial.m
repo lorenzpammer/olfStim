@@ -24,21 +24,21 @@ h=appdataManager('olfStimGui','get','h');
 %% Build the lsq file for the current trial
 % buildTrialLsq.m will create an lsq file taking into account the
 % olfactometerInstructions for the current trial.
-% trialLsq = buildTrialLsq(trialNum);
-% 
-% % Add the lsq file for the current trial into the smell structure:
-%smell.trial(trialNum).trialLsqFile = trialLsq;
-% 
-% 
+trialLsq = buildTrialLsq(trialNum,smell);
+
+% Add the lsq file for the current trial into the smell structure:
+smell.trial(trialNum).trialLsqFile = trialLsq;
 
 
 
-callingFunctionName = 'startTrial.m'; % Define the name of the initalizing function
-lsqPath = which(callingFunctionName);
-lsqPath(length(lsqPath)-length(callingFunctionName):length(lsqPath))=[];
-lsqPath=[lsqPath filesep 'lsq' filesep];
-clear callingFunctionName
-% trialLsq = fileread([lsqPath 'trial.lsq']);
+
+% 
+% callingFunctionName = 'startTrial.m'; % Define the name of the initalizing function
+% lsqPath = which(callingFunctionName);
+% lsqPath(length(lsqPath)-length(callingFunctionName):length(lsqPath))=[];
+% lsqPath=[lsqPath filesep 'lsq' filesep];
+% clear callingFunctionName
+% % trialLsq = fileread([lsqPath 'trial.lsq']);
 
 %% Connect to LASOM and set it up
 lasomH = lasomFunctions('connect');
@@ -196,6 +196,9 @@ delete(readLasomStatusTimer)
 if ishandle(lasomH)
     release(lasomH)
 end
+if ~isempty(timerfindall)
+    delete(timerfindall)
+end
 
 %% Callback functions of timer:
     function readLasomStatusUntilTrialStart(obj,event,lasomH,trialNum,smell)
@@ -227,7 +230,7 @@ end
             stop(mfcMeasureTimer)
             % Release the connection to the olfactometer
             stop(readLasomStatusTimer)
-            delete(readLasomStatusTimer)
+%             delete(readLasomStatusTimer)
             
             release(lasomH)
         end

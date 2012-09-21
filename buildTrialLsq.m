@@ -130,9 +130,16 @@ if smell.trial(trialNum).mixture == 0
                 %    read the lsq file that includes the command for the current
                 % action in the1 loop iteration
                 currentActionLsq = fileread([lsqPath smell.trial(trialNum).olfactometerInstructions(i).name '.lsq']);
+                
+                % If the first action tzpe is called multiple times within
+                % a trial, the first action of the trial will also be the
+                % first of the multiple calls of the same action. Therefore
+                % take the first value from the instructions:
+                currentActionValueIndex = 1;
+                
                 % in the first action of a trial the wait time is the
                 % time when the first action should be triggered:
-                waitTime = smell.trial(trialNum).olfactometerInstructions(i).value*1000;% *1000 because LASOM expects ms, values in smell are in s
+                waitTime = smell.trial(trialNum).olfactometerInstructions(i).value(currentActionValueIndex)*1000;% *1000 because LASOM expects ms, values in smell are in s
                 currentActionLsq = sprintf([';\nwait, %d \n' currentActionLsq], waitTime);
                 % Start the timer in the beginning of the trial:
                 currentActionLsq = sprintf([';\nstartTimer, 2 ; Starts the timer for the trial \n' currentActionLsq]);
@@ -165,9 +172,18 @@ if smell.trial(trialNum).mixture == 0
                 % whether it should wait.
                 timeLapseLsq = fileread([lsqPath 'timeLapse.lsq']);
                 
+                % In cases where one action (opening a valve) is called
+                % multiple times within a trial, we have to know which
+                % of the several times of action calling we're in now:
+                currentActionCallsInTrial = find(sequenceIndexOfActions==i);
+                if length(currentActionCallsInTrial)>1
+                    currentActionValueIndex = find(currentActionCallsInTrial == loopIteration);
+                else
+                    currentActionValueIndex = 1;
+                end
                 % First change the timing of the when it lapses:
                 replaceString = 'MYVAL';
-                waitTime = num2str(smell.trial(trialNum).olfactometerInstructions(i).value*1000); % *1000 because LASOM expects ms, values in smell are in s
+                waitTime = num2str(smell.trial(trialNum).olfactometerInstructions(i).value(currentActionValueIndex)*1000); % *1000 because LASOM expects ms, values in smell are in s
                 timeLapseLsq = replacePlaceHolderInLsq(timeLapseLsq,replaceString, waitTime);
                 clear waitTime
                 
