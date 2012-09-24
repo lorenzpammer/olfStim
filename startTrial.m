@@ -45,11 +45,11 @@ lasomH = lasomFunctions('connect');
 
 %% Update smell:
 if trialNum == 1
-    %     smell.olfactometerSettings.lasomID = invoke(lasomH,'GetID');
+    %     smell.olfactometerSettings.lasomID = get(lasomH,'GetID');
     % - prompt LASOM to get the maximum flow rate of the Mfcs and write
     % into smell.olfactometerSettings
-    %     [smell.olfactometerSettings.flowRateMfcAir, units] = invoke(lasomH,'GetMfcCapacity',1);
-    %     [smell.olfactometerSettings.flowRateMfcN, units] = invoke(lasomH,'GetMfcCapacity',2);
+    %     [smell.olfactometerSettings.flowRateMfcAir, units] = get(lasomH,'GetMfcCapacity',1);
+    %     [smell.olfactometerSettings.flowRateMfcN, units] = get(lasomH,'GetMfcCapacity',2);
 end
 
 %% Send lsq file of the current trial to the LASOM
@@ -82,8 +82,8 @@ clear percentOfCapacityAir percentOfCapacityN
 lasomFunctions('loadAndRunSequencer',lasomH);
 % clear a
 % for i = 1:150
-%    a(1,i) =  invoke(lasomH,'SeqUpdateEnable');
-%    a(2,i) = invoke(lasomH,'SeqUpdateVarState',1);
+%    a(1,i) =  get(lasomH,'SeqUpdateEnable');
+%    a(2,i) = get(lasomH,'SeqUpdateVarState',1);
 %     pause(0.1)
 % end
 
@@ -206,8 +206,8 @@ end
         % status:
         measurementNo = get(readLasomStatusTimer,'TasksExecuted');
         
-        lasomStatus = invoke(lasomH,'SeqUpdateEnable')
-        startVariableStatus = invoke(lasomH,'SeqUpdateVarState',1)
+        lasomStatus = get(lasomH,'SeqUpdateEnable')
+        startVariableStatus = get(lasomH,'SeqUpdateVarState',1)
 %         disp('reading')
         
         if lasomStatus == 1 && ...
@@ -245,8 +245,8 @@ end
     end
 
     function readLasomStatusAfterTrialStart(obj,event,lasomH,trialNum,smell)
-       lasomStatus = invoke(lasomH,'SeqUpdateEnable')
-       startVariableStatus  = invoke(lasomH,'SeqUpdateVarState',1)
+       lasomStatus = get(lasomH,'SeqUpdateEnable')
+       startVariableStatus  = get(lasomH,'SeqUpdateVarState',1)
         
         if lasomStatus == 0 && ...
                startVariableStatus == 0
