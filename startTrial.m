@@ -24,28 +24,28 @@ h=appdataManager('olfStimGui','get','h');
 %% Build the lsq file for the current trial
 % buildTrialLsq.m will create an lsq file taking into account the
 % olfactometerInstructions for the current trial.
-trialLsq = buildTrialLsq(trialNum,smell);
+%trialLsq = buildTrialLsq(trialNum,smell);
 
 % Add the lsq file for the current trial into the smell structure:
-smell.trial(trialNum).trialLsqFile = trialLsq;
+%smell.trial(trialNum).trialLsqFile = trialLsq;
 
 
 
 
 % 
-% callingFunctionName = 'startTrial.m'; % Define the name of the initalizing function
-% lsqPath = which(callingFunctionName);
-% lsqPath(length(lsqPath)-length(callingFunctionName):length(lsqPath))=[];
-% lsqPath=[lsqPath filesep 'lsq' filesep];
-% clear callingFunctionName
-% % trialLsq = fileread([lsqPath 'trial.lsq']);
+callingFunctionName = 'startTrial.m'; % Define the name of the initalizing function
+lsqPath = which(callingFunctionName);
+lsqPath(length(lsqPath)-length(callingFunctionName):length(lsqPath))=[];
+lsqPath=[lsqPath filesep 'lsq' filesep];
+clear callingFunctionName
+trialLsq = fileread([lsqPath 'test.lsq']);
 
 %% Connect to LASOM and set it up
 lasomH = lasomFunctions('connect');
 
 %% Update smell:
 if trialNum == 1
-    %     smell.olfactometerSettings.lasomID = get(lasomH,'GetID');
+    smell.olfactometerSettings.lasomID = lasomH.GetID;
     % - prompt LASOM to get the maximum flow rate of the Mfcs and write
     % into smell.olfactometerSettings
     %     [smell.olfactometerSettings.flowRateMfcAir, units] = get(lasomH,'GetMfcCapacity',1);
