@@ -23,6 +23,7 @@ lasomH = appdataManager('olfStimGui','get','lasomH');
 %% 
 % Check whether lasomH has not been released properly. If so, close it.
 if iscom(lasomH)
+    disp('The connection to the LASOM wasn''t released properly in a previous trial. Closing it now.')
     release(lasomH);
 end
 clear lasomH;
@@ -120,7 +121,7 @@ slave = smell.trial(trialNum).slave;
 % Set up the timer, and its callbacks for measuring the mfc flow
 mfcMeasureTimer = timer('ExecutionMode','fixedRate','Period',measurementInterval,...
     'StartDelay',0,'TasksToExecute',Inf,...
-    'TimerFcn',{@measureMfcFlowRate,lasomH,slave},'StopFcn',@measureMfcFlowStopped,...
+    'TimerFcn',@measureMfcFlowRate,'StopFcn',@measureMfcFlowStopped,...
     'BusyMode','error','ErrorFcn',@measureMfcErrorFcn);
 
 % Start the timer, only once the sequencer received the trial start signal.
@@ -135,7 +136,7 @@ mfcMeasureTimer = timer('ExecutionMode','fixedRate','Period',measurementInterval
 
 
 % Callback functions of timer:
-    function measureMfcFlowRate(obj,event,lasomH,slave)
+    function measureMfcFlowRate(obj,event)
         % Every 100 ms, jump into this function measure the mfc flow rates
         % and write the returned values into the smell structure:
         measurementNo = get(mfcMeasureTimer,'TasksExecuted');
@@ -144,7 +145,6 @@ mfcMeasureTimer = timer('ExecutionMode','fixedRate','Period',measurementInterval
             elapsedTime;
         smell.trial(trialNum).lasomEventLog.flowRateMfcN(1,measurementNo) = ...
             elapsedTime;
-
         smell.trial(trialNum).lasomEventLog.flowRateMfcAir(2,measurementNo) = ...
             get(lasomH, 'MfcFlowRateMeasurePercent', slave, 1);
         smell.trial(trialNum).lasomEventLog.flowRateMfcN(2,measurementNo) = ...
@@ -179,7 +179,7 @@ tasksToExecute = 10e7; % this high number is a hack, because if infinite tasks s
 readLasomStatusTimer = timer('ExecutionMode','fixedRate','Period',readStatusInterval,...
     'StartDelay',0,'TasksToExecute',tasksToExecute,...
     'BusyMode','error','ErrorFcn',@readLasomStatusErrorFcn,...
-    'TimerFcn',{@readLasomStatusUntilTrialStart,lasomH,trialNum,smell},'StopFcn',{@trialStarted,lasomH,trialNum,smell});
+    'TimerFcn',{@readLasomStatusUntilTrialStart},'StopFcn',{@trialStarted});
 
 start(readLasomStatusTimer)
 
@@ -199,7 +199,8 @@ start(readLasomStatusTimer)
 wait(readLasomStatusTimer) % keeps function active until timer stops (once sequencer is idle)
 
 delete(readLasomStatusTimer)
-if ishandle(lasomH)
+
+if iscom(lasomH)
     release(lasomH)
 end
 if ~isempty(timerfindall)
@@ -207,7 +208,7 @@ if ~isempty(timerfindall)
 end
 
 %% Callback functions of timer:
-    function readLasomStatusUntilTrialStart(obj,event,lasomH,trialNum,smell)
+    function readLasomStatusUntilTrialStart(obj,event)
         % Every 100 ms, jump into this function and read the last emitted
         % status:
         measurementNo = get(readLasomStatusTimer,'TasksExecuted');
@@ -242,15 +243,15 @@ end
         end
     end
 
-    function trialStarted(obj,event,lasomH,trialNum,smell)
+    function trialStarted(obj,event)
         set(readLasomStatusTimer,'Period',2); % Once the trial started read statuses at a rate of 10 Hz
-        set(readLasomStatusTimer,'TimerFcn',{@readLasomStatusAfterTrialStart,lasomH,trialNum,smell});
+        set(readLasomStatusTimer,'TimerFcn',@readLasomStatusAfterTrialStart);
         set(readLasomStatusTimer,'StopFcn','')
         start(readLasomStatusTimer)
         disp('next step in reading port');
     end
 
-    function readLasomStatusAfterTrialStart(obj,event,lasomH,trialNum,smell)
+    function readLasomStatusAfterTrialStart(obj,event)
        lasomStatus = get(lasomH,'SeqUpdateEnable')
        startVariableStatus  = get(lasomH,'SeqUpdateVarState',1)
         
@@ -273,9 +274,12 @@ end
             % Stop measuring the Mfc flow:
             stop(mfcMeasureTimer)
             
+            % To do get events after trial.
+            t3 = get(lasomH, 'SequencerLabelTimeValue', '')
+
+            
             % Release the connection to the olfactometer
             release(lasomH)
-            
 
             sprintf('Executed trial %d successfully.\n',trialNum)
         end
