@@ -40,7 +40,7 @@ Param, slaveIndex, 1                         ; defines from which slave module t
 ; sequence of actions, which allows the host computer to monitor progress.
 ; ------------------------------------------------------
 ;
-SetVar, $Var1, 0                        ; 
+SetVar, $Var1, 1                        ; 
 ;
 ; ------------------------------------------------------
 ; Trial Sequence Definition
@@ -49,13 +49,16 @@ SetVar, $Var1, 0                        ;
 wait, 3000;
 SetVar, $Var1, 1    ; Causes the sequencer to update the status, about the value of $Var1
 EmitStatus          ; Causes the sequencer to emit the updated status to the host computer. This way the host computer knows, when the trial starts.
+If, 1, @startTrial
 ;
 ;
+label, @startTrial
 wait, 2000;
 ;
 gate, slaveIndex, finalValveIndex;
 ;
 Wait, 2000				; Wait for 2000ms
+
 ;
 UnGate, slaveIndex, finalValveIndex 
 ;

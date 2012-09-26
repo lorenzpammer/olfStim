@@ -70,7 +70,7 @@ clear callingFunctionName
 pathTrialLsq = [lsqPath 'trial.lsq'];
 
 % Clear old sequences, send new one to LASOM and compile it.
-lasomFunctions('sendLsqToLasom',lasomH,pathTrialLsq);
+lasomFunctions('sendLsqToLasom',pathTrialLsq);
 
 
 %% Set MFC flow rates
@@ -86,7 +86,7 @@ clear percentOfCapacityAir percentOfCapacityN
 
 %% Start sequencer
 
-lasomFunctions('loadAndRunSequencer',lasomH);
+lasomFunctions('loadAndRunSequencer');
 % clear a
 % for i = 1:150
 %    a(1,i) =  get(lasomH,'SeqUpdateEnable');
@@ -275,7 +275,7 @@ end
             stop(mfcMeasureTimer)
             
             % To do get events after trial.
-            test = get(lasomH, 'SequencerLabelTimeValue', '@')
+%             test = get(lasomH, 'SequencerLabelTimeValue', '@')
             
             % Release the connection to the olfactometer
             release(lasomH)
