@@ -31,17 +31,17 @@ clear lasomH;
 %% Build the lsq file for the current trial
 % buildTrialLsq.m will create an lsq file taking into account the
 % olfactometerInstructions for the current trial.
-%trialLsq = buildTrialLsq(trialNum,smell);
+trialLsq = buildTrialLsq(trialNum,smell);
 
 % Add the lsq file for the current trial into the smell structure:
-%smell.trial(trialNum).trialLsqFile = trialLsq;
+smell.trial(trialNum).trialLsqFile = trialLsq;
 
-callingFunctionName = 'startTrial.m'; % Define the name of the initalizing function
-lsqPath = which(callingFunctionName);
-lsqPath(length(lsqPath)-length(callingFunctionName):length(lsqPath))=[];
-lsqPath=[lsqPath filesep 'lsq' filesep];
-clear callingFunctionName
-trialLsq = fileread([lsqPath 'test.lsq']);
+% callingFunctionName = 'startTrial.m'; % Define the name of the initalizing function
+% lsqPath = which(callingFunctionName);
+% lsqPath(length(lsqPath)-length(callingFunctionName):length(lsqPath))=[];
+% lsqPath=[lsqPath filesep 'lsq' filesep];
+% clear callingFunctionName
+% trialLsq = fileread([lsqPath 'test.lsq']);
 
 %% Connect to LASOM and set it up
 lasomFunctions('connect');
@@ -213,8 +213,8 @@ end
         % status:
         measurementNo = get(readLasomStatusTimer,'TasksExecuted');
         
-        lasomStatus = get(lasomH,'SeqUpdateEnable')
-        startVariableStatus = get(lasomH,'SeqUpdateVarState',1)
+        lasomStatus = get(lasomH,'SeqUpdateEnable');
+        startVariableStatus = get(lasomH,'SeqUpdateVarState',1);
 %         disp('reading')
         
         if lasomStatus == 1 && ...
@@ -246,14 +246,14 @@ end
     function trialStarted(obj,event)
         set(readLasomStatusTimer,'Period',2); % Once the trial started read statuses at a rate of 10 Hz
         set(readLasomStatusTimer,'TimerFcn',@readLasomStatusAfterTrialStart);
-        set(readLasomStatusTimer,'StopFcn','')
-        start(readLasomStatusTimer)
+        set(readLasomStatusTimer,'StopFcn','');
+        start(readLasomStatusTimer);
         disp('next step in reading port');
     end
 
     function readLasomStatusAfterTrialStart(obj,event)
-       lasomStatus = get(lasomH,'SeqUpdateEnable')
-       startVariableStatus  = get(lasomH,'SeqUpdateVarState',1)
+       lasomStatus = get(lasomH,'SeqUpdateEnable');
+       startVariableStatus  = get(lasomH,'SeqUpdateVarState',1);
         
         if lasomStatus == 0 && ...
                startVariableStatus == 0
@@ -268,7 +268,7 @@ end
             if smell.trial(trialNum).olfactometerInstructions(index).used
                 invoke(lasomH,'SetMfcFlowRate',slave,1,100);
                 invoke(lasomH,'SetMfcFlowRate',slave,2,100);
-                sprintf('Purging olfactometer\n')
+                fprintf('Purging olfactometer\n')
             end
             
             % Stop measuring the Mfc flow:
@@ -280,7 +280,7 @@ end
             % Release the connection to the olfactometer
             release(lasomH)
 
-            sprintf('Executed trial %d successfully.\n',trialNum)
+            fprintf('Executed trial %d successfully.\n',trialNum)
         end
     end
     function readLasomStatusErrorFcn(~,~)
