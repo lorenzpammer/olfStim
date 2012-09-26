@@ -1,6 +1,6 @@
-function lasomH = lasomFunctions(instruction,lasomH, varargin)
+function lasomFunctions(instruction, varargin)
 %
-% lasomFunctions(instruction, lasomH, varargin)
+% lasomFunctions(instruction, varargin)
 % The argument instruction is a string 
 %   - 'checkConnection', checks whether a connection to the LASOM can be
 %      established, if yes results in a positive message, if no, results in an
@@ -23,15 +23,7 @@ function lasomH = lasomFunctions(instruction,lasomH, varargin)
 if nargin < 1
     error('Not enough input arguments.')
 end
-if nargin < 2 && strcmp(instruction,'loadAndRunSequencer') || ...
-        nargin < 2 && strcmp(instruction,'setMfcFlowRate') 
-    error('Not enough input arguments.')
-end
 if nargin < 2
-    lasomH = [];
-    varargin = {[]};
-end
-if nargin <3
     varargin = {[]};
 end
 
@@ -39,15 +31,14 @@ end
 
 if strcmp(instruction,'checkConnection')
    lasomH = actxcontrol('LASOMX.LASOMXCtrl.1');
-%     success = invoke(lasomH, 'DevOpen', 0, 1); % invoke(lasomH, 'DevOpen',???, show/notShow the debugWindow)
+   success = invoke(lasomH, 'DevOpen', 0, 1); % invoke(lasomH, 'DevOpen',???, show/notShow the debugWindow)
     if success == 0
-        pause(2)
         disp('Connecting to LASOM successful.')
+        pause(2)
         release(lasomH)
     else
          error('Could not connect to LASOM.')
     end
-    
     
 
 elseif strcmp(instruction,'connect')
@@ -60,14 +51,21 @@ elseif strcmp(instruction,'connect')
     end
     invoke(lasomH, 'GetLastError');
     invoke(lasomH, 'GetID');
+    disp('Connecting to LASOM successful.')
+    % Write the lasom handle into the appdata of the figure:
+    appdataManager('olfStimGui','set',lasomH);
+
 
     
 elseif strcmp(instruction,'sendLsqToLasom')
-    if isempty(varargin{1}) || isempty(lasomH)
+    if isempty(varargin{1})
         errormsg=sprintf('Not enough input arguments. \nThe handle to the lasom board and the path to the lsq file, \nwhich should be parsed have to be provided.');
         error(errormsg)
         clear errormsg
     end
+    % Extract the lasom handle from the appdata of the figure:
+    lasomH = appdataManager('olfStimGui','get','lasomH');
+    
     pathTrialLsq = varargin{1};
     % Clear old sequence:
     success = invoke(lasomH, 'ClearSequence');
@@ -88,6 +86,8 @@ elseif strcmp(instruction,'sendLsqToLasom')
 
     
 elseif strcmp(instruction,'loadAndRunSequencer')
+    % Extract the lasom handle from the appdata of the figure:
+    lasomH = appdataManager('olfStimGui','get','lasomH');
     % Load the sequencer and run it:
     success = invoke(lasomH, 'LoadAndRunSequencer',1);
     if success ~= 0
@@ -95,11 +95,13 @@ elseif strcmp(instruction,'loadAndRunSequencer')
     end
 
 elseif strcmp(instruction,'setMfcFlowRate')
-    if isempty(varargin{1}) || isempty(lasomH)
-        errormsg=sprintf('Not enough input arguments. \nThe handle to the lasom board and the MFC flow rates, \nhave to be provided.');
+    if isempty(varargin{1})
+        errormsg=sprintf('Not enough input arguments. \nThe MFC flow rates have to be provided.');
         error(errormsg)
         clear errormsg
     end
+    % Extract the lasom handle from the appdata of the figure:
+    lasomH = appdataManager('olfStimGui','get','lasomH');
     % Clear old sequence
     lsqFilePath = varargin{1};
     invoke(lasomH, 'ClearSequence')

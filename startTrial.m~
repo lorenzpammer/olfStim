@@ -273,10 +273,9 @@ end
             % Stop measuring the Mfc flow:
             stop(mfcMeasureTimer)
             
-            % To do get events after trial.
-            
             % Release the connection to the olfactometer
             release(lasomH)
+            
 
             sprintf('Executed trial %d successfully.\n',trialNum)
         end
