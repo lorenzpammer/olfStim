@@ -8,6 +8,8 @@ function clearSessionDataCallback(~,~)
 % lorenzpammer september 2012
 
 %%
+
+global trialNum
 % Extract the gui handle structure from the appdata of the figure:
 h=appdataManager('olfStimGui','get','h');
 
@@ -20,6 +22,9 @@ switch selection,
     case 'Yes',
         % Clear the global smell variable
         clearvars -global 'smell'
+        % set trialNum
+        trialNum = 0;
+        
         % Now set up a fresh smell structure.
         selectedProtocol=appdataManager('olfStimGui','get','selectedProtocol');
         buildSmell('setUp',[],[],selectedProtocol);
