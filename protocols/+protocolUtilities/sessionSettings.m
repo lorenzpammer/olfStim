@@ -58,15 +58,29 @@ end
 %% Set up
 
 if strcmp(instruction,'setUp') || strcmp(instruction,'setUpStructure')
+    % Check if there is still a session structure available in the gui
+    % appdata:
+    oldSessionInstructions = appdataManager('olfStimGui','get','sessionInstructions');
+    if ~isempty(oldSessionInstructions)
+        % If there's still old sessionInstructions structure left, use the
+        % active settings information. This can happen if the session
+        % inforamtion is cleared, and a new session is started.
+        activeSettings = {oldSessionInstructions.activeSettingNumber}; 
+    else
+        % At the beginning of a session, the active settings will be
+        % defined below. The instruction is then 'setUp'
+        activeSettings = [];
+    end
     
     % Create the sessionInstructions structure
     sessionInstructions = struct('name',{'scientist' 'animalName',...
         'interTrialInterval'},...
         'value',{'' '' ''},...
         'unit',{ 'ID' 'ID' 's'},...
-        'activeSettingNumber',[],...
+        'activeSettingNumber',activeSettings,...
         'used',{false false false});  % for every setting put the default of not used, depending on which settings were provided in usedSettingNames, this will be overridden below.
     
+    clear activeSettings;
     
     
     if strcmp(instruction,'setUp')
@@ -209,9 +223,6 @@ function sessionInstructions = extractSessionSettings(h,sessionInstructions)
 % Extract field from gui and update sessionInstructions structure
 % As not all necessary session settings are present in the gui, these numbers allow cross referencing
 pointersToGui = [sessionInstructions.activeSettingNumber]; 
-if isempty(pointersToGui)
-    error('No activeSettingNumber has been defined for the structure sessionInstructions. Session instructions cannot be exracted.')
-end
 for i = 1 : length(pointersToGui)
     % finds the corresponding sessionInstructions index to the current gui field
     indexStruct2GuiField = find(pointersToGui==i); 
