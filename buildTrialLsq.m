@@ -223,7 +223,7 @@ if smell.trial(trialNum).mixture == 0
     trialLsq = replacePlaceHolderInLsq(trialLsq,replaceString, actionLsq);
     
     
-    disp(trialLsq)
+%     disp(trialLsq)
     
 elseif smell.trial(trialNum).mixture == 1
     error(': Creating Lsq files for mixtures is not yet programmed.')
