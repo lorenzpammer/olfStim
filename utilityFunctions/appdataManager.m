@@ -7,6 +7,7 @@ function varargout = appdataManager(handle,instruction,varargin)
 %    - 'get' : get the specified appdata (variable names) of the specified
 %    figure component 
 % varargin - 
+%
 % lorenzpamemr 2012/08
 
 %%

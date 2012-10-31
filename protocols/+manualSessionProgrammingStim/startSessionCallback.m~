@@ -128,7 +128,7 @@ if get(h.startSession,'Value') == 1 % if the startSessionButton is pressed
                 smell.trial(trialNum+1).sessionInstructions(index).value = '0';
             end
             interTrialInterval = str2num(smell.trial(trialNum+1).sessionInstructions(index).value);
-            disp(['Waiting for the intertrial interval period of ' num2str(interTrialInterval) ' seconds.'])
+            disp(['Waiting for the inter-tria' num2str(interTrialInterval)])
             pause(interTrialInterval)
         else
             fprintf('Last trial in programmed sequence was reached. Session ended successfully.\n')

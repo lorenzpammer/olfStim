@@ -64,7 +64,7 @@ if strcmp(instruction,'setUp') || strcmp(instruction,'setUpStructure')
         'interTrialInterval'},...
         'value',{'' '' ''},...
         'unit',{ 'ID' 'ID' 's'},...
-        'activeSettingNumber',[],...
+        'userSettingNumber',[],...
         'used',{false false false});  % for every setting put the default of not used, depending on which settings were provided in usedSettingNames, this will be overridden below.
     
     
@@ -134,44 +134,44 @@ if strcmp(instruction,'setUp') || strcmp(instruction,'setUpStructure')
         numberOfActiveSettings = length(find([sessionInstructions.used])); % Get the number of active sessionInstructions.
         usedSettingNames = {sessionInstructions(find([sessionInstructions.used])).name}; % extract the names of the active settings
         
-        for activeSettingNumber = 1 : numberOfActiveSettings
+        for userSettingNumber = 1 : numberOfActiveSettings
             
-            settingNumber = find(strcmp(usedSettingNames(activeSettingNumber),{sessionInstructions.name}));
+            settingNumber = find(strcmp(usedSettingNames(userSettingNumber),{sessionInstructions.name}));
             
             % Set up some missing parameters for the current setting:
-            sessionInstructions(settingNumber).activeSettingNumber = activeSettingNumber;
+            sessionInstructions(settingNumber).userSettingNumber = userSettingNumber;
             
             % Set up the user controls for the current setting in the GUI:
             
             % Text label:
-            position = [positions{activeSettingNumber}(1)+spacing positions{activeSettingNumber}(2)+15 textWidth textHeight];
-            h.sessionSettings.text(activeSettingNumber) = uicontrol('Parent',h.guiHandle,...
+            position = [positions{userSettingNumber}(1)+spacing positions{userSettingNumber}(2)+15 textWidth textHeight];
+            h.sessionSettings.text(userSettingNumber) = uicontrol('Parent',h.guiHandle,...
                 'Style','text','String',[sessionInstructions(settingNumber).name ' ' sessionInstructions(settingNumber).unit],...
                 'Position', position,'Tag',sessionInstructions(settingNumber).name,...
                 'Fontsize',7.5);
             
             % Field for editing the value of the setting:
             if useEditField(settingNumber)
-                position = [positions{activeSettingNumber}(1)+spacing positions{activeSettingNumber}(2)+spacing editWidth editHeight];
-                h.sessionSettings.edit(activeSettingNumber) = uicontrol('Parent',h.guiHandle,...
+                position = [positions{userSettingNumber}(1)+spacing positions{userSettingNumber}(2)+spacing editWidth editHeight];
+                h.sessionSettings.edit(userSettingNumber) = uicontrol('Parent',h.guiHandle,...
                     'Style','edit','String',num2str(sessionInstructions(settingNumber).value),'Position', position,...
                     'Tag',sessionInstructions(settingNumber).name);
             end
             
             % Check field whether to use the setting or not:
             if useCheckBox(settingNumber)
-                position = [positions{activeSettingNumber}(1)+position(3)+spacing positions{activeSettingNumber}(2)+10 15 15];
-                h.sessionSettings.check(activeSettingNumber) = uicontrol('Parent',h.guiHandle,... % check to define whether the final valve should be used
+                position = [positions{userSettingNumber}(1)+position(3)+spacing positions{userSettingNumber}(2)+10 15 15];
+                h.sessionSettings.check(userSettingNumber) = uicontrol('Parent',h.guiHandle,... % check to define whether the final valve should be used
                     'Style','checkbox','String','','Value',sessionInstructions(settingNumber).used,'Position', position,...
                     'Tag',sessionInstructions(settingNumber).name);
                 % if there's  a setting for which only the checkbox is set
                 % change the position.
                 if ~useEditField(settingNumber)
-                    position = [positions{activeSettingNumber}(1)+editWidth/2 positions{activeSettingNumber}(2)+(editHeight/2) 15 15];
-                    set(h.sessionSettings.check(activeSettingNumber),'Position', position);
+                    position = [positions{userSettingNumber}(1)+editWidth/2 positions{userSettingNumber}(2)+(editHeight/2) 15 15];
+                    set(h.sessionSettings.check(userSettingNumber),'Position', position);
                 end
             else
-                h.sessionSettings.check(activeSettingNumber) = false;
+                h.sessionSettings.check(userSettingNumber) = false;
             end
             
             
@@ -208,10 +208,9 @@ function sessionInstructions = extractSessionSettings(h,sessionInstructions)
 
 % Extract field from gui and update sessionInstructions structure
 % As not all necessary session settings are present in the gui, these numbers allow cross referencing
-pointersToGui = [sessionInstructions.activeSettingNumber]; 
+pointersToGui = [sessionInstructions.userSettingNumber]; 
 if isempty(pointersToGui)
-    error('No activeSettingNumber has been defined for the structure sessionInstructions. Session instructions cannot be exracted.')
-end
+    error('No userSettingNumber has been defined for the structure sessionInstructions. 
 for i = 1 : length(pointersToGui)
     % finds the corresponding sessionInstructions index to the current gui field
     indexStruct2GuiField = find(pointersToGui==i); 
