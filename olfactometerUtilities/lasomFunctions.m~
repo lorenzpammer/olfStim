@@ -102,7 +102,7 @@ elseif strcmp(instruction,'loadAndRunSequencer')
     % Load the sequencer and run it:
     success = invoke(lasomH, 'LoadAndRunSequencer',1);
     if success ~= 0
-        error(fprintf('Could not start sequencer with new sequence file.\nLasom handle = %s, Load and run sequencer = %d',lasomH,success)
+        error(fprintf('Could not start sequencer with new sequence file.\nLasom handle = %s, Load and run sequencer = %d',lasomH,s)
     end
 
 elseif strcmp(instruction,'setMfcFlowRate')

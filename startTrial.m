@@ -14,6 +14,11 @@ function smell = startTrial(trialNum, smell)
 %
 % lorenzpammer dec 2011
 
+%% Decide whether to output information to the command window for debugging;
+
+debug = true;
+% debug = false;
+
 %% Fetch some variables from the gui appdata
 % Extract the gui handle structure from the appdata of the figure:
 h = appdataManager('olfStimGui','get','h');
@@ -35,7 +40,11 @@ trialLsq = buildTrialLsq(trialNum,smell);
 
 % Add the lsq file for the current trial into the smell structure:
 smell.trial(trialNum).trialLsqFile = trialLsq;
-% 
+
+if debug
+    disp(trialLsq)
+end
+
 % callingFunctionName = 'startTrial.m'; % Define the name of the initalizing function
 % lsqPath = which(callingFunctionName);
 % lsqPath(length(lsqPath)-length(callingFunctionName):length(lsqPath))=[];
@@ -44,7 +53,7 @@ smell.trial(trialNum).trialLsqFile = trialLsq;
 % trialLsq = fileread([lsqPath 'test.lsq']);
 
 %% Connect to LASOM and set it up
-lasomFunctions('connect');
+lasomFunctions('connect',debug);
 
 %% Get the lasom handle from appdata after connecting to LASOM
 % Extract the lasom handle from the appdata of the figure:
@@ -70,8 +79,7 @@ clear callingFunctionName
 pathTrialLsq = [lsqPath 'trial.lsq'];
 
 % Clear old sequences, send new one to LASOM and compile it.
-lasomFunctions('sendLsqToLasom',pathTrialLsq);
-
+lasomFunctions('sendLsqToLasom',debug,pathTrialLsq);
 
 %% Set MFC flow rates
 
@@ -79,6 +87,7 @@ slave = smell.trial(trialNum).slave;
 smell = calculateMfcFlowRates(trialNum,smell);
 percentOfCapacityAir = smell.trial(trialNum).flowRateMfcAir / smell.olfactometerSettings.maxFlowRateMfcAir * 100;
 percentOfCapacityN = smell.trial(trialNum).flowRateMfcN / smell.olfactometerSettings.maxFlowRateMfcNitrogen * 100;
+% These commands should be externalized into the lasomFunctions.m function.
 invoke(lasomH,'SetMfcFlowRate',slave,1,percentOfCapacityAir);
 invoke(lasomH,'SetMfcFlowRate',slave,2,percentOfCapacityN);
 
@@ -86,7 +95,7 @@ clear percentOfCapacityAir percentOfCapacityN
 
 %% Start sequencer
 
-lasomFunctions('loadAndRunSequencer');
+lasomFunctions('loadAndRunSequencer',debug);
 % clear a
 % for i = 1:150
 %    a(1,i) =  get(lasomH,'SeqUpdateEnable');
@@ -137,7 +146,7 @@ mfcMeasureTimer = timer('ExecutionMode','fixedRate','Period',measurementInterval
 
 % Callback functions of timer:
     function measureMfcFlowRate(obj,event)
-        % Every 100 ms, jump into this function measure the mfc flow rates
+        % Every 2000 ms, jump into this function measure the mfc flow rates
         % and write the returned values into the smell structure:
         measurementNo = get(mfcMeasureTimer,'TasksExecuted');
         elapsedTime = toc(get(mfcMeasureTimer,'UserData'));
@@ -149,14 +158,19 @@ mfcMeasureTimer = timer('ExecutionMode','fixedRate','Period',measurementInterval
             get(lasomH, 'MfcFlowRateMeasurePercent', slave, 1);
         smell.trial(trialNum).lasomEventLog.flowRateMfcN(2,measurementNo) = ...
             get(lasomH, 'MfcFlowRateMeasurePercent', slave, 2);
-        disp('measuring flow');
+        % Print the measured flow rates to the command window:
+        fprintf('Measurement of MFC flow #%d. Air: %.3f, N2: %.3f.\n',...
+            measurementNo,smell.trial(trialNum).lasomEventLog.flowRateMfcAir(2,measurementNo),...
+            smell.trial(trialNum).lasomEventLog.flowRateMfcN(2,measurementNo));
     end
     function measureMfcFlowStopped(varargin)
         % At the end of the trial, after last measurement of mfc flow, jump
         % into this function and stop the timer.
          stop(mfcMeasureTimer);
         delete(mfcMeasureTimer);
-                disp('mfcMeasure timer stopped');
+        if debug
+            disp('Stopped measuring MFC flowrate.');
+        end
     end
     function measureMfcErrorFcn(~,~)
         warning('Can''t fulfill MFC measuring requests at the set interval. Giving up.')
@@ -209,27 +223,34 @@ end
 
 %% Callback functions of timer:
     function readLasomStatusUntilTrialStart(obj,event)
-        % Every 100 ms, jump into this function and read the last emitted
+        % Every 1500 ms, jump into this function and read the last emitted
         % status:
         measurementNo = get(readLasomStatusTimer,'TasksExecuted');
         
         lasomStatus = get(lasomH,'SeqUpdateEnable');
         startVariableStatus = get(lasomH,'SeqUpdateVarState',1);
-%         disp('reading')
+        if debug
+            fprintf('Checking sequencer status. Sequencer status: %d, Start variable: %d\n',...
+                lasomStatus, startVariableStatus);
+        end
         
+        % If the variable with index 1 ($Var1) is set to 1, this means
+        % the sequencer has started to execute the trial (eg after
+        % exiting the initial whileloop).
         if lasomStatus == 1 && ...
-                startVariableStatus == 1;
-            % If the variable with index 1 ($Var1) is set to 1, this means
-            % the sequencer has started to execute the trial (eg after
-            % exiting the initial whileloop).
+                startVariableStatus == 1;    
             
-            disp('Starting mfc measuring')
+            if debug
+                fprintf('Started to execute trial.\n');
+            end
+            
             ticID = tic;
             set(mfcMeasureTimer,'UserData',ticID);
             start(mfcMeasureTimer);
             
-            stop(readLasomStatusTimer)
-            fprintf('Trial %d started.\n',trialNum)
+            stop(readLasomStatusTimer) % will execute trialStarted subfunction.
+            fprintf('Trial #%d started.\n',trialNum)
+           
         end
         if measurementNo >= 2 && (lasomStatus == 205 || startVariableStatus == 205)
             warning('LASOM throws error 205 at reading status. Stopped reading status & measuring flow. Not purging.')
@@ -237,7 +258,7 @@ end
             stop(mfcMeasureTimer)
             % Release the connection to the olfactometer
             stop(readLasomStatusTimer)
-%             delete(readLasomStatusTimer)
+            %             delete(readLasomStatusTimer)
             
             release(lasomH)
         end
@@ -248,19 +269,25 @@ end
         set(readLasomStatusTimer,'TimerFcn',@readLasomStatusAfterTrialStart);
         set(readLasomStatusTimer,'StopFcn','');
         start(readLasomStatusTimer);
-        disp('next step in reading port');
+        if debug
+            disp('2nd phase of checking LASOM status initiated.')
+        end
     end
 
     function readLasomStatusAfterTrialStart(obj,event)
-       lasomStatus = get(lasomH,'SeqUpdateEnable');
-       startVariableStatus  = get(lasomH,'SeqUpdateVarState',1);
-        
+        lasomStatus = get(lasomH,'SeqUpdateEnable');
+        startVariableStatus  = get(lasomH,'SeqUpdateVarState',1);
+        if debug
+            fprintf('2nd phase of checking sequencer status. Sequencer status: %d, Start variable: %d\n',...
+                lasomStatus, startVariableStatus);
+        end
         if lasomStatus == 0 && ...
-               startVariableStatus == 0
+                startVariableStatus == 0
             % At the end of the trial, jump into this function and stop the timer.
             stop(readLasomStatusTimer)
-            disp('readLasomStatusTimer timer stopped')
-            
+            if debug
+                fprintf('Sequencer finished. Stopped the timer readLasomStatus.\n');
+            end
             % If purging is used by the user, set mfcs to maximum flow rate
             % at the end of the trial:
             settingNames = {smell.trial(trialNum).olfactometerInstructions.name};
@@ -268,18 +295,18 @@ end
             if smell.trial(trialNum).olfactometerInstructions(index).used
                 invoke(lasomH,'SetMfcFlowRate',slave,1,100);
                 invoke(lasomH,'SetMfcFlowRate',slave,2,100);
-                fprintf('Purging olfactometer\n')
+                fprintf('Purging olfactometer.\n')
             end
             
             % Stop measuring the Mfc flow:
             stop(mfcMeasureTimer)
             
             % To do get events after trial.
-%             test = get(lasomH, 'SequencerLabelTimeValue', '@')
+            %             test = get(lasomH, 'SequencerLabelTimeValue', '@')
             
             % Release the connection to the olfactometer
             release(lasomH)
-
+            
             fprintf('Executed trial %d successfully.\n',trialNum)
         end
     end
