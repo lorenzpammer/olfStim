@@ -36,17 +36,17 @@ clear lasomH;
 %% Build the lsq file for the current trial
 % buildTrialLsq.m will create an lsq file taking into account the
 % olfactometerInstructions for the current trial.
-% trialLsq = buildTrialLsq(trialNum,smell);
-% 
-% % Add the lsq file for the current trial into the smell structure:
-% smell.trial(trialNum).trialLsqFile = trialLsq;
+trialLsq = buildTrialLsq(trialNum,smell);
 
-callingFunctionName = 'startTrial.m'; % Define the name of the initalizing function
-lsqPath = which(callingFunctionName);
-lsqPath(length(lsqPath)-length(callingFunctionName):length(lsqPath))=[];
-lsqPath=[lsqPath filesep 'lsq' filesep];
-clear callingFunctionName
-trialLsq = fileread([lsqPath 'test.lsq']);
+% Add the lsq file for the current trial into the smell structure:
+smell.trial(trialNum).trialLsqFile = trialLsq;
+
+% callingFunctionName = 'startTrial.m'; % Define the name of the initalizing function
+% lsqPath = which(callingFunctionName);
+% lsqPath(length(lsqPath)-length(callingFunctionName):length(lsqPath))=[];
+% lsqPath=[lsqPath filesep 'lsq' filesep];
+% clear callingFunctionName
+% trialLsq = fileread([lsqPath 'test.lsq']);
 
 
 if debug
@@ -281,8 +281,10 @@ end
             fprintf('2nd phase of checking sequencer status. Sequencer status: %d, Start variable: %d\n',...
                 lasomStatus, startVariableStatus);
         end
-        if lasomStatus == 0 && ...
-                startVariableStatus == 0
+        if startVariableStatus == 0 %lasomStatus == 0 && ...
+            if lasomStatus ~= 0
+                disp('Sequencer didn''t terminate. Still quitting trial.')
+            end
             % At the end of the trial, jump into this function and stop the timer.
             stop(readLasomStatusTimer)
             if debug
