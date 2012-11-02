@@ -36,22 +36,22 @@ clear lasomH;
 %% Build the lsq file for the current trial
 % buildTrialLsq.m will create an lsq file taking into account the
 % olfactometerInstructions for the current trial.
-trialLsq = buildTrialLsq(trialNum,smell);
+% trialLsq = buildTrialLsq(trialNum,smell);
+% 
+% % Add the lsq file for the current trial into the smell structure:
+% smell.trial(trialNum).trialLsqFile = trialLsq;
 
-% Add the lsq file for the current trial into the smell structure:
-smell.trial(trialNum).trialLsqFile = trialLsq;
+callingFunctionName = 'startTrial.m'; % Define the name of the initalizing function
+lsqPath = which(callingFunctionName);
+lsqPath(length(lsqPath)-length(callingFunctionName):length(lsqPath))=[];
+lsqPath=[lsqPath filesep 'lsq' filesep];
+clear callingFunctionName
+trialLsq = fileread([lsqPath 'test.lsq']);
+
 
 if debug
     disp(trialLsq)
 end
-
-% callingFunctionName = 'startTrial.m'; % Define the name of the initalizing function
-% lsqPath = which(callingFunctionName);
-% lsqPath(length(lsqPath)-length(callingFunctionName):length(lsqPath))=[];
-% lsqPath=[lsqPath filesep 'lsq' filesep];
-% clear callingFunctionName
-% trialLsq = fileread([lsqPath 'test.lsq']);
-
 %% Connect to LASOM and set it up
 lasomFunctions('connect',debug);
 

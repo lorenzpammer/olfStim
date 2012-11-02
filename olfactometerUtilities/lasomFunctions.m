@@ -49,7 +49,7 @@ elseif strcmp(instruction,'connect')
     success = invoke(lasomH, 'DevOpen', 0, 0); % invoke(lasomH, 'DevOpen',???, show/notShow the debugWindow)
     if success ~= 0
         if debug
-            olfStimDebug(dbstack,fprintf('LASOM returned: handle = %s, connection success = %d\n',lasomH,success));
+            olfStimDebug(dbstack,fprintf('LASOM returned: ishandle = %d, connection success = %d\n',iscom(lasomH),success));
         end
         error('Could not connect to LASOM.')
     else
@@ -59,8 +59,8 @@ elseif strcmp(instruction,'connect')
     lasomID = invoke(lasomH, 'GetID');
     if debug
         olfStimDebug(dbstack,...
-            fprintf('Connecting to LASOM. LASOM returned: handle = %s, connection success = %d\nLast error = %d, LASOM ID = %s',...
-            lasomH,success,lastError,lasomID));
+            fprintf('Connecting to LASOM. LASOM returned: ishandle = %d, connection success = %d,\nLast error = %s, LASOM ID = %s\n',...
+            iscom(lasomH),success,lastError,lasomID)); % should be 
     end
     % Write the lasom handle into the appdata of the figure:
     appdataManager('olfStimGui','set',lasomH);
@@ -102,7 +102,7 @@ elseif strcmp(instruction,'loadAndRunSequencer')
     % Load the sequencer and run it:
     success = invoke(lasomH, 'LoadAndRunSequencer',1);
     if success ~= 0
-        error(fprintf('Could not start sequencer with new sequence file.\nLasom handle = %s, Load and run sequencer = %d',lasomH,success)
+        error(fprintf('Could not start sequencer with new sequence file.\nLasom handle = %s, Load and run sequencer = %d',lasomH,success))
     end
 
 elseif strcmp(instruction,'setMfcFlowRate')
