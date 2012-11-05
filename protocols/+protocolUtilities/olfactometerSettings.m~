@@ -623,9 +623,9 @@ catch
     % line
     allTerminatingValues = cell2mat(value);
     finalAction = nanmax(allTerminatingValues);
-    plot(axisHandle,[finalAction finalAction], get(axisHandle,'Ylim') + [-1 +1],'--k','Linewidth',1.5)
+    plot(axisHandle,
     
-    % Set the figure limits:
+    
     ylim([0 i+1])
     xlim([0 max(cell2mat(value))+1])
     
