@@ -11,7 +11,7 @@ function smell = removeHistoricalTrialDataFromSmell(smell)
 % smell.olfactometerSettings.maxFlowRateMfcAir = [];
 % smell.olfactometerSettings.maxFlowRateMfcNitrogen = [];
 
-%% Delete trial specific information from the individual trials
+%% Delete trial specific 
 for i = 1 : length(smell.trial)
     smell.trial(i).stimProtocol = [];
     smell.trial(i).time = [];
@@ -29,9 +29,6 @@ for i = 1 : length(smell.trial)
     smell.trial(i).trialLsqFile = [];
 end
 
-%% Delete session specific information from smell
-smell.olfactometerOdors = [];
 
-
-
+%%
 end

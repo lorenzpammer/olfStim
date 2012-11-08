@@ -60,6 +60,8 @@ global olfactometerOdors
 global smell 
 global olfactometerInstructions
 
+smellVersion = 0; % version of smell structure
+
 %% Import function packages
 
 % Import all utility functions
@@ -90,25 +92,24 @@ if nargin< 5
     protocolSpecificInfo =[];
 end
 
-
 %% Set up smell structure
 
 if strcmp(instruction,'setUp')
-   smell = setUpSmellStructure(smell, stimProtocol,protocolSpecificInfo); 
+   smell = setUpSmellStructure(smell, stimProtocol,protocolSpecificInfo,smellVersion); 
 end
     
 
 %% Update all relevant elements of smell structure for the current trial
 % 
 if strcmp(instruction,'update')
-    smell = updateSmellStructure(smell, trialOdor,trialNum,stimProtocol,protocolSpecificInfo);
+    smell = updateSmellStructure(smell, trialOdor,trialNum,stimProtocol,protocolSpecificInfo,smellVersion);
 end
 
 
 %% Update a defined set of parameters in smell.
 
 if strcmp(instruction,'updateFields')
-     smell = updateFields(smell,trialNum,stimProtocol,protocolSpecificInfo,varargin);
+     smell = updateFields(smell,trialNum,stimProtocol,protocolSpecificInfo,smellVersion,varargin);
 end
 
 
@@ -116,7 +117,7 @@ end
 
 
 
-function smell = setUpSmellStructure(smell, stimProtocol,protocolSpecificInfo)
+function smell = setUpSmellStructure(smell, stimProtocol,protocolSpecificInfo,smellVersion)
 
 global olfactometerOdors
 global olfactometerInstructions
@@ -130,97 +131,98 @@ h=appdataManager('olfStimGui','get','h');
 import protocolUtilities.*
 
 %%
-    
- % Basic information about the current trial
-    smell.olfactometerOdors = olfactometerOdors; % structure containing information which odors are loaded into olfactometer
-    smell.version = 0; % Define here which version of the smell structure was used - if anything has to change in the future downstream algorithms know what to do.
-    
-    % Get this from the olfactometer
-    smell.olfactometerSettings.maxFlowRateMfcAir = 1.5; % in liters/minute
-    smell.olfactometerSettings.maxFlowRateMfcNitrogen = 0.1; % in liters/minute
-    % Field for storing information about LASOM (firmware, etc.)
-    smell.olfactometerSettings.lasomID = [];
-    
-    odorFields = fields(olfactometerOdors.sessionOdors(1));
-    smell.trial(1) = cell2struct(cell(length(odorFields),1),odorFields,1); % all fields for each used odor are written to the smell structure: odorName,iupacName,CASNumber,producingCompany,odorantPurity,state,odorantDilution,dilutedIn,concentrationAtPresentation,inflectionPointResponseCurve,slave,vial,mixture,sessionOdorNumber
-    smell.trial(1).isSequence = []; % Whether multiple different odors are presented sequentially within one trial.
-    smell.trial(1).trialNum = []; % Trial number in the current session
-    smell.trial(1).stimProtocol = []; % which stimulation protocol was used for this session
-    smell.trial(1).time = []; % time at time of start of a new trial (not the time of actual odor presentation)
+
+% Basic information about the current trial
+smell.olfactometerOdors = olfactometerOdors; % structure containing information which odors are loaded into olfactometer
+smell.version = smellVersion; % Define here which version of the smell structure was used - if anything has to change in the future downstream algorithms know what to do.
+
+% Get this from the olfactometer
+smell.olfactometerSettings.maxFlowRateMfcAir = 1.5; % in liters/minute
+smell.olfactometerSettings.maxFlowRateMfcNitrogen = 0.1; % in liters/minute
+% Field for storing information about LASOM (firmware, etc.)
+smell.olfactometerSettings.lasomID = [];
+
+odorFields = fields(olfactometerOdors.sessionOdors(1));
+smell.trial(1) = cell2struct(cell(length(odorFields),1),odorFields,1); % all fields for each used odor are written to the smell structure: odorName,iupacName,CASNumber,producingCompany,odorantPurity,state,odorantDilution,dilutedIn,concentrationAtPresentation,inflectionPointResponseCurve,slave,vial,mixture,sessionOdorNumber
+smell.trial(1).isSequence = []; % Whether multiple different odors are presented sequentially within one trial.
+smell.trial(1).trialNum = []; % Trial number in the current session
+smell.trial(1).stimProtocol = []; % which stimulation protocol was used for this session
+smell.trial(1).time = []; % time at time of start of a new trial (not the time of actual odor presentation)
 %     smell.trial(1).interTrialInterval = 0; % First trial has a intertrial-interval of 0 seconds.
-    smell.trial(1).notes = []; % Notes that are taken during the session will be saved here. Every trial the notes are extracted from the field and written into this field in form of a string.\
-    smell.trial(1).flowRateMfcAir = [];
-    smell.trial(1).flowRateMfcN = [];
-    
-    % User defined times to instruct the olfactometer.
-    % olfactometerInstructions structure is handled by
-    % olfactometerSettings.m function
-    smell.trial(1).olfactometerInstructions = olfactometerInstructions; 
-    
-    % User defined settings for the current session. sessionInstructions
-    % structure is produced by sessionSettings.m and written into the
-    % appdata of the gui.
-    sessionSettings(h,'setUpStructure'); % Create structure and write into appdata
-    % Extract the sessionInstructions structure from the appdata of the figure:
-    sessionInstructions=appdataManager('olfStimGui','get','sessionInstructions');
-    smell.trial(1).sessionInstructions = sessionInstructions;
-    
-    % Field for storing the event log from the LASOM after the execution of
-    % the trial:
-    smell.trial(1).lasomEventLog.flowRateMfcAir = [];
-    smell.trial(1).lasomEventLog.flowRateMfcN = [];
-    % Field for storing the lsq file (lasom sequencer script) for each
-    % trial:
-    smell.trial(1).trialLsqFile = []; 
-   
-    % Here any information specific for the current protocol can be dumped
-    smell.trial(1).protocolSpecificInfo = []; 
+smell.trial(1).notes = []; % Notes that are taken during the session will be saved here. Every trial the notes are extracted from the field and written into this field in form of a string.\
+smell.trial(1).flowRateMfcAir = [];
+smell.trial(1).flowRateMfcN = [];
+
+% User defined times to instruct the olfactometer.
+% olfactometerInstructions structure is handled by
+% olfactometerSettings.m function
+smell.trial(1).olfactometerInstructions = olfactometerInstructions;
+
+% User defined settings for the current session. sessionInstructions
+% structure is produced by sessionSettings.m and written into the
+% appdata of the gui.
+sessionSettings(h,'setUpStructure'); % Create structure and write into appdata
+% Extract the sessionInstructions structure from the appdata of the figure:
+sessionInstructions=appdataManager('olfStimGui','get','sessionInstructions');
+smell.trial(1).sessionInstructions = sessionInstructions;
+
+% Field for storing the event log from the LASOM after the execution of
+% the trial:
+smell.trial(1).lasomEventLog.flowRateMfcAir = [];
+smell.trial(1).lasomEventLog.flowRateMfcN = [];
+% Field for storing the lsq file (lasom sequencer script) for each
+% trial:
+smell.trial(1).trialLsqFile = [];
+
+% Here any information specific for the current protocol can be dumped
+smell.trial(1).protocolSpecificInfo = [];
 end
 
-function smell = updateSmellStructure(smell, trialOdor,trialNum,stimProtocol,protocolSpecificInfo)
+function smell = updateSmellStructure(smell, trialOdor,trialNum,stimProtocol,protocolSpecificInfo,smellVersion)
 
 global olfactometerOdors
 global olfactometerInstructions
 
 % Extract the gui handle structure from the appdata of the figure:
-    h=appdataManager('olfStimGui','get','h');
-    
+h=appdataManager('olfStimGui','get','h');
+
 %% Import function packages
 
 % Import all utility functions
 import protocolUtilities.*
 
 %%
-    smell.trial(trialNum).odorName = []; % to set up a new struct array (1xtrialNum)
-    % Find out how to extract information which function called buildSmell
-    trialOdorFields = fields(trialOdor); % get name of fields in trialOdor (also present in smell
-    % update first couple of fields (same as in trialOdor) with the data for the current trial.
-    for i = 1 : length(trialOdorFields)
-        smell.trial(trialNum) = setfield(smell.trial(trialNum),trialOdorFields{i},getfield(trialOdor,trialOdorFields{i})); 
-    end
-    smell.trial(trialNum).isSequence = false;
-    smell.trial(trialNum).trialNum = trialNum;
-    smell.trial(trialNum).stimProtocol = stimProtocol;
-    smell.trial(trialNum).time = clock; % This only gives an approximate time, as the odor might be presented to the animal multiple seconds later.
-    smell.trial(trialNum).protocolSpecificInfo = protocolSpecificInfo;
-    smell.trial(trialNum).notes = protocolUtilities.getUserNotes(h); % extract the notes 
-    
-    % olfactometerInstructions structure is updated in the
-    % olfactometerSettings function prior to calling build smell. Now write
-    % the updated instructions into the smell structure.
-    smell.trial(trialNum).olfactometerInstructions = olfactometerInstructions;
-    
-    % sessionInstructions structure is updated in the
-    % sessionSettings function prior to calling build smell. Now write
-    % the updated instructions into the smell structure.
-    sessionSettings(h,'get'); % Create structure and write into appdata
-    % Extract the sessionInstructions structure from the appdata of the figure:
-    sessionInstructions=appdataManager('olfStimGui','get','sessionInstructions');
-    smell.trial(trialNum).sessionInstructions = sessionInstructions;
+smell.version = smellVersion; % Define here which version of the smell structure was used - if anything has to change in the future downstream algorithms know what to do.
+smell.trial(trialNum).odorName = []; % to set up a new struct array (1xtrialNum)
+% Find out how to extract information which function called buildSmell
+trialOdorFields = fields(trialOdor); % get name of fields in trialOdor (also present in smell
+% update first couple of fields (same as in trialOdor) with the data for the current trial.
+for i = 1 : length(trialOdorFields)
+    smell.trial(trialNum) = setfield(smell.trial(trialNum),trialOdorFields{i},getfield(trialOdor,trialOdorFields{i}));
+end
+smell.trial(trialNum).isSequence = false;
+smell.trial(trialNum).trialNum = trialNum;
+smell.trial(trialNum).stimProtocol = stimProtocol;
+smell.trial(trialNum).time = clock; % This only gives an approximate time, as the odor might be presented to the animal multiple seconds later.
+smell.trial(trialNum).protocolSpecificInfo = protocolSpecificInfo;
+smell.trial(trialNum).notes = protocolUtilities.getUserNotes(h); % extract the notes
+
+% olfactometerInstructions structure is updated in the
+% olfactometerSettings function prior to calling build smell. Now write
+% the updated instructions into the smell structure.
+smell.trial(trialNum).olfactometerInstructions = olfactometerInstructions;
+
+% sessionInstructions structure is updated in the
+% sessionSettings function prior to calling build smell. Now write
+% the updated instructions into the smell structure.
+sessionSettings(h,'get'); % Create structure and write into appdata
+% Extract the sessionInstructions structure from the appdata of the figure:
+sessionInstructions=appdataManager('olfStimGui','get','sessionInstructions');
+smell.trial(trialNum).sessionInstructions = sessionInstructions;
 
 end
 
-function smell = updateFields(smell,trialNum,stimProtocol,protocolSpecificInfo,fieldsToUpdate)
+function smell = updateFields(smell,trialNum,stimProtocol,protocolSpecificInfo,smellVersion,fieldsToUpdate)
 
 global olfactometerOdors
 global olfactometerInstructions
@@ -232,6 +234,9 @@ h=appdataManager('olfStimGui','get','h');
 % Import all utility functions
 import protocolUtilities.*
 
+%% Update smell version
+% Define here which version of the smell structure was used - if anything has to change in the future downstream algorithms know what to do.
+smell.version = smellVersion; 
 %% Update the fields specified in varargin
 % varargin includes the information in the form
 % 'PropertyName','PropertyValue'
@@ -249,11 +254,11 @@ if any(strcmpi('time',fieldsToUpdate))
 end
 
 if any(strcmpi('notes',fieldsToUpdate))
-    smell.trial(trialNum).notes = protocolUtilities.getUserNotes(h); % extract the notes 
+    smell.trial(trialNum).notes = protocolUtilities.getUserNotes(h); % extract the notes
 end
 
 if any(strcmpi('olfactometerInstructions',fieldsToUpdate))
-    smell.trial(trialNum).olfactometerInstructions = olfactometerInstructions;    
+    smell.trial(trialNum).olfactometerInstructions = olfactometerInstructions;
 end
 
 if any(strcmpi('protocolSpecificInfo',fieldsToUpdate))

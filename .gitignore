@@ -1,0 +1,18 @@
+###########################################################################
+# This is the file telling git which files to exclude. There may be more 
+# files in the subdirectories of olfStim. See http://git-scm.com/book/en/Git-Basics-Recording-Changes-to-the-Repository
+# Some examples
+#	# a comment - this is ignored
+#	*.a       # no .a files
+#	!lib.a    # but do track lib.a, even though you're ignoring .a files above
+#	/TODO     # only ignore the root TODO file, not subdir/TODO
+#	build/    # ignore all files in the build/ directory
+#	doc/*.txt # ignore doc/notes.txt, but not doc/server/arch.txt
+###########################################################################
+*.DS_Store 	# Ignore all files that end with ".DS_Store". Hidden DS_Store files are used on the Mac OS, to customize folder attributes.
+*.asv 		# Ignore all files ending with ".asv". Matlab on Windows produces temporary .asv files.
+*~ 		# Ignore all files ending with "~". Matlab on Windows produces temporary ".m~" files.
+#################################
+# Specific ignoring rules for olfStim:
+#################################
+*/lsq/trial.lsq	# The trial.lsq file is updated for every trial.
