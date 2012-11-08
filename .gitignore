@@ -9,10 +9,14 @@
 #	build/    # ignore all files in the build/ directory
 #	doc/*.txt # ignore doc/notes.txt, but not doc/server/arch.txt
 ###########################################################################
-*.DS_Store 	# Ignore all files that end with ".DS_Store". Hidden DS_Store files are used on the Mac OS, to customize folder attributes.
-*.asv 		# Ignore all files ending with ".asv". Matlab on Windows produces temporary .asv files.
-*~ 		# Ignore all files ending with "~". Matlab on Windows produces temporary ".m~" files.
+# Ignore all files that end with ".DS_Store". Hidden DS_Store files are used on the Mac OS, to customize folder attributes.
+*.DS_Store
+# Ignore all files ending with ".asv". Matlab on Windows produces temporary .asv files.
+*.asv
+# Ignore all files ending with "~". Matlab on Mac produces temporary ".m~" files.
+*~
 #################################
 # Specific ignoring rules for olfStim:
 #################################
-*/lsq/trial.lsq	# The trial.lsq file is updated for every trial.
+# The trial.lsq file is updated for every trial.
+*/lsq/trial.lsq	
