@@ -37,5 +37,9 @@ load(pathToFile);
 % otherwise weird behavior can happen.
 smell = protocolUtilities.removeHistoricalTrialDataFromSmell(smell);
 
+%% Repopulate the information
+% This is necessary as we're 
+
+
 
 end
