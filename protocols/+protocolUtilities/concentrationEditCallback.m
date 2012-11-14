@@ -19,9 +19,15 @@ import protocolUtilities.*
 % This pseudo smell 
 
 pseudoSmell = smell;
+% Find the index of the vial where the concentration was changed in the
+% olfactometerOdors information:
 index = find([pseudoSmell.olfactometerOdors.slave(slave).sessionOdors(:).vial]==vialNumber);
+% Get all the information about the odor for which the concentration
+% changed:
 currentOdor = pseudoSmell.olfactometerOdors.slave(slave).sessionOdors(index);
+% Extract all the fields of information for the odor:
 currentOdorFields = fields(pseudoSmell.olfactometerOdors.slave(slave).sessionOdors(index));
+% Go through each field and populate the dummy smell structure:
 for i = 1 : length(currentOdorFields)
     pseudoSmell.trial(1) = setfield(pseudoSmell.trial(1),currentOdorFields{i},getfield(currentOdor,currentOdorFields{i}));
 end

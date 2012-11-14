@@ -1,4 +1,4 @@
-function lasomFunctions(instruction, debug, varargin)
+function varargout = lasomFunctions(instruction, debug, varargin)
 %
 % lasomFunctions(instruction, debug, varargin)
 % The argument instruction is a string 
@@ -14,6 +14,9 @@ function lasomFunctions(instruction, debug, varargin)
 %   - 'loadAndRunSequencer', providing this argument will start the
 %      sequencer with the previously loaded and compiled lsq file.
 %   - 'setMfcFlowRate', varargin: (flowRateMfcAir, flowRateMfcN). In l/min
+%   - 'getMaxFlowRateMfc', 
+%        [capacity,units] = lasomFunctions(getMfcMaxFlowRate',slave, MfcID)
+%                             MfcID air: 1 , # MfcID Nitrogen: 2
 
 %
 % lorenzpammer 2012/07
@@ -116,8 +119,20 @@ elseif strcmp(instruction,'setMfcFlowRate')
     % Clear old sequence
     lsqFilePath = varargin{1};
     invoke(lasomH, 'ClearSequence')
-    invoke(lasomH, 'ParseSeqFile', lsqFilePath) 
+    invoke(lasomH, 'ParseSeqFile', lsqFilePath)
     invoke(lasomH, 'CompileSequence')
+    
+elseif strcmp(instruction,'getMaxFlowRateMfc')
+    if length(varargin) < 2
+        errormsg = sprintf('Not enough input arguments. Slave and type of MFC have to be provided\nto get the maximum MFC flow rate.');
+        error(errormsg)
+        clear errormsg
+    end
+    % Extract the lasom handle from the appdata of the figure:
+    lasomH = appdataManager('olfStimGui','get','lasomH');
+    % 
+    [varargout{1}, varargout{2}] = get(lasomH,'GetMfcCapacity',varargin{1},varargin{2},[],'lmin');
+
 end
 
 end

@@ -37,9 +37,10 @@ load(pathToFile);
 % otherwise weird behavior can happen.
 smell = protocolUtilities.removeHistoricalTrialDataFromSmell(smell);
 
-%% Repopulate the information
-% This is necessary as we're 
+%% Repopulate smell with the information of the current session
+% This is necessary as we removed some session specific data as well. Eg
+% olfactometerOdors and session protocol
 
-
+smell = repopulateSmell(smell);
 
 end

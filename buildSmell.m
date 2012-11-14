@@ -14,8 +14,9 @@ function  buildSmell(instruction,trialOdor,trialNum,stimProtocol,protocolSpecifi
 % buildSmell is called from the stimulation protocol m-file, the function
 % can extract the name of the protocol and write it into the smell
 % structure.
-%
-% Possible properties:
+% 
+% Possible fields to update in 'updateFields' option:
+%     - 'maxFlowRateMfc': no property value necessary.
 %     - 'trialNum': no propertyValue necessary.
 %     - 'stimProtocol': no propertyValue necessary.
 %     - 'time': no propertyValue necessary.
@@ -49,7 +50,6 @@ function  buildSmell(instruction,trialOdor,trialNum,stimProtocol,protocolSpecifi
 % - Write the numbers which will be output as 8-bit digital timestamps to
 % the recording software for each valve and for each trial into the smell structure.
 % - prompt LASOM to get the maximum flow rate of the Mfcs
-% - add intertrial interval information to each smell.trial
 % - Document for every field of smell, in which step of an olfactory
 % session it should be populated, updated etc.
 %
@@ -300,5 +300,16 @@ if any(strcmpi('animalName',fieldsToUpdate))
     index = strmatch('animalName', {sessionInstructions.name});
     smell.trial(trialNum).sessionInstructions(index).value = sessionInstructions(index).value;
 end
-
+% if any(strcmpi('maxFlowRateMfc',fieldsToUpdate))
+%     
+%     [smell.olfactometerSettings.maxFlowRateMfcAir,units] = lasomFunctions('getMaxFlowRateMfc',; % in liters/minute
+%     % sessionInstructions structure is updated in the
+%     % sessionSettings function prior to calling build smell. Now write
+%     % the updated instructions into the smell structure.
+%     sessionSettings(h,'get'); % Create structure and write into appdata
+%     % Extract the sessionInstructions structure from the appdata of the figure:
+%     sessionInstructions=appdataManager('olfStimGui','get','sessionInstructions');
+%     index = strmatch('animalName', {sessionInstructions.name});
+%     smell.trial(trialNum).sessionInstructions(index).value = sessionInstructions(index).value;
+% end
 end
