@@ -4,7 +4,7 @@ function clearSessionDataCallback(~,~,askForUserApproval)
 % structures. It will remove all historical trial execution specific data
 % from smell and will update the progress panel to show the list of
 % unexecuted trials.
-% 
+%
 % lorenzpammer september 2012
 
 %%
@@ -16,30 +16,33 @@ if nargin < 3
     askForUserApproval = true;
 end
 
-%%
+%% Clear smell
+
 if askForUserApproval
     selection = questdlg('Are you sure you want to clear all data associated with this session?',...
         'Close Request Function',...
         'Yes','No','Yes');
 else
     selection = 'Yes';
-    switch selection,
-        case 'Yes',
-            % Clear the global smell variable
-            clearvars -global 'smell'
-            % set trialNum
-            trialNum = 0;
-            
-            % Now set up a fresh smell structure.
-            selectedProtocol=appdataManager('olfStimGui','get','selectedProtocol');
-            buildSmell('setUp',[],[],selectedProtocol);
-            
-            % Clear progress panel
-            delete(get(h.progress.figure,'Children'))
-            xlim(h.progress.figure,[0.5 10.5])
-            
-        case 'No'
-            return
-    end
-    
+end
+
+switch selection,
+    case 'Yes',
+        % Clear the global smell variable
+        clearvars -global 'smell'
+        % set trialNum to zero
+        trialNum = 0;
+        
+        % Now set up a fresh smell structure.
+        selectedProtocol=appdataManager('olfStimGui','get','selectedProtocol');
+        buildSmell('setUp',[],[],selectedProtocol);
+        
+        % Clear progress panel
+        delete(get(h.progress.figure,'Children'))
+        xlim(h.progress.figure,[0.5 10.5])
+        
+    case 'No'
+        return
+end
+
 end

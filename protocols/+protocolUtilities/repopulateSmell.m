@@ -1,4 +1,4 @@
-function smell = repopulateSmell(smell,selectedProtocol,olfactometerOdors)
+function smell = repopulateSmell(smell,olfactometerOdors,selectedProtocol)
 %% repopulateSmell(smell,selectedProtocol)
 % When loading previously saved sequence of trials to use that sequence,
 % repopulateSmell will repopulate that saved smell structure with
@@ -31,7 +31,9 @@ elseif nargin < 2
     h=appdataManager('olfStimGui','get','h');
     selectedProtocol = appdataManager('olfStimGui','get','selectedProtocol');
 elseif nargin < 3
-    global olfactometerOdors;
+    % Extract the gui handle structure from the appdata of the figure:
+    h=appdataManager('olfStimGui','get','h');
+    selectedProtocol = appdataManager('olfStimGui','get','selectedProtocol');
 end
 
 %% Set the session parameters.

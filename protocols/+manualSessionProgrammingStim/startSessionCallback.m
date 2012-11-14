@@ -41,6 +41,7 @@ set(h.startSession,'backgroundcolor',[1 0 0],'String','Pause','Callback','')
 % used to instruct olfStim for a new session, this data has to be removed,
 % otherwise weird behavior can happen.
 smell = protocolUtilities.removeHistoricalTrialDataFromSmell(smell);
+smell = protocolUtilities.repopulateSmell(smell);
 
 %% Start executing one trial after the other:
 
@@ -115,7 +116,7 @@ if get(h.startSession,'Value') == 1 % if the startSessionButton is pressed
         % 5. star the new trial
         %   This will build the lsq file for the current trial, send the
         %   instructions to the olfactometer and trigger the trial.
-         smell = startTrial(trialNum, smell);
+%          smell = startTrial(trialNum, smell);
         
         % % Wait for a time period, defined in interTrialInterval until
         % doing the next loop iteration.
