@@ -136,11 +136,17 @@ import protocolUtilities.*
 smell.olfactometerOdors = olfactometerOdors; % structure containing information which odors are loaded into olfactometer
 smell.version = smellVersion; % Define here which version of the smell structure was used - if anything has to change in the future downstream algorithms know what to do.
 
-% Get this from the olfactometer
-smell.olfactometerSettings.maxFlowRateMfcAir = 1.5; % in liters/minute
-smell.olfactometerSettings.maxFlowRateMfcNitrogen = 0.1; % in liters/minute
+% Get the maximum flow rate of the mass flow controllers from the olfactometer
+% If more than two MFCs are conntected, this code has to be adapted:
+usedSlaves = find([smell.olfactometerOdors.slave.used]);
+for i = usedSlaves
+%     smell.olfactometerSettings.slave(i).maxFlowRateMfcAir = 1.5;
+%     smell.olfactometerSettings.slave(i).maxFlowRateMfcNitrogen = 0.1; 
+    [smell.olfactometerSettings.slave(i).maxFlowRateMfcAir, ~] = lasomFunctions('getMaxFlowRateMfc',0,i,1); % in liters/minute probably 1.5
+    [smell.olfactometerSettings.slave(i).maxFlowRateMfcNitrogen,~] = lasomFunctions('getMaxFlowRateMfc',0,i,2); % in liters/minute probably 0.1
+end
 % Field for storing information about LASOM (firmware, etc.)
-smell.olfactometerSettings.lasomID = [];
+smell.olfactometerSettings.olfactometerID = [];
 
 odorFields = fields(olfactometerOdors.sessionOdors(1));
 smell.trial(1) = cell2struct(cell(length(odorFields),1),odorFields,1); % all fields for each used odor are written to the smell structure: odorName,iupacName,CASNumber,producingCompany,odorantPurity,state,odorantDilution,dilutedIn,concentrationAtPresentation,inflectionPointResponseCurve,slave,vial,mixture,sessionOdorNumber
@@ -300,16 +306,20 @@ if any(strcmpi('animalName',fieldsToUpdate))
     index = strmatch('animalName', {sessionInstructions.name});
     smell.trial(trialNum).sessionInstructions(index).value = sessionInstructions(index).value;
 end
-% if any(strcmpi('maxFlowRateMfc',fieldsToUpdate))
-%     
-%     [smell.olfactometerSettings.maxFlowRateMfcAir,units] = lasomFunctions('getMaxFlowRateMfc',; % in liters/minute
-%     % sessionInstructions structure is updated in the
-%     % sessionSettings function prior to calling build smell. Now write
-%     % the updated instructions into the smell structure.
-%     sessionSettings(h,'get'); % Create structure and write into appdata
-%     % Extract the sessionInstructions structure from the appdata of the figure:
-%     sessionInstructions=appdataManager('olfStimGui','get','sessionInstructions');
-%     index = strmatch('animalName', {sessionInstructions.name});
-%     smell.trial(trialNum).sessionInstructions(index).value = sessionInstructions(index).value;
-% end
+if any(strcmpi('maxFlowRateMfc',fieldsToUpdate))
+    % Get the maximum flow rate of the mass flow controllers from the olfactometer
+    % If more than two MFCs are conntected, this code has to be adapted:
+    usedSlaves = find([smell.olfactometerOdors.slave.used]);
+    for i = usedSlaves
+%         smell.olfactometerSettings.slave(i).maxFlowRateMfcAir = 1
+%         smell.olfactometerSettings.slave(i).maxFlowRateMfcNitrogen = 0.1;
+        [smell.olfactometerSettings.slave(i).maxFlowRateMfcAir, ~] = lasomFunctions('getMaxFlowRateMfc',0,i,1); % in liters/minute probably 1.5
+        [smell.olfactometerSettings.slave(i).maxFlowRateMfcNitrogen,~] = lasomFunctions('getMaxFlowRateMfc',0,i,2); % in liters/minute probably 0.1
+    end
+end
+if any(strcmpi('olfactometerID',fieldsToUpdate))
+% Field for storing information about LASOM (firmware, etc.)
+    smell.olfactometerSettings.olfactometerID = [];
+end
+    
 end

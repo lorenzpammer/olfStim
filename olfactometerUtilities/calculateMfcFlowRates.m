@@ -24,8 +24,8 @@ function smell = calculateMfcFlowRates(trialNum, smell,errorType)
 
 %% Do the calculation and update smell
 
-flowRateMfcN = smell.trial(trialNum).concentrationAtPresentation * smell.olfactometerSettings.maxFlowRateMfcNitrogen / smell.trial(trialNum).odorantDilution;
-flowRateMfcAir = smell.olfactometerSettings.maxFlowRateMfcNitrogen - flowRateMfcN;
+flowRateMfcN = smell.trial(trialNum).concentrationAtPresentation * smell.olfactometerSettings.slave(1).maxFlowRateMfcNitrogen / smell.trial(trialNum).odorantDilution;
+flowRateMfcAir = smell.olfactometerSettings.slave(1).maxFlowRateMfcNitrogen - flowRateMfcN;
 
 totalFlow = flowRateMfcN + flowRateMfcAir;
 
@@ -43,8 +43,8 @@ flowRateMfcN = round(flowRateMfcN*10e5)/10e5;
 
 % Check if the desired flow rates can be reached given the maximum flow
 % rates of the MFCs. If not give an error:
-if flowRateMfcN > smell.olfactometerSettings.maxFlowRateMfcNitrogen || ...
-        flowRateMfcAir > smell.olfactometerSettings.maxFlowRateMfcAir
+if flowRateMfcN > smell.olfactometerSettings.slave(1).maxFlowRateMfcNitrogen || ...
+        flowRateMfcAir > smell.olfactometerSettings.slave(1).maxFlowRateMfcAir
     if strmatch(errorType,'error')
         errormsg = sprintf('Concentration can not be reached. Please enter a lower value or reduce the total flow.\nDesired: flowRateMfcAir = %f\nflowRateMfcN=%f.',flowRateMfcAir,flowRateMfcN);
         error(errormsg)
@@ -64,7 +64,7 @@ end
 
 % Give warning, if the Nitrogen Mfc is set to less than 1% of its maximal
 % flow rate, as it becomes inaccurate around that point
-if flowRateMfcN < smell.olfactometerSettings.maxFlowRateMfcNitrogen/50
+if flowRateMfcN < smell.olfactometerSettings.slave(1).maxFlowRateMfcNitrogen/50
     if strmatch(errorType,'error')
         warningmsg = sprintf('The Nitrogen MFC is set to less than 2%% of its maximal flow rate.\nAs the MFC isn''t accurate below 2%% flow rate, please consider diluting the odorant.')
         warning(warningmsg)

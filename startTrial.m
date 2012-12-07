@@ -61,7 +61,7 @@ lasomH = appdataManager('olfStimGui','get','lasomH');
 
 %% Update smell:
 if trialNum == 1
-    smell.olfactometerSettings.lasomID = lasomH.GetID;
+    smell.olfactometerSettings.olfactometerID = lasomH.GetID;
     % - prompt LASOM to get the maximum flow rate of the Mfcs and write
     % into smell.olfactometerSettings
     %     [smell.olfactometerSettings.flowRateMfcAir, units] = lasomH.GetMfcCapacity(1,1,);
@@ -85,8 +85,8 @@ lasomFunctions('sendLsqToLasom',debug,pathTrialLsq);
 
 slave = smell.trial(trialNum).slave;
 smell = calculateMfcFlowRates(trialNum,smell);
-percentOfCapacityAir = smell.trial(trialNum).flowRateMfcAir / smell.olfactometerSettings.maxFlowRateMfcAir * 100;
-percentOfCapacityN = smell.trial(trialNum).flowRateMfcN / smell.olfactometerSettings.maxFlowRateMfcNitrogen * 100;
+percentOfCapacityAir = smell.trial(trialNum).flowRateMfcAir / smell.olfactometerSettings.slave(slave).maxFlowRateMfcAir * 100;
+percentOfCapacityN = smell.trial(trialNum).flowRateMfcN / smell.olfactometerSettings.slave(slave).maxFlowRateMfcNitrogen * 100;
 % These commands should be externalized into the lasomFunctions.m function.
 invoke(lasomH,'SetMfcFlowRate',slave,1,percentOfCapacityAir);
 invoke(lasomH,'SetMfcFlowRate',slave,2,percentOfCapacityN);

@@ -1,4 +1,4 @@
-function smell = repopulateSmell(smell,olfactometerOdors,selectedProtocol)
+function repopulateSmell(olfactometerOdors,selectedProtocol)
 %% repopulateSmell(smell,selectedProtocol)
 % When loading previously saved sequence of trials to use that sequence,
 % repopulateSmell will repopulate that saved smell structure with
@@ -23,14 +23,18 @@ function smell = repopulateSmell(smell,olfactometerOdors,selectedProtocol)
 % lorenzpammer 2012/11
 %%
 
+global smell
+
+%%
+
+%if nargin < 1
+ %   error('smell has to be provided to the function.')
 if nargin < 1
-    error('smell has to be provided to the function.')
-elseif nargin < 2
     global olfactometerOdors;
     % Extract the gui handle structure from the appdata of the figure:
     h=appdataManager('olfStimGui','get','h');
     selectedProtocol = appdataManager('olfStimGui','get','selectedProtocol');
-elseif nargin < 3
+elseif nargin < 2
     % Extract the gui handle structure from the appdata of the figure:
     h=appdataManager('olfStimGui','get','h');
     selectedProtocol = appdataManager('olfStimGui','get','selectedProtocol');
@@ -40,8 +44,10 @@ end
 
 % The positions of odorants can change in the olfactometer
 smell.olfactometerOdors = olfactometerOdors;
-% % Set the maximum flow rate of the Mass flow controllers:
-% buildSmell('updateFields',[],[],[],[],'getMaxFlowRateMfc');
+
+% Set the maximum flow rate of the Mass flow controllers & the
+% olfactometerID
+buildSmell('updateFields',[],[],[],[],'maxFlowRateMfc','olfactometerID');
 
 %% Repopulate the trial structures
 

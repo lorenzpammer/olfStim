@@ -17,9 +17,14 @@ function varargout = lasomFunctions(instruction, debug, varargin)
 %   - 'getMaxFlowRateMfc', 
 %        [capacity,units] = lasomFunctions(getMfcMaxFlowRate',slave, MfcID)
 %                             MfcID air: 1 , # MfcID Nitrogen: 2
+%   - 'getFlowRateSettingMfc',
 
 %
 % lorenzpammer 2012/07
+
+%% Get some data from the gui
+
+
 
 %% Check arguments to function
 
@@ -59,11 +64,11 @@ elseif strcmp(instruction,'connect')
         disp('Successfully connected to LASOM.')
     end
     lastError = invoke(lasomH, 'GetLastError');
-    lasomID = invoke(lasomH, 'GetID');
+    olfactometerID = invoke(lasomH, 'GetID');
     if debug
         olfStimDebug(dbstack,...
             fprintf('Connecting to LASOM. LASOM returned: ishandle = %d, connection success = %d,\nLast error = %s, LASOM ID = %s\n',...
-            iscom(lasomH),success,lastError,lasomID)); % should be 
+            iscom(lasomH),success,lastError,olfactometerID)); % should be 
     end
     % Write the lasom handle into the appdata of the figure:
     appdataManager('olfStimGui','set',lasomH);
@@ -72,9 +77,7 @@ elseif strcmp(instruction,'connect')
     
 elseif strcmp(instruction,'sendLsqToLasom')
     if isempty(varargin{1})
-        errormsg=sprintf('Not enough input arguments. \nThe handle to the lasom board and the path to the lsq file, \nwhich should be parsed have to be provided.');
-        error(errormsg)
-        clear errormsg
+        error(sprintf('Not enough input arguments. \n The handle to the lasom board and the path to the lsq file, \nwhich should be parsed have to be provided.'));
     end
     % Extract the lasom handle from the appdata of the figure:
     lasomH = appdataManager('olfStimGui','get','lasomH');
@@ -108,11 +111,14 @@ elseif strcmp(instruction,'loadAndRunSequencer')
         error(fprintf('Could not start sequencer with new sequence file.\nLasom handle = %s, Load and run sequencer = %d',lasomH,success))
     end
 
+    
 elseif strcmp(instruction,'setMfcFlowRate')
+    print('setMfcFlowRate not done yet!')
+    return
+    
     if isempty(varargin{1})
         errormsg=sprintf('Not enough input arguments. \nThe MFC flow rates have to be provided.');
         error(errormsg)
-        clear errormsg
     end
     % Extract the lasom handle from the appdata of the figure:
     lasomH = appdataManager('olfStimGui','get','lasomH');
@@ -122,17 +128,51 @@ elseif strcmp(instruction,'setMfcFlowRate')
     invoke(lasomH, 'ParseSeqFile', lsqFilePath)
     invoke(lasomH, 'CompileSequence')
     
+    
 elseif strcmp(instruction,'getMaxFlowRateMfc')
-    if length(varargin) < 2
-        errormsg = sprintf('Not enough input arguments. Slave and type of MFC have to be provided\nto get the maximum MFC flow rate.');
+    if length(varargin) ~= 2
+        errormsg = sprintf('Not enough input arguments. Slave and number of MFC have to be provided\nto get the maximum MFC flow rate.');
         error(errormsg)
-        clear errormsg
+    else
+        slave = varargin{1};
+        mfcId = varargin{2};
     end
     % Extract the lasom handle from the appdata of the figure:
     lasomH = appdataManager('olfStimGui','get','lasomH');
-    % 
-    [varargout{1}, varargout{2}] = get(lasomH,'GetMfcCapacity',varargin{1},varargin{2},[],'lmin');
 
+    % Query mass flow controller for its capacity
+    [~,mfcCapacity,units]=lasomH.GetMfcCapacity(slave,mfcId,1000.0,''); % The 3rd and 4th argument don't seem to matter
+    
+    % Check in which units the capacity of the MFCs is returned and convert
+    % if necessary:
+    if strncmp(units,'ln/min',6)
+        units = 'l/min';
+        % Do nothing. liters per minutes are the unit we're using.
+    elseif strncmp(units,'mln/min',7)
+        % If units are in ml/min, convert to liters/min
+        mfcCapicity = mfcCapacity / 1000;
+        units = 'l/min';
+    else
+        errormsg = sprintf('Mass flow controllers returned flow rate in ''%s''.\nUnknown unit, add another case for this unit.',unit);
+        error(errormsg)
+    end
+    varargout{1} = mfcCapacity;
+    varargout{2} = units;
+    
+    
+elseif strcmp(instruction,'getFlowRateSettingMfc')
+    if length(varargin) < 2
+        errormsg = sprintf('Not enough input arguments. Slave and number of MFC have to be provided\nto query the MFC flow rate setting.');
+        error(errormsg)
+    else
+        slave = varargin{1};
+        mfcId = varargin{2};
+    end
+    % Extract the lasom handle from the appdata of the figure:
+    lasomH = appdataManager('olfStimGui','get','lasomH');
+    % Query for the flow rate setting:
+    [~,flowRateSettingInPercent]=lasomH.GetMfcFlowRateSetting(slave,mfcId,100);
+    varargout{1} = flowRateSettingInPercent;
 end
 
 end

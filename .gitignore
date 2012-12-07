@@ -15,7 +15,8 @@
 *.asv
 # Ignore all files ending with "~". Matlab on Mac produces temporary ".m~" files.
 *~
-#################################
+# Ignore all files ending with ".swp". Vim produces temporary ".swp" files.
+*.swp
 # Specific ignoring rules for olfStim:
 #################################
 # The trial.lsq file is updated for every trial.
