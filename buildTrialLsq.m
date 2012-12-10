@@ -18,7 +18,6 @@ function trialLsq = buildTrialLsq(trialNum,smell)
 %
 % lorenzpammer 2011/12
 
-
 %% Build the lsq file for this trial
 
 callingFunctionName = 'startTrial.m'; % Define the name of the initalizing function

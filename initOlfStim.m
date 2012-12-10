@@ -1,4 +1,4 @@
-function initOlfStim
+function initOlfStim(mode)
 % olfStim is the wrapper function calling the all necessary steps for odor
 % stimulation. The action goes on in the called functions.
 % 
@@ -15,13 +15,25 @@ function initOlfStim
 % within one trial.
 %
 % lorenzpammer 2011/07
+%%
 
 global smell % smell is the data structure containing all information relevant to the session
 global olfactometerOdors % olfactometerOdors is a data structure, that contains information about which odors are loaded into the olfactometer
+global olfStimTestMode
+
+%% Set up relevant variables
+
+if nargin > 0 && (strmatch(mode,'testing') || strmatch(mode,'test'))
+    olfStimTestMode = true;
+    disp('Entering test mode. No interactions with the olfactometer in this mode.')
+else
+    olfStimTestMode = false;
+end
 
 %% Check whether connection can be made to the olfactometer
-% lasomFunctions('checkConnection');
-
+if ~olfStimTestMode
+    lasomFunctions('checkConnection',0);
+end
 
 %% Add olfStim folders to the matlab path
 
@@ -44,6 +56,11 @@ buildSmell('setUp');
 protocolChooserSubGui;
 % Extract selected protocol from appdata:
 selectedProtocol=appdataManager('olfStimGui','get','selectedProtocol');
+
+% %% Write data into the gui appdata
+% % Write olfStimTestMode to the gui
+% appdataManager('olfStimGui','set',olfStimTestMode);
+
 
 %% Execute selected protocol
 functionHandle = str2func([selectedProtocol '.' selectedProtocol]); % make string of selected protocol to function handle

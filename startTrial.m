@@ -20,10 +20,15 @@ debug = true;
 % debug = false;
 
 %% Fetch some variables from the gui appdata
+
+global olfStimTestMode
+
 % Extract the gui handle structure from the appdata of the figure:
 h = appdataManager('olfStimGui','get','h');
 % Extract the lasom handle from the appdata of the figure:
 lasomH = appdataManager('olfStimGui','get','lasomH');
+% % Extract the olfStimTestMode variable
+% olfStimTestMode = appdataManager('olfStimGui','get','olfStimTestMode');
 
 %% 
 % Check whether lasomH has not been released properly. If so, close it.
@@ -48,10 +53,10 @@ smell.trial(trialNum).trialLsqFile = trialLsq;
 % clear callingFunctionName
 % trialLsq = fileread([lsqPath 'test.lsq']);
 
-
 if debug
     disp(trialLsq)
 end
+
 %% Connect to LASOM and set it up
 lasomFunctions('connect',debug);
 
@@ -60,12 +65,9 @@ lasomFunctions('connect',debug);
 lasomH = appdataManager('olfStimGui','get','lasomH');
 
 %% Update smell:
-if trialNum == 1
+if trialNum == 1 && ~olfStimTestMode
+    % Outsource this to lasomFunctions and call it from build smell
     smell.olfactometerSettings.olfactometerID = lasomH.GetID;
-    % - prompt LASOM to get the maximum flow rate of the Mfcs and write
-    % into smell.olfactometerSettings
-    %     [smell.olfactometerSettings.flowRateMfcAir, units] = lasomH.GetMfcCapacity(1,1,);
-    %     [smell.olfactometerSettings.flowRateMfcN, units] = get(lasomH,'GetMfcCapacity'1,2,);
 end
 
 %% Send lsq file of the current trial to the LASOM
@@ -87,24 +89,25 @@ slave = smell.trial(trialNum).slave;
 smell = calculateMfcFlowRates(trialNum,smell);
 percentOfCapacityAir = smell.trial(trialNum).flowRateMfcAir / smell.olfactometerSettings.slave(slave).maxFlowRateMfcAir * 100;
 percentOfCapacityN = smell.trial(trialNum).flowRateMfcN / smell.olfactometerSettings.slave(slave).maxFlowRateMfcNitrogen * 100;
+
 % These commands should be externalized into the lasomFunctions.m function.
-invoke(lasomH,'SetMfcFlowRate',slave,1,percentOfCapacityAir);
-invoke(lasomH,'SetMfcFlowRate',slave,2,percentOfCapacityN);
+if ~olfStimTestMode
+    invoke(lasomH,'SetMfcFlowRate',slave,1,percentOfCapacityAir);
+    invoke(lasomH,'SetMfcFlowRate',slave,2,percentOfCapacityN);
+end
 
 clear percentOfCapacityAir percentOfCapacityN
 
 %% Start sequencer
 
 lasomFunctions('loadAndRunSequencer',debug);
-% clear a
-% for i = 1:150
-%    a(1,i) =  get(lasomH,'SeqUpdateEnable');
-%    a(2,i) = get(lasomH,'SeqUpdateVarState',1);
-%     pause(0.1)
-% end
+
+if olfStimTestMode
+    disp('olfStim currently in test mode. No interaction with olfactometer.')
+end
 
 % Trigger trial:
-%Triggering is done from an external device.
+% Triggering is done from an external device.
 
 %% Prepare for timer action
 
@@ -154,14 +157,16 @@ mfcMeasureTimer = timer('ExecutionMode','fixedRate','Period',measurementInterval
             elapsedTime;
         smell.trial(trialNum).lasomEventLog.flowRateMfcN(1,measurementNo) = ...
             elapsedTime;
-        smell.trial(trialNum).lasomEventLog.flowRateMfcAir(2,measurementNo) = ...
-            get(lasomH, 'MfcFlowRateMeasurePercent', slave, 1);
-        smell.trial(trialNum).lasomEventLog.flowRateMfcN(2,measurementNo) = ...
-            get(lasomH, 'MfcFlowRateMeasurePercent', slave, 2);
-        % Print the measured flow rates to the command window:
-        fprintf('Measurement of MFC flow #%d. Air: %.3f, N2: %.3f.\n',...
-            measurementNo,smell.trial(trialNum).lasomEventLog.flowRateMfcAir(2,measurementNo),...
-            smell.trial(trialNum).lasomEventLog.flowRateMfcN(2,measurementNo));
+        if ~olfStimTestMode % only execute when we aren't in test mode
+            smell.trial(trialNum).lasomEventLog.flowRateMfcAir(2,measurementNo) = ...
+                get(lasomH, 'MfcFlowRateMeasurePercent', slave, 1);
+            smell.trial(trialNum).lasomEventLog.flowRateMfcN(2,measurementNo) = ...
+                get(lasomH, 'MfcFlowRateMeasurePercent', slave, 2);
+            % Print the measured flow rates to the command window:
+            fprintf('Measurement of MFC flow #%d. Air: %.3f, N2: %.3f.\n',...
+                measurementNo,smell.trial(trialNum).lasomEventLog.flowRateMfcAir(2,measurementNo),...
+                smell.trial(trialNum).lasomEventLog.flowRateMfcN(2,measurementNo));
+        end
     end
     function measureMfcFlowStopped(varargin)
         % At the end of the trial, after last measurement of mfc flow, jump
@@ -226,9 +231,14 @@ end
         % Every 1500 ms, jump into this function and read the last emitted
         % status:
         measurementNo = get(readLasomStatusTimer,'TasksExecuted');
-        
-        lasomStatus = get(lasomH,'SeqUpdateEnable');
-        startVariableStatus = get(lasomH,'SeqUpdateVarState',1);
+        if ~olfStimTestMode % only execute when we aren't in test mode
+            lasomStatus = get(lasomH,'SeqUpdateEnable');
+            startVariableStatus = get(lasomH,'SeqUpdateVarState',1);
+        else
+            % if we're in test mode set the two variables:
+            lasomStatus = 1;
+            startVariableStatus = 1;
+        end
         if debug
             fprintf('Checking sequencer status. Sequencer status: %d, Start variable: %d\n',...
                 lasomStatus, startVariableStatus);
@@ -275,8 +285,14 @@ end
     end
 
     function readLasomStatusAfterTrialStart(obj,event)
-        lasomStatus = get(lasomH,'SeqUpdateEnable');
-        startVariableStatus  = get(lasomH,'SeqUpdateVarState',1);
+        if ~olfStimTestMode % only execute when we aren't in test mode
+            lasomStatus = get(lasomH,'SeqUpdateEnable');
+            startVariableStatus = get(lasomH,'SeqUpdateVarState',1);
+        else
+            % if we're in test mode set the two variables:
+            lasomStatus = 0;
+            startVariableStatus = 0;
+        end
         if debug
             fprintf('2nd phase of checking sequencer status. Sequencer status: %d, Start variable: %d\n',...
                 lasomStatus, startVariableStatus);
@@ -294,7 +310,7 @@ end
             % at the end of the trial:
             settingNames = {smell.trial(trialNum).olfactometerInstructions.name};
             index = find(strcmp('purge',settingNames));
-            if smell.trial(trialNum).olfactometerInstructions(index).used
+            if smell.trial(trialNum).olfactometerInstructions(index).used && ~olfStimTestMode
                 invoke(lasomH,'SetMfcFlowRate',slave,1,100);
                 invoke(lasomH,'SetMfcFlowRate',slave,2,100);
                 fprintf('Purging olfactometer.\n')
@@ -307,7 +323,9 @@ end
             %             test = get(lasomH, 'SequencerLabelTimeValue', '@')
             
             % Release the connection to the olfactometer
-            release(lasomH)
+            if ~olfStimTestMode
+                release(lasomH)
+            end
             
             fprintf('Executed trial %d successfully.\n',trialNum)
         end

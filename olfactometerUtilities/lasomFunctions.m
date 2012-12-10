@@ -18,13 +18,25 @@ function varargout = lasomFunctions(instruction, debug, varargin)
 %        [capacity,units] = lasomFunctions(getMfcMaxFlowRate',slave, MfcID)
 %                             MfcID air: 1 , # MfcID Nitrogen: 2
 %   - 'getFlowRateSettingMfc',
-
+%   - 'olfactometerId', 
+%
 %
 % lorenzpammer 2012/07
 
 %% Get some data from the gui
 
+global olfStimTestMode
 
+% if nargin > 2
+%     % If the debugMode variable is passed in the varargin, extract it:
+%     if any(strcmp('olfStimTestMode',varargin))
+%         index = find(strcmp('olfStimTestMode',varargin)) + 1;
+%         olfStimTestMode = varargin{index};
+%     else
+%         % Otherwise get it from the gui
+%         olfStimTestMode = appdataManager('olfStimGui','get','olfStimTestMode');
+%     end
+% end
 
 %% Check arguments to function
 
@@ -38,7 +50,18 @@ if nargin < 3
     varargin = {[]};
 end
 
-%% extablish connection to LASOM
+%% See whether we're in test mode
+
+% if in test mode, don't interact with the olfactometer.
+if olfStimTestMode
+    varargout = cell(1,10);
+    % Write a dummy lasom handle into the appdata of the figure:
+    lasomH=[];
+    appdataManager('olfStimGui','set',lasomH);
+    return
+end
+
+%% Establish connection to LASOM
 
 if strcmp(instruction,'checkConnection')
    lasomH = actxcontrol('LASOMX.LASOMXCtrl.1');
@@ -160,19 +183,30 @@ elseif strcmp(instruction,'getMaxFlowRateMfc')
     varargout{2} = units;
     
     
-elseif strcmp(instruction,'getFlowRateSettingMfc')
-    if length(varargin) < 2
-        errormsg = sprintf('Not enough input arguments. Slave and number of MFC have to be provided\nto query the MFC flow rate setting.');
-        error(errormsg)
-    else
-        slave = varargin{1};
-        mfcId = varargin{2};
-    end
+% elseif strcmp(instruction,'getFlowRateSettingMfc')
+%     if length(varargin) < 2
+%         errormsg = sprintf('Not enough input arguments. Slave and number of MFC have to be provided\nto query the MFC flow rate setting.');
+%         error(errormsg)
+%     else
+%         slave = varargin{1};
+%         mfcId = varargin{2};
+%     end
+%     % Extract the lasom handle from the appdata of the figure:
+%     lasomH = appdataManager('olfStimGui','get','lasomH');
+%     % Query for the flow rate setting:
+%     [~,flowRateSettingInPercent]=lasomH.GetMfcFlowRateSetting(slave,mfcId,100);
+%     varargout{1} = flowRateSettingInPercent;
+% end
+
+    elseif strcmp(instruction,'olfactometerID')
+%     if length(varargin) ~= 2
+%         errormsg = sprintf('Not enough input arguments. Slave and number of MFC have to be provided\nto get the maximum MFC flow rate.');
+%         error(errormsg)
+%     else
+%         slave = varargin{1};
+%         mfcId = varargin{2};
+%     end
     % Extract the lasom handle from the appdata of the figure:
     lasomH = appdataManager('olfStimGui','get','lasomH');
-    % Query for the flow rate setting:
-    [~,flowRateSettingInPercent]=lasomH.GetMfcFlowRateSetting(slave,mfcId,100);
-    varargout{1} = flowRateSettingInPercent;
-end
 
 end

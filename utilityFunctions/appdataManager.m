@@ -34,7 +34,8 @@ if ~all(ishandle(handle))
     end
 end
 
-%%
+%% Interact with the gui component to set or get appdata
+
 if strcmp(instruction,'set')
     for i = 1 : length(varargin)
         % Save the handle for the gui as application data in the gui. In order to

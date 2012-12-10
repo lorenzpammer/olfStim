@@ -151,7 +151,7 @@ for j = 1 : length(activeSlaves)
             settingNames = get(h.olfactometerSettings.text,'Tag');
             settingIndex = strcmp('mfcTotalFlow',settingNames);
             totalFlow = str2num(get(h.olfactometerSettings.edit(settingIndex),'String'));
-            maximumPossibleConcentration = smell.olfactometerSettings.maxFlowRateMfcNitrogen / totalFlow * smell.olfactometerOdors.slave(j).sessionOdors(odorCounter).odorantDilution;
+            maximumPossibleConcentration = smell.olfactometerSettings.slave(j).maxFlowRateMfcNitrogen / totalFlow * smell.olfactometerOdors.slave(j).sessionOdors(odorCounter).odorantDilution;
             % Set up the fields, and append the gui handle structure
             h.protocolSpecificHandles.concentration(j,i) = uicontrol(h.guiHandle,'Style','edit',...
                 'String',maximumPossibleConcentration,...

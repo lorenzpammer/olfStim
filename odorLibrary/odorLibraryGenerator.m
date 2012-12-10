@@ -1,7 +1,7 @@
 function odorLibrary=odorLibraryGenerator
 %
 % This function creates the odorLibrary structure. This structure contains
-% information to every odor used in the Laurent lab.
+% information to every odor used in the lab.
 % To change the information to a given odorant of the odorLibrary, change
 % entries for the respective odor in C). 
 % To add an odor add the popular name of the odor to the odorNames array in

@@ -6,10 +6,6 @@ function smell = removeHistoricalTrialDataFromSmell(smell)
 %
 % lorenzpammer september 2012
 
-%%
-
-% smell.olfactometerSettings.maxFlowRateMfcAir = [];
-% smell.olfactometerSettings.maxFlowRateMfcNitrogen = [];
 
 %% Delete trial specific information from the individual trials
 
