@@ -32,7 +32,7 @@ end
 
 %% Check whether connection can be made to the olfactometer
 if ~olfStimTestMode
-    lasomFunctions('checkConnection',0);
+    olfactometerAccess.checkConnection;
 end
 
 %% Add olfStim folders to the matlab path

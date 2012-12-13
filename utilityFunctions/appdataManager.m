@@ -3,12 +3,12 @@ function varargout = appdataManager(handle,instruction,varargin)
 % handle can either be a handle to a figure (component) or a tag name that 
 % instructions include:
 %    - 'clear' : clears all appdata of the specified figure component.
-%    - 'set' : add the appdata (variables) for the specified figure component
-%    - 'get' : get the specified appdata (variable names) of the specified
-%    figure component 
-% varargin - 
+%    - 'set' : add the variables provided as input to the funciton to the
+%       specified figure component
+%    - 'get' : get the specified variable (specify name of variable in form
+%    of a string) from the specified figure component 
 %
-% lorenzpamemr 2012/08
+% lorenzpammer 2012/08
 
 %%
 if nargin < 1

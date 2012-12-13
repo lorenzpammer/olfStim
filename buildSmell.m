@@ -142,8 +142,10 @@ smell.version = smellVersion; % Define here which version of the smell structure
 usedSlaves = find([smell.olfactometerOdors.slave.used]);
 for i = usedSlaves
     if ~olfStimTestMode
-        [smell.olfactometerSettings.slave(i).maxFlowRateMfcAir, ~] = lasomFunctions('getMaxFlowRateMfc',0,i,1); % in liters/minute probably 1.5
-        [smell.olfactometerSettings.slave(i).maxFlowRateMfcNitrogen,~] = lasomFunctions('getMaxFlowRateMfc',0,i,2); % in liters/minute probably 0.1
+        olfactometerH = olfactometerAccess.connect(false);
+        [smell.olfactometerSettings.slave(i).maxFlowRateMfcAir, ~] = olfactometerAccess.getMaxFlowRateMfc(false, olfactometerH, i,1); % in liters/minute probably 1.5
+        [smell.olfactometerSettings.slave(i).maxFlowRateMfcNitrogen,~] = olfactometerAccess.getMaxFlowRateMfc(false, olfactometerH, i,2); % in liters/minute probably 0.1
+        release(olfactometerH);
     else
         smell.olfactometerSettings.slave(i).maxFlowRateMfcAir = 1.5;
         smell.olfactometerSettings.slave(i).maxFlowRateMfcNitrogen = 0.1;
@@ -317,8 +319,10 @@ if any(strcmpi('maxFlowRateMfc',fieldsToUpdate))
     usedSlaves = find([smell.olfactometerOdors.slave.used]);
     for i = usedSlaves
         if ~olfStimTestMode
-            [smell.olfactometerSettings.slave(i).maxFlowRateMfcAir, ~] = lasomFunctions('getMaxFlowRateMfc',0,i,1); % in liters/minute probably 1.5
-            [smell.olfactometerSettings.slave(i).maxFlowRateMfcNitrogen,~] = lasomFunctions('getMaxFlowRateMfc',0,i,2); % in liters/minute probably 0.1
+            olfactometerH = olfactometerAccess.connect(false);
+            [smell.olfactometerSettings.slave(i).maxFlowRateMfcAir, ~] = olfactometerAccess.getMaxFlowRateMfc(false, olfactometerH, i,1); % in liters/minute probably 1.5
+            [smell.olfactometerSettings.slave(i).maxFlowRateMfcNitrogen,~] = olfactometerAccess.getMaxFlowRateMfc(false, olfactometerH, i,2); % in liters/minute probably 0.1
+            release(olfactometerH);
         else
             smell.olfactometerSettings.slave(i).maxFlowRateMfcAir = 1.5;
             smell.olfactometerSettings.slave(i).maxFlowRateMfcNitrogen = 0.1;
@@ -326,7 +330,7 @@ if any(strcmpi('maxFlowRateMfc',fieldsToUpdate))
     end
 end
 if any(strcmpi('olfactometerID',fieldsToUpdate))
-% Field for storing information about LASOM (firmware, etc.)
+    % Field for storing information about LASOM (firmware, etc.)
     smell.olfactometerSettings.olfactometerID = [];
 end
     
