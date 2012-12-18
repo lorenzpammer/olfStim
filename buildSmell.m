@@ -145,14 +145,15 @@ for i = usedSlaves
         olfactometerH = olfactometerAccess.connect(false);
         [smell.olfactometerSettings.slave(i).maxFlowRateMfcAir, ~] = olfactometerAccess.getMaxFlowRateMfc(false, olfactometerH, i,1); % in liters/minute probably 1.5
         [smell.olfactometerSettings.slave(i).maxFlowRateMfcNitrogen,~] = olfactometerAccess.getMaxFlowRateMfc(false, olfactometerH, i,2); % in liters/minute probably 0.1
+        % Field for storing information about LASOM (firmware, etc.)
+        smell.olfactometerSettings.olfactometerID = olfactometerAccess.getID(false,olfactometerH);
         release(olfactometerH);
     else
         smell.olfactometerSettings.slave(i).maxFlowRateMfcAir = 1.5;
         smell.olfactometerSettings.slave(i).maxFlowRateMfcNitrogen = 0.1;
+        smell.olfactometerSettings.olfactometerID = [];
     end
 end
-% Field for storing information about LASOM (firmware, etc.)
-smell.olfactometerSettings.olfactometerID = [];
 
 odorFields = fields(olfactometerOdors.sessionOdors(1));
 smell.trial(1) = cell2struct(cell(length(odorFields),1),odorFields,1); % all fields for each used odor are written to the smell structure: odorName,iupacName,CASNumber,producingCompany,odorantPurity,state,odorantDilution,dilutedIn,concentrationAtPresentation,inflectionPointResponseCurve,slave,vial,mixture,sessionOdorNumber
@@ -330,8 +331,10 @@ if any(strcmpi('maxFlowRateMfc',fieldsToUpdate))
     end
 end
 if any(strcmpi('olfactometerID',fieldsToUpdate))
-    % Field for storing information about LASOM (firmware, etc.)
-    smell.olfactometerSettings.olfactometerID = [];
+    % Field for storing information about LASOM (firmware, etc.)\
+    olfactometerH = olfactometerAccess.connect(false);
+    smell.olfactometerSettings.olfactometerID = olfactometerAccess.getID(false,olfactometerH);
+    release(olfactometerH);
 end
     
 end

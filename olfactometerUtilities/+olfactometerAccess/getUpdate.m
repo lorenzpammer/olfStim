@@ -1,6 +1,6 @@
-function olfactometerID = getID(debug, olfactometerH)
-% olfactometerID = olfactometerAccess.getID(debug, olfactometerH)
-% Will return the ID of the olfactometer.
+function olfactometerStatus = getUpdate(debug, olfactometerH)
+% olfactometerStatus = olfactometerAccess.getUpdate(debug, olfactometerH)
+% Will return the current status of the olfactometer.
 % 
 % lorenzpammer 2012/12
 
@@ -19,12 +19,12 @@ end
 
 % if in test mode, don't interact with the olfactometer.
 if olfStimTestMode
-    olfactometerID = [];
+    olfactometerStatus = [];
     return
 end
 
-%% Query LASOM to get its ID 
+%% Query LASOM to get back the current status 
 
-olfactometerID = olfactometerH.GetID;
+olfactometerStatus = olfactometerH.SeqUpdateEnable;
 
 end

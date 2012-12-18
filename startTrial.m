@@ -61,16 +61,14 @@ end
 olfactometerH = olfactometerAccess.connect(debug);
 
 % Write the olfactometer activeX handle into the appdata of the figure:
+% make this conditional to allow SCRIPTING
 appdataManager('olfStimGui','set',olfactometerH);
 
-%% Get the lasom handle from appdata after connecting to LASOM
-% Extract the lasom handle from the appdata of the figure:
-% olfactometerH = appdataManager('olfStimGui','get','olfactometerH');
-
 %% Update smell:
+
 if trialNum == 1 && ~olfStimTestMode
-    % Outsource this to olfactometerAccess and call it from build smell
-    smell.olfactometerSettings.olfactometerID = olfactometerH.GetID;
+    % Get the ID from the olfactometer:
+    smell.olfactometerSettings.olfactometerID = olfactometerAccess.getID(debug,olfactometerH);
 end
 
 %% Send lsq file of the current trial to the LASOM
@@ -95,8 +93,8 @@ percentOfCapacityN = smell.trial(trialNum).flowRateMfcN / smell.olfactometerSett
 
 % These commands should be externalized into the olfactometerAccess function.
 if ~olfStimTestMode
-    invoke(olfactometerH,'SetMfcFlowRate',slave,1,percentOfCapacityAir);
-    invoke(olfactometerH,'SetMfcFlowRate',slave,2,percentOfCapacityN);
+    olfactometerAccess.setMfcFlowRate(debug, olfactometerH, slave, 1, percentOfCapacityAir);
+    olfactometerAccess.setMfcFlowRate(debug, olfactometerH, slave, 2, percentOfCapacityN);
 end
 
 clear percentOfCapacityAir percentOfCapacityN
@@ -106,7 +104,7 @@ clear percentOfCapacityAir percentOfCapacityN
 olfactometerAccess.executeSequence(debug,olfactometerH);
 
 if olfStimTestMode
-    disp('olfStim currently in test mode. No interaction with olfactometer.')
+    disp('olfStim is currently in test mode. No interaction with olfactometer.')
 end
 
 % Trigger trial:
@@ -162,9 +160,9 @@ mfcMeasureTimer = timer('ExecutionMode','fixedRate','Period',measurementInterval
             elapsedTime;
         if ~olfStimTestMode % only execute when we aren't in test mode
             smell.trial(trialNum).lasomEventLog.flowRateMfcAir(2,measurementNo) = ...
-                get(olfactometerH, 'MfcFlowRateMeasurePercent', slave, 1);
+                olfactometerAccess.getMfcFlowRateMeasure(debug,olfactometerH,slave,1);
             smell.trial(trialNum).lasomEventLog.flowRateMfcN(2,measurementNo) = ...
-                get(olfactometerH, 'MfcFlowRateMeasurePercent', slave, 2);
+                olfactometerAccess.getMfcFlowRateMeasure(debug,olfactometerH,slave,2);
             % Print the measured flow rates to the command window:
             fprintf('Measurement of MFC flow #%d. Air: %.3f, N2: %.3f.\n',...
                 measurementNo,smell.trial(trialNum).lasomEventLog.flowRateMfcAir(2,measurementNo),...
@@ -235,8 +233,8 @@ end
         % status:
         measurementNo = get(readLasomStatusTimer,'TasksExecuted');
         if ~olfStimTestMode % only execute when we aren't in test mode
-            lasomStatus = get(olfactometerH,'SeqUpdateEnable');
-            startVariableStatus = get(olfactometerH,'SeqUpdateVarState',1);
+            lasomStatus = olfactometerAccess.getUpdate(debug,olfactometerH);
+            startVariableStatus = olfactometerAccess.getStateOfVariable(debug,olfactometerH,1);
         else
             % if we're in test mode set the two variables:
             lasomStatus = 1;
@@ -289,8 +287,8 @@ end
 
     function readLasomStatusAfterTrialStart(obj,event)
         if ~olfStimTestMode % only execute when we aren't in test mode
-            lasomStatus = get(olfactometerH,'SeqUpdateEnable');
-            startVariableStatus = get(olfactometerH,'SeqUpdateVarState',1);
+            lasomStatus = olfactometerAccess.getUpdate(debug,olfactometerH);
+            startVariableStatus = olfactometerAccess.getStateOfVariable(debug,olfactometerH,1);
         else
             % if we're in test mode set the two variables:
             lasomStatus = 0;
@@ -314,8 +312,8 @@ end
             settingNames = {smell.trial(trialNum).olfactometerInstructions.name};
             index = find(strcmp('purge',settingNames));
             if smell.trial(trialNum).olfactometerInstructions(index).used && ~olfStimTestMode
-                invoke(olfactometerH,'SetMfcFlowRate',slave,1,100);
-                invoke(olfactometerH,'SetMfcFlowRate',slave,2,100);
+                olfactometerAccess.setMfcFlowRate(debug,olfactometerH,slave,1,100);
+                olfactometerAccess.setMfcFlowRate(debug,olfactometerH,slave,2,100);                
                 fprintf('Purging olfactometer.\n')
             end
             

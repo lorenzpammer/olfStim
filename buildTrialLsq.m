@@ -1,5 +1,4 @@
 function trialLsq = buildTrialLsq(trialNum,smell)
-
 % trialLsq = buildTrialLsq(trialNum,smell)
 %   will construct an LSQ file for the current trial using the information
 %   from the smell structure for the current trial. It returns the lsq file
