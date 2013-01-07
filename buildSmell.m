@@ -97,7 +97,7 @@ end
 if strcmp(instruction,'setUp')
    smell = setUpSmellStructure(smell, stimProtocol,protocolSpecificInfo,smellVersion); 
 end
-    
+
 
 %% Update all relevant elements of smell structure for the current trial
 % 
@@ -148,7 +148,7 @@ for i = usedSlaves
         % Field for storing information about LASOM (firmware, etc.)
         smell.olfactometerSettings.olfactometerID = olfactometerAccess.getID(false,olfactometerH);
         release(olfactometerH);
-    else
+    else % if we're in the test mode write some default values into the olfactometerSettings. Otherwise downstream code will break.
         smell.olfactometerSettings.slave(i).maxFlowRateMfcAir = 1.5;
         smell.olfactometerSettings.slave(i).maxFlowRateMfcNitrogen = 0.1;
         smell.olfactometerSettings.olfactometerID = [];
@@ -186,6 +186,9 @@ smell.trial(1).lasomEventLog.flowRateMfcN = [];
 % Field for storing the lsq file (lasom sequencer script) for each
 % trial:
 smell.trial(1).trialLsqFile = [];
+
+% Set up the structure containing information about I/O (triggers, timestamps, etc.).
+% 
 
 % Here any information specific for the current protocol can be dumped
 smell.trial(1).protocolSpecificInfo = [];

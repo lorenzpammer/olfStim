@@ -51,7 +51,7 @@ h = olfactometerSettings(h,'setUp'); % sets up all controls the user has over th
 % 6. Session Settings
 % All controls a user has over session parameters (inter trial interval etc)
 h = sessionSettingsPanel(h,0); % sessionSettingsPanel(h,guiEnlarge). 
-usedSettingNames = {'scientist' 'animalName'};
+usedSettingNames = {'scientist' 'animalName' 'I/O'};
 h = sessionSettings(h,'setUp',usedSettingNames);
 clear usedSettingNames;
 

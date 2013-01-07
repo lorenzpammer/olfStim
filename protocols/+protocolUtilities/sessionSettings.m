@@ -19,6 +19,7 @@ function h = sessionSettings(h,instruction,usedSettingNames,varargin)
 %       - 'scientist'
 %       - 'animalName'
 %       - 'interTrialInterval'
+%       - 'I/O'
 %
 %
 %
@@ -74,11 +75,17 @@ if strcmp(instruction,'setUp') || strcmp(instruction,'setUpStructure')
     
     % Create the sessionInstructions structure
     sessionInstructions = struct('name',{'scientist' 'animalName',...
-        'interTrialInterval'},...
-        'value',{'' '' ''},...
-        'unit',{ 'ID' 'ID' 's'},...
+        'interTrialInterval','I/O'},...
+        'value',{'' '' '' ''},...
+        'unit',{ 'ID' 'ID' 's' ''},...
         'activeSettingNumber',activeSettings,...
-        'used',{false false false});  % for every setting put the default of not used, depending on which settings were provided in usedSettingNames, this will be overridden below.
+        'used',{false false false false});  % for every setting put the default of not used, depending on which settings were provided in usedSettingNames, this will be overridden below.
+    % Which user interface type for each entry
+    uiType = {'edit' 'edit' 'edit' 'button'}; % Does the setting require a button or edit field
+    checkBox = [false false false false]; % whether or not a checkbox indicating used/non-used should be added to the gui
+    dependentOnSetting = {0 0 0 0}; % on which setting (written as a string) a given setting (sequence) is dependent.
+    callbackFunction = {'' '' '' 'protocolUtilities.ioControl.setUpGui'};
+    
     
     clear activeSettings;
     
@@ -142,9 +149,9 @@ if strcmp(instruction,'setUp') || strcmp(instruction,'setUpStructure')
         % Order of Olfactometer settings fields
         %     {'scientist' 'animalName', 'interTrialInterval'}
         %         settingValue = {'' '' 30}; % value for the different settings (in the according units)
-        useEditField = logical([1 1 1]); % whether or not an editing field should be added to the gui for each setting
-        useCheckBox = logical([0 0 0]); % whether or not a checkbox indicating used/non-used should be added to the gui
-        dependentOnSetting = {0 0 0}; % on which setting (written as a string) a given setting (sequence) is dependent.
+        useEditField = strcmp('edit',uiType); % whether or not an editing field should be added to the gui for each setting
+        useButton = strcmp('button',uiType); % whether or not a button should be added instead of the the edit field
+        useCheckBox = checkBox; % whether or not a checkbox indicating used/non-used should be added to the gui
         numberOfActiveSettings = length(find([sessionInstructions.used])); % Get the number of active sessionInstructions.
         usedSettingNames = {sessionInstructions(find([sessionInstructions.used])).name}; % extract the names of the active settings
         
@@ -170,6 +177,13 @@ if strcmp(instruction,'setUp') || strcmp(instruction,'setUpStructure')
                 h.sessionSettings.edit(activeSettingNumber) = uicontrol('Parent',h.guiHandle,...
                     'Style','edit','String',num2str(sessionInstructions(settingNumber).value),'Position', position,...
                     'Tag',sessionInstructions(settingNumber).name);
+            end
+            
+            if useButton(settingNumber)
+                position = [positions{activeSettingNumber}(1)+spacing positions{activeSettingNumber}(2)+spacing editWidth editHeight];
+                h.sessionSettings.edit(activeSettingNumber) = uicontrol('Parent',h.guiHandle,...
+                    'Style','pushbutton','String',num2str(sessionInstructions(settingNumber).name),'Position', position,...
+                    'Tag',sessionInstructions(settingNumber).name,'Callback',callbackFunction{settingNumber});
             end
             
             % Check field whether to use the setting or not:
