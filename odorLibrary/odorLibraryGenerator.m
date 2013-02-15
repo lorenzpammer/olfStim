@@ -1,29 +1,31 @@
 function odorLibrary=odorLibraryGenerator
 %
 % This function creates the odorLibrary structure. This structure contains
-% information to every odor used in the lab.
-% To change the information to a given odorant of the odorLibrary, change
+% information about every odor used in the lab.
+% To change the information about a given odorant of the odorLibrary, change
 % entries for the respective odor in C). 
 % To add an odor add the popular name of the odor to the odorNames array in
 % A) and add a new field for the odor in C), following the conventions of
 % the other odors.
 %
+% If you want to start from scratch you have to delete all entries to
+% odorNames under A, and delete all odor entries under C
+%
 % http://www.thegoodscentscompany.com
 %  
-%
-% Left to do:
-% Add vapor pressure to the odors.
 %
 % lorenzpamemr, March/2011
 %
 %% A) List odors in the library:
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% For every new odor add its common name to this list
 odorNames = {'Benzyl alcohol','Butanone','Camphor','Cineole','Citral', ...
     'Eugenol','Geranyl acetate','Hexanal','1-Hexanol','2-Hexanone','Isoamyl acetate', ...
     'Vanillin','Turtle food','Paraffin oil','Mineral oil','Ethanol', 'Water','Empty'}; % Cell array of strings with names of odorants in Library
 
 
 %% B) Set up the property fields of each odor
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 odorLibrary(1:length(odorNames)) = struct('odorName',[],'iupacName',[],'CASNumber',[],...
     'producingCompany',[], 'odorantPurity',[], 'state', [], 'odorantDilution', 0.1,...
@@ -360,4 +362,9 @@ for i = 1 : length(odorLibrary)
     end
 end
 
+
+
+
+
+%% Paste new odors above this end:
 end

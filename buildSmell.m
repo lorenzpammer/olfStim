@@ -21,15 +21,17 @@ function  buildSmell(instruction,trialOdor,trialNum,stimProtocol,protocolSpecifi
 %     - 'stimProtocol': no propertyValue necessary.
 %     - 'time': no propertyValue necessary.
 %     - 'notes': no propertyValue necessary. Will extract notes
-%     automatically from gui.
+%        automatically from gui.
 %     - 'olfactometerInstructions': no propertyValue necessary. Will
-%     extract instructions automatically from gui.
+%        extract instructions automatically from gui.
 %     - 'protocolSpecificInfo': no propertyValue necessary.
 %     - 'interTrialInterval': propertyValue necessary. Give intertrial
-%     interval in seconds.
+%       interval in seconds.
 %     - 'sessionInstructions'
 %     - 'scientist'
 %     - 'animalName'
+%     - 'io' : If no property value is provided, this option will pull the
+%       current io variable from the appdata.
 %
 % NOTICE: If you want to add a new field to smell, remember to check:
 % - If the new field will be populated during a trial with information
@@ -60,7 +62,7 @@ global olfactometerOdors
 global smell 
 global olfactometerInstructions
 
-smellVersion = 0; % version of smell structure
+smellVersion = '0.1'; % version of smell structure
 
 %% Import function packages
 
@@ -187,8 +189,8 @@ smell.trial(1).lasomEventLog.flowRateMfcN = [];
 % trial:
 smell.trial(1).trialLsqFile = [];
 
-% Set up the structure containing information about I/O (triggers, timestamps, etc.).
-% 
+% Set up the structure containing information about I/O io (triggers, timestamps, etc.).
+smell.trial(1).io = ioConfiguration;
 
 % Here any information specific for the current protocol can be dumped
 smell.trial(1).protocolSpecificInfo = [];
@@ -235,6 +237,12 @@ sessionSettings(h,'get'); % Create structure and write into appdata
 % Extract the sessionInstructions structure from the appdata of the figure:
 sessionInstructions=appdataManager('olfStimGui','get','sessionInstructions');
 smell.trial(trialNum).sessionInstructions = sessionInstructions;
+
+% The list of I/O actions can be updated from the gui. If the user updated
+% some actions, the io variable in the appdata will be updated. Pull the
+% current io variable from the appdata and update the io field in
+% smell.trial(trialNum):
+smell.trial(trialNum).io = appdataManager('olfStimGui','get','io');
 
 end
 
@@ -283,7 +291,7 @@ if any(strcmpi('protocolSpecificInfo',fieldsToUpdate))
 end
 
 if any(strcmpi('interTrialInterval',fieldsToUpdate))
-    index = find(strcmp('interTrialInterval',varargin));
+    index = find(strcmp('interTrialInterval',varargin)); % This should give an error. Why is nothing happening?
     value = fieldsToUpdate{index+1};
     smell.trial(trialNum).interTrialInterval = value;
 end
@@ -338,6 +346,19 @@ if any(strcmpi('olfactometerID',fieldsToUpdate))
     olfactometerH = olfactometerAccess.connect(false);
     smell.olfactometerSettings.olfactometerID = olfactometerAccess.getID(false,olfactometerH);
     release(olfactometerH);
+end
+if any(strcmpi('io',fieldsToUpdate))
+    index = find(strcmp('io',fieldsToUpdate));
+    try
+        io = fieldsToUpdate{index+1};
+        if ~isstruct(io)
+            error('jump to catch')
+        end
+    catch
+        io = appdataManager('olfStimGui','get','io');
+    end
+    
+    smell.trial(trialNum).io = io;
 end
     
 end

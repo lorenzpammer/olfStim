@@ -60,7 +60,10 @@ selectedProtocol=appdataManager('olfStimGui','get','selectedProtocol');
 % %% Write data into the gui appdata
 % % Write olfStimTestMode to the gui
 % appdataManager('olfStimGui','set',olfStimTestMode);
-
+%% Write some key variables to the gui
+% List of I/O actions:
+io = ioConfiguration();
+appdataManager('olfStimGui','set',io)
 
 %% Execute selected protocol
 functionHandle = str2func([selectedProtocol '.' selectedProtocol]); % make string of selected protocol to function handle

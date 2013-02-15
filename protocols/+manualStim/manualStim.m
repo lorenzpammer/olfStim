@@ -35,7 +35,6 @@ stimProtocol = 'manualStim';
 % placement of the components is relative to other components.
 
 
-
 % 3. End session button
 h = quitSession(h); % endSession is a function in the protocolUtilities package. Sets up a functional button to end the session, save the smell structure, disconnect from LASOM etc.
 

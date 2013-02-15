@@ -20,4 +20,7 @@
 # Specific ignoring rules for olfStim:
 #################################
 # The trial.lsq file is updated for every trial.
-*/lsq/trial.lsq	
+*/lsq/trial.lsq
+
+# The trial.lsq file is updated for every trial.
+#*/odorLibrary/odorLibrary.m

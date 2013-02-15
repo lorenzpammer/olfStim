@@ -183,7 +183,7 @@ if strcmp(instruction,'setUp') || strcmp(instruction,'setUpStructure')
                 position = [positions{activeSettingNumber}(1)+spacing positions{activeSettingNumber}(2)+spacing editWidth editHeight];
                 h.sessionSettings.edit(activeSettingNumber) = uicontrol('Parent',h.guiHandle,...
                     'Style','pushbutton','String',num2str(sessionInstructions(settingNumber).name),'Position', position,...
-                    'Tag',sessionInstructions(settingNumber).name,'Callback',callbackFunction{settingNumber});
+                    'Tag',sessionInstructions(settingNumber).name,'Callback',{callbackFunction{settingNumber},h});
             end
             
             % Check field whether to use the setting or not:
