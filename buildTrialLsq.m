@@ -84,8 +84,10 @@ if smell.trial(trialNum).mixture == 0
     ai{2} = ~strcmp('purge',{smell.trial(trialNum).olfactometerInstructions.name});
     olfactometerActionsIndex = logical(ai{1} .* ai{2});
     clear ai;
-    % Timing of the different actions
+    % Timing of the different actions from olfactometer instructions:
     timesOfAction = {smell.trial(trialNum).olfactometerInstructions.value};
+    % Timing of the different actions from I/O:
+    timesOfAction = [timesOfAction {smell.trial(trialNum).io.value}]
     % Create an index that allows to backinfer which times of actions
     % correspond to which type of action. Need to jump through some hoops
     % here, in order to be able to deal with multiple opening/closing times
