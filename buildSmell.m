@@ -343,9 +343,13 @@ if any(strcmpi('maxFlowRateMfc',fieldsToUpdate))
 end
 if any(strcmpi('olfactometerID',fieldsToUpdate))
     % Field for storing information about LASOM (firmware, etc.)\
-    olfactometerH = olfactometerAccess.connect(false);
-    smell.olfactometerSettings.olfactometerID = olfactometerAccess.getID(false,olfactometerH);
-    release(olfactometerH);
+    if ~olfStimTestMode
+        olfactometerH = olfactometerAccess.connect(false);
+        smell.olfactometerSettings.olfactometerID = olfactometerAccess.getID(false,olfactometerH);
+        release(olfactometerH);
+    else
+        smell.olfactometerSettings.olfactometerID = '';
+    end
 end
 if any(strcmpi('io',fieldsToUpdate))
     index = find(strcmp('io',fieldsToUpdate));
