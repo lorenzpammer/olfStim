@@ -49,7 +49,7 @@ else
         color = varargin{index+1};
     else
         % Define a default color, here orange:
-        color =  [1.0000    0.8000    0.2000];
+        color =  [1    0.9922    0.8980];
     end
     
 end
@@ -71,7 +71,7 @@ if strmatch(instruction,'setUp')
     figurePosition(3) = panelPosition(3)-10; % Set the width of the progress figure
     figurePosition(4) = panelPosition(4)-37; % Set the height of the progress figure
     % Set up the figure where progress gets plotted
-    set(h.progress.figure,'Ytick',[],'Xtick',(0:10000),'Fontsize',8)
+    set(h.progress.figure,'Ytick',[],'Xtick',(0:10000),'Fontsize',8,'Color',[0.8 0.8 0.8])
     set(h.progress.figure,'Position',figurePosition)
     xlim(h.progress.figure,[0.5 10.5]); ylim(h.progress.figure,[0 1])
 end
