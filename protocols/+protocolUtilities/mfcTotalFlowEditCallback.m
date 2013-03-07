@@ -32,7 +32,7 @@ clear tagNames index
 
 %% Check whether the flow is too high
 
-maximalFlowRate = smell.olfactometerSettings.maxFlowRateMfcAir + smell.olfactometerSettings.maxFlowRateMfcNitrogen;
+maximalFlowRate = smell.olfactometerSettings.slave(1).maxFlowRateMfcAir + smell.olfactometerSettings.slave(1).maxFlowRateMfcNitrogen;
 
 if maximalFlowRate < userDefinedMfcTotalFlow
     selection = warndlg('The desired flow rate cannot be achieved. Please enter a lower value.',...

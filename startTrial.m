@@ -87,7 +87,7 @@ olfactometerAccess.sendSequence(debug,olfactometerH,pathTrialLsq);
 %% Set MFC flow rates
 
 slave = smell.trial(trialNum).slave;
-smell = calculateMfcFlowRates(trialNum,smell);
+smell = calculateMfcFlowRates(trialNum,smell,'error');
 percentOfCapacityAir = smell.trial(trialNum).flowRateMfcAir / smell.olfactometerSettings.slave(slave).maxFlowRateMfcAir * 100;
 percentOfCapacityN = smell.trial(trialNum).flowRateMfcN / smell.olfactometerSettings.slave(slave).maxFlowRateMfcNitrogen * 100;
 

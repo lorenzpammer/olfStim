@@ -27,7 +27,6 @@ io(i).value = 2;
 io(i).time = 0;
 io(i).used = 0;
 
-
 %% Paste new io entries above this end:
 end
 
