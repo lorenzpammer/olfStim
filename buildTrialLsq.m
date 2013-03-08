@@ -23,6 +23,7 @@ callingFunctionName = 'startTrial.m'; % Define the name of the initalizing funct
 lsqPath = which(callingFunctionName);
 lsqPath(length(lsqPath)-length(callingFunctionName):length(lsqPath))=[];
 lsqPath=[lsqPath filesep 'lsq' filesep];
+ioLsqPath=[lsqPath filesep 'ioCodes' filesep];
 clear callingFunctionName
 
 coreLsq = fileread([lsqPath 'core.lsq']); % read in the core lsq file (a text file)
@@ -76,7 +77,10 @@ if smell.trial(trialNum).mixture == 0
     % Define the actions and the sequence of actions of the
     % olfactometer and create the sequencer code to carry them out
     
-    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % 1. Get the actions saved in olfactometer instructions
+    % flow
+    %
     % Find the mfcTotalFlow field. Make a logical indexing vector
     % denoting the actions (fields), that have to be dealt with in the
     % sequencer:
@@ -86,8 +90,16 @@ if smell.trial(trialNum).mixture == 0
     clear ai;
     % Timing of the different actions from olfactometer instructions:
     timesOfAction = {smell.trial(trialNum).olfactometerInstructions.value};
-    % Timing of the different actions from I/O:
-    timesOfAction = [timesOfAction {smell.trial(trialNum).io.value}]
+    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % 2. Deal with the I/O and trial flow information
+    timesOfAction = [timesOfAction {smell.trial(trialNum).io.time}];
+    
+    % Create indices that allow to backinfer which action entries come from
+    % olfactometerSettings and which from io
+    olfactometerSettingsActions = 1:length(smell.trial(trialNum).olfactometerInstructions);
+    ioActions = length(smell.trial(trialNum).olfactometerInstructions)+1 : length(timesOfAction);
+    
     % Create an index that allows to backinfer which times of actions
     % correspond to which type of action. Need to jump through some hoops
     % here, in order to be able to deal with multiple opening/closing times
@@ -104,6 +116,31 @@ if smell.trial(trialNum).mixture == 0
     % Overwrite sequenceIndexOfActions with the indices for the actions:
     sequenceIndexOfActions = instructionIndexOfTimesOfAction(sequenceIndexOfActions);
     
+    % If an olfactometerSettings action and a I/O action are supposed to
+    % occur at the same time, we will first execute the I/O action. Sort
+    % the actions according to this principle:
+    [b,m,n]=unique(sortedTimesOfAction);
+    
+    
+    for i = 1 : length(m)
+       if i == 1
+           sameValues = 1:m(i);
+           tempIoActions = ismember(sequenceIndexOfActions(sameValues),ioActions);
+           [~,c]=sort(tempIoActions,'descend');
+           reorderedValues = sameValues(c);
+           sequenceIndexOfActions(sameValues) = sequenceIndexOfActions(reorderedValues);
+       else
+           sameValues = m(i-1):m(i);
+           tempIoActions = ismember(sequenceIndexOfActions(sameValues),ioActions);
+           [~,c]=sort(tempIoActions,'descend');
+           reorderedValues = sameValues(c);
+           sequenceIndexOfActions(sameValues) = sequenceIndexOfActions(reorderedValues);
+           
+       end
+    end
+    
+    % Write an index of which actions are used
+    usedActions = [[smell.trial(trialNum).olfactometerInstructions(:).used] logical([smell.trial(trialNum).io.used])];
     
     %%
     % Go through a sorted loop, and add the sequencer commands for the
@@ -116,12 +153,15 @@ if smell.trial(trialNum).mixture == 0
     for i = sequenceIndexOfActions
         loopIteration = loopIteration+1;
         % if the current action is not handled by the sequencer skip it
-        if ~ismember(i,find(olfactometerActionsIndex))
+        % (some fields in the olfactometerSettings structure are not
+        % handled by the sequencer, eg MFC flow rates. io actions are all
+        % handled by the sequencer).
+        if ~ismember(i,find(olfactometerActionsIndex)) && i <= max(olfactometerSettingsActions)
             continue % to next iteration of for loop
         end
         
         % If the action is used:
-        if smell.trial(trialNum).olfactometerInstructions(i).used
+        if usedActions(i)
             
             % Add 1 to the action counter.
             actionNumber = actionNumber+1;
@@ -129,20 +169,33 @@ if smell.trial(trialNum).mixture == 0
             if actionNumber==1
                 %    read the lsq file that includes the command for the current
                 % action in the1 loop iteration
-                currentActionLsq = fileread([lsqPath smell.trial(trialNum).olfactometerInstructions(i).name '.lsq']);
+                if ismember(i,olfactometerSettingsActions)
+                    currentActionLsq = fileread([lsqPath smell.trial(trialNum).olfactometerInstructions(i).name '.lsq']);
+                elseif ismember(i,ioActions)
+                    index = i - max(olfactometerSettingsActions);
+                    currentActionLsq = fileread([ioLsqPath smell.trial(trialNum).io(index).label '.lsq']);
+                end
                 
-                % If the first action tzpe is called multiple times within
+                % If the first action type is called multiple times within
                 % a trial, the first action of the trial will also be the
                 % first of the multiple calls of the same action. Therefore
                 % take the first value from the instructions:
                 currentActionValueIndex = 1;
                 
-                % in the first action of a trial the wait time is the
-                % time when the first action should be triggered:
-                waitTime = smell.trial(trialNum).olfactometerInstructions(i).value(currentActionValueIndex)*1000;% *1000 because LASOM expects ms, values in smell are in s
-                currentActionLsq = sprintf([';\nwait, %d \n' currentActionLsq], waitTime);
-                % Start the timer in the beginning of the trial:
-                currentActionLsq = sprintf([';\nstartTimer, 2 ; Starts the timer for the trial \n' currentActionLsq]);
+                % In the first action of a trial the wait time is the
+                % time at which the first action should be triggered:
+                if ismember(i,olfactometerSettingsActions)
+                    waitTime = smell.trial(trialNum).olfactometerInstructions(i).value(currentActionValueIndex)*1000;% *1000 because LASOM expects ms, values in smell are in s
+                    currentActionLsq = sprintf([';\nwait, %d \n' currentActionLsq], waitTime);
+                    % Start the timer in the beginning of the trial:
+                    currentActionLsq = sprintf([';\nstartTimer, 2 ; Starts the timer for the trial \n' currentActionLsq]);
+                elseif ismember(i,ioActions)
+                    index = i - max(olfactometerSettingsActions);
+                    waitTime = smell.trial(trialNum).io(index).time(currentActionValueIndex)*1000;% *1000 because LASOM expects ms, values in smell are in s
+                    currentActionLsq = sprintf([';\nwait, %d \n' currentActionLsq], waitTime);
+                    % Start the timer in the beginning of the trial:
+                    currentActionLsq = sprintf([';\nstartTimer, 2 ; Starts the timer for the trial \n' currentActionLsq]);
+                end
                 
 %                 % Add the command to send a timestamp:
 %                 sendTimestampLsq = fileread([lsqPath 'sendTimestamp.lsq']);
@@ -161,18 +214,25 @@ if smell.trial(trialNum).mixture == 0
                 clear currentActionLsq
                 % Read the lsq file that includes the command for the current
                 % action in the loop iteration
-                currentActionLsq = fileread([lsqPath smell.trial(trialNum).olfactometerInstructions(i).name '.lsq']);
+                if ismember(i,olfactometerSettingsActions)
+                    currentActionLsq = fileread([lsqPath smell.trial(trialNum).olfactometerInstructions(i).name '.lsq']);
+                elseif ismember(i,ioActions)
+                    index = i - max(olfactometerSettingsActions);
+                    currentActionLsq = fileread([ioLsqPath smell.trial(trialNum).io(index).label '.lsq']);
+                end
                 
                 if isempty(currentActionLsq) 
                    errormsg=sprintf('No lsq template for the current action found.\nCurrent action: %s',smell.trial(trialNum).olfactometerInstructions(i).name) 
                    error(errormsg)
                 end
-                % Read in the sequencer code, that allows to check
+                % Read in the sequencer code, which allows to check
                 % whether the next action should be triggered or
                 % whether it should wait.
+                % This is for the sequencer to know whether the time for
+                % triggering the action has come.
                 timeLapseLsq = fileread([lsqPath 'timeLapse.lsq']);
                 
-                % In cases where one action (opening a valve) is called
+                % In cases where one action (eg opening a valve) is called
                 % multiple times within a trial, we have to know which
                 % of the several times of action calling we're in now:
                 currentActionCallsInTrial = find(sequenceIndexOfActions==i);
@@ -181,11 +241,20 @@ if smell.trial(trialNum).mixture == 0
                 else
                     currentActionValueIndex = 1;
                 end
+                
                 % First change the timing of the when it lapses:
-                replaceString = 'MYVAL';
-                waitTime = num2str(smell.trial(trialNum).olfactometerInstructions(i).value(currentActionValueIndex)*1000); % *1000 because LASOM expects ms, values in smell are in s
-                timeLapseLsq = replacePlaceHolderInLsq(timeLapseLsq,replaceString, waitTime);
-                clear waitTime
+                if ismember(i,olfactometerSettingsActions)
+                    replaceString = 'MYVAL';
+                    waitTime = num2str(smell.trial(trialNum).olfactometerInstructions(i).value(currentActionValueIndex)*1000); % *1000 because LASOM expects ms, values in smell are in s
+                    timeLapseLsq = replacePlaceHolderInLsq(timeLapseLsq,replaceString, waitTime);
+                    clear waitTime
+                elseif ismember(i,ioActions)
+                    index = i - max(olfactometerSettingsActions);
+                    replaceString = 'MYVAL';
+                    waitTime = num2str(smell.trial(trialNum).io(index).time(currentActionValueIndex)*1000); % *1000 because LASOM expects ms, values in smell are in s
+                    timeLapseLsq = replacePlaceHolderInLsq(timeLapseLsq,replaceString, waitTime);
+                    clear waitTime
+                end
                 
                 % Now change the label to jump to, when it lapses out:
                 replaceString = '@lapsedOut';

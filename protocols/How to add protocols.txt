@@ -4,3 +4,4 @@ In every protocol define the trial number with the variable trialNum. First tria
 
 In every new trial you have to call buildSmell('update',trialOdor,trialNum). This will update the smell structure.
 
+For details see the documentation in olfStim/Documentation/

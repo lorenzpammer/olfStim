@@ -1,0 +1,5 @@
+; THIS DOESN'T WORK YET JUST TO TEST THE I/O code
+Output $XlogicOut5,1
+wait, 5
+Output $XlogicOut5,0
+;

@@ -49,13 +49,6 @@ SetVar, $Var1, 0                        ;
 ; Trial Sequence Definition
 ; ------------------------------------------------------
 ;
-WhileAlways
-IfIn, $DigIn1, @startTrial
-EndWhile
-;
-label, @startTrial
-SetVar, $Var1, 1    ; Causes the sequencer to update the status, about the value of $Var1
-EmitStatus          ; Causes the sequencer to emit the updated status to the host computer. This way the host computer knows, when the trial starts.
 ;
 ; eof
 SetVar, $Var1, 0    ; Set $Var1 back to initial state indicating end of trial

@@ -56,8 +56,12 @@ panelPosition = get(h.ioControl.panel,'Position');
 % value editing:
 position = [panelPosition(3)-5-editWidth popupPosition(2) - 50 editWidth editHeight];
 h.ioControl.edit(1) = uicontrol('Parent',h.ioControl.panel,...
-                    'Style','edit','String','','Position', position,...
-                    'Tag','value');
+    'Style','edit','String','','Position', position,...
+    'Tag','value','Callback',@tempFun);
+
+    function tempFun(~,~)
+        warndlg('At the moment the value edit option doesn''t have any effect.','Warning')
+    end
 
 textPosition = [panelPosition(1)+5 position(2) textWidth textHeight];
 h.ioControl.text(1) = uicontrol('Parent',h.ioControl.panel,...
@@ -98,9 +102,14 @@ h.ioControl.saveButton = uicontrol('Parent',h.ioControl.panel,...
                     'Style','pushbutton','String','Save','Position', position,...
                     'Tag','ioSave','Callback',{@ioSaveButtonCallback,h});
 
-%%
+%% Write updated handle into gui appdata
 
 appdataManager('olfStimGui','set',h)
+
+%% Populate fields with first I/O action
+
+popupMenuCallback([],[])
+
 end
 
 
@@ -158,4 +167,3 @@ io(index).used = logical(get(h.ioControl.edit(3),'Value'));
 appdataManager('olfStimGui','set',io);
 
 end
-
