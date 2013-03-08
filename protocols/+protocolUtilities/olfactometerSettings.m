@@ -619,11 +619,27 @@ catch
     end
     
     
+    % Get I/O data and plot it
+    i=7;
+    io = appdataManager('olfStimGui','get','io');
+    if ~isempty(io)
+        color = [0 0 0];
+        xvalues = {io(logical([io.used])).time};
+        xvalues = cell2mat(xvalues);
+        yvalues = i;
+        for j = 1 : length(xvalues)
+            plot(axisHandle,xvalues(j),yvalues,'*','Color',color)
+        end
+    else
+        i=i-1;
+    end
+    
+    
     % Indicate the timing of the end of the trial with a vertical broken
     % line
     allTerminatingValues = cell2mat(value);
     finalAction = nanmax(allTerminatingValues);
-    plot(axisHandle,[finalAction finalAction], get(axisHandle,'Ylim') + [-1 +1],'--k','Linewidth',1.5)
+    plot(axisHandle,[finalAction finalAction], get(axisHandle,'Ylim') + [-1 +1],'--k','Linewidth',1.2)
     
     % Set the figure limits:
     ylim([0 i+1])

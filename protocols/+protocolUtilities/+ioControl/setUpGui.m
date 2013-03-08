@@ -113,10 +113,6 @@ popupMenuCallback([],[])
 end
 
 
-
-
-
-
 function popupMenuCallback(source,eventdata)
 
 h = appdataManager('olfStimGui','get','h');
