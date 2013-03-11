@@ -621,7 +621,7 @@ catch
     
     % Get I/O data and plot it
     i=7;
-    io = appdataManager('olfStimGui','get','io');
+    io = appdataManager('olfStimGui','get','io');  
     if ~isempty(io)
         color = [0 0 0];
         xvalues = {io(logical([io.used])).time};

@@ -2,7 +2,6 @@ function manualSessionProgrammingStim
 %
 %
 % TO DO:
-% - Check how many odors are used in order to decide whether to enlarge the gui.
 % - when importing an old smell structure, clear all information which 
 % lorenzpammer august 2012
 
@@ -61,7 +60,7 @@ h = olfactometerSettings(h,'setUp'); % sets up all controls the user has over th
 % 6. Session Settings
 % All controls a user has over session parameters (inter trial interval etc)
 h = sessionSettingsPanel(h,0); % sessionSettingsPanel(h,guiEnlarge). 
-usedSettingNames = {'scientist' 'animalName' 'interTrialInterval'};
+usedSettingNames = {'scientist' 'animalName' 'interTrialInterval' 'I/O'};
 h = sessionSettings(h,'setUp',usedSettingNames);
 clear usedSettingNames;
 
