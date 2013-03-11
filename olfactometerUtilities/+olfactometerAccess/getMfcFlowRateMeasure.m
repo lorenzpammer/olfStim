@@ -1,4 +1,4 @@
-function mfcFlowRate = getMfcFlowRateMeasure(debug,olfactometerH,slave,MfcID)
+function mfcFlowRate = getMfcFlowRateMeasure(debug,olfactometerH,slave,mfcID)
 % [mfcFlowRate = getMfcFlowRateMeasure(debug,olfactometerH,slave,MfcID)
 % Function returns the current Mfc flow rates in percentage of maximum flow
 % rate.
@@ -28,6 +28,7 @@ end
 
 % Query mass flow controller for its current flow rate in percent of
 % capacity
-mfcFlowRate = olfactometerH.GetMfcFlowRateMeasurePercent(slave,mfcID);
+% mfcFlowRate = olfactometerH.GetMfcFlowRateMeasurePercent(slave,mfcID);
+mfcFlowRate = get(olfactometerH,'MfcFlowRateMeasurePercent',slave,mfcID);
 
 end

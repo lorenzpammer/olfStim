@@ -25,6 +25,9 @@ end
 
 %% Query LASOM to get back the current status of the defined variable
 
-variableStatus = olfactometerH.SeqUpdateVarState(variableIndex);
+variableStatus = get(olfactometerH,'SeqUpdateVarState',variableIndex);
+% Strangely this code variableStatus =
+% olfactometerH.SeqUpdateVarState(variableIndex); leads to an error with
+% not enough arguments.
 
 end

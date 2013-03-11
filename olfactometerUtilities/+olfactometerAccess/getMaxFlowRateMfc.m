@@ -1,5 +1,5 @@
-function [mfcCapacity, units] = getMaxFlowRateMfc(debug, olfactometerH, slave, MfcID)
-% [mfcCapacity, units] = olfactometerAccess.getMaxFlowRateMfc(debug, olfactometerH, slave, MfcID)
+function [mfcCapacity, units] = getMaxFlowRateMfc(debug, olfactometerH, slave, mfcID)
+% [mfcCapacity, units] = olfactometerAccess.getMaxFlowRateMfc(debug, olfactometerH, slave, mfcID)
 % Will return the maximum flow rate of the specified mass flow controller.
 % Each mass flow controller is identified by the slave it is connected to
 % and the mass flow controller ID on that slave: 
@@ -31,10 +31,10 @@ if olfStimTestMode
     return
 end
 
-%% Connect to Lasom and write LASOM handle into appdata
+%% Connect to Lasom and return mfc 
 
 % Query mass flow controller for its capacity
-[~,mfcCapacity,units]=olfactometerH.GetMfcCapacity(slave,mfcId,1000.0,''); % The 3rd and 4th argument don't seem to matter
+[~,mfcCapacity,units]=olfactometerH.GetMfcCapacity(slave,mfcID,1000.0,''); % The 3rd and 4th argument don't seem to matter
 
 % Check in which units the capacity of the MFCs is returned and convert
 % if necessary:
@@ -43,7 +43,7 @@ if strncmp(units,'ln/min',6)
     % Do nothing. liters per minutes are the unit we're using.
 elseif strncmp(units,'mln/min',7)
     % If units are in ml/min, convert to liters/min
-    mfcCapicity = mfcCapacity / 1000;
+    mfcCapacity = mfcCapacity / 1000;
     units = 'l/min';
 else
     errormsg = sprintf('Mass flow controllers returned flow rate in ''%s''.\nUnknown unit, add another case for this unit.',unit);

@@ -1,4 +1,4 @@
-function setMfcFlowRate(debug,olfactometerH,slave,MfcID,percentOfCapacity)
+function setMfcFlowRate(debug,olfactometerH,slave,mfcID,percentOfCapacity)
 % olfactometerH = olfactometerAccess.setMfcFlowRate(debug)
 % Not coded yet.
 % Establishes a connection to the LASOM and returns the activeX control
@@ -27,6 +27,6 @@ end
 
 %% Set the flow rates of the mass flow controller
 
-invoke(olfactometerH,'SetMfcFlowRate',slave,MfcID,percentOfCapacityAir);
+invoke(olfactometerH,'SetMfcFlowRate',slave,mfcID,percentOfCapacity);
 
 end

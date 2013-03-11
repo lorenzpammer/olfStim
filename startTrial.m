@@ -97,8 +97,6 @@ if ~olfStimTestMode
     olfactometerAccess.setMfcFlowRate(debug, olfactometerH, slave, 2, percentOfCapacityN);
 end
 
-clear percentOfCapacityAir percentOfCapacityN
-
 %% Start sequencer
 
 olfactometerAccess.executeSequence(debug,olfactometerH);
@@ -159,14 +157,34 @@ mfcMeasureTimer = timer('ExecutionMode','fixedRate','Period',measurementInterval
         smell.trial(trialNum).lasomEventLog.flowRateMfcN(1,measurementNo) = ...
             elapsedTime;
         if ~olfStimTestMode % only execute when we aren't in test mode
+            % Get the current MFC flow rate measurement. Will be returned
+            % in percentage of total flow:
             smell.trial(trialNum).lasomEventLog.flowRateMfcAir(2,measurementNo) = ...
                 olfactometerAccess.getMfcFlowRateMeasure(debug,olfactometerH,slave,1);
             smell.trial(trialNum).lasomEventLog.flowRateMfcN(2,measurementNo) = ...
                 olfactometerAccess.getMfcFlowRateMeasure(debug,olfactometerH,slave,2);
+            
+            % Calculate flow rates in l/min:
+            mfcAirFlow=(smell.trial(trialNum).lasomEventLog.flowRateMfcAir(2,measurementNo)/100)*smell.olfactometerSettings.slave(slave).maxFlowRateMfcAir;
+            mfcNFlow=(smell.trial(trialNum).lasomEventLog.flowRateMfcN(2,measurementNo)/100)*smell.olfactometerSettings.slave(slave).maxFlowRateMfcNitrogen;
+
+            % Check whether the measured flow rates deviate by more than 5%
+            % from the target flow rates
+                        
+            deviationAirFlow = abs(smell.trial(trialNum).lasomEventLog.flowRateMfcAir(2,measurementNo) - percentOfCapacityAir);
+            if deviationAirFlow > 5
+                fprintf('ATTENTION! Air flow rate deviates by more than 5%% from target flow. Measured air flow: %.3f %%, Target air flow: %.3f %%.\n',...
+                smell.trial(trialNum).lasomEventLog.flowRateMfcAir(2,measurementNo), percentOfCapacityAir);
+            end 
+            deviationNFlow = abs(smell.trial(trialNum).lasomEventLog.flowRateMfcN(2,measurementNo) - percentOfCapacityN);
+            if  deviationNFlow > 5
+                fprintf('ATTENTION! Nitrogen flow rate deviates by more than 5%% from target flow. Measured N flow: %.3f %%, Target N flow: %.3f %%.\n',...
+                smell.trial(trialNum).lasomEventLog.flowRateMfcN(2,measurementNo), percentOfCapacityN);
+            end
+            
             % Print the measured flow rates to the command window:
-            fprintf('Measurement of MFC flow #%d. Air: %.3f, N2: %.3f.\n',...
-                measurementNo,smell.trial(trialNum).lasomEventLog.flowRateMfcAir(2,measurementNo),...
-                smell.trial(trialNum).lasomEventLog.flowRateMfcN(2,measurementNo));
+            fprintf('Measurement of MFC flow #%d. Air: %.3f l/min, N2: %.3f l/min.\n',...
+                measurementNo,mfcAirFlow, mfcNFlow);
         end
     end
     function measureMfcFlowStopped(varargin)
@@ -337,6 +355,7 @@ end
         % and then has to be stopped, as it would result overloading the
         % computer and a lot of unwanted behavior.
         warning('Can''t fulfill LASOM reading requests at the set interval. Giving up.')
+        disp(lasterror)
         stop(readLasomStatusTimer)
     end
 end

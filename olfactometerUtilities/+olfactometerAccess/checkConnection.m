@@ -29,12 +29,15 @@ end
 %% Check whether connection to LASOM can be established.
 
 lasomH = actxcontrol('LASOMX.LASOMXCtrl.1');
-success = invoke(lasomH, 'DevOpen', 0, 1); % invoke(lasomH, 'DevOpen',???, show/notShow the debugWindow)
+success = invoke(lasomH, 'DevOpen', 0, true); % invoke(lasomH, 'DevOpen',???, show/notShow the debugWindow)
 if success == 0
     disp('Successfully connected to LASOM. Now closing connection.')
     pause(2)
     release(lasomH)
+    close all
 else
+    lastError = invoke(olfactometerH, 'GetLastError');
+    disp(lastError)
     error('Could not establish connection to LASOM.')
 end
 

@@ -86,7 +86,7 @@ if strmatch(instruction,'setUp')
     
     % Set up some controls for zooming in, zooming out and moving the limits
     pushButtonPosition(3:4) = [20 20];
-    pushButtonPosition(1) = figurePosition(1)+figurePosition(3) + ((panelPosition(3)-figurePosition(1)-figurePosition(3)) / 2 - pushButtonPosition(3)/2)
+    pushButtonPosition(1) = figurePosition(1)+figurePosition(3) + ((panelPosition(3)-figurePosition(1)-figurePosition(3)) / 2 - pushButtonPosition(3)/2);
     pushButtonPosition(2) = figurePosition(2)+figurePosition(4) - pushButtonPosition(4);
     h.progress.zoomIn = uicontrol('Parent',h.progress.panel,'Style','pushbutton',...
         'Position', pushButtonPosition,'String','+','Callback',@zoomIn);

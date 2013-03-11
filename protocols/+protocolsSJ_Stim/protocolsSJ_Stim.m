@@ -284,6 +284,8 @@ appdataManager('olfStimGui','set',h)
 %         smell.trial(sentTrialIdx).olfactometerInstructions(14).used = sequence.enable{9}; % Triggered
 %         smell.trial(sentTrialIdx).olfactometerInstructions(3).used = sequence.enable{1,9};  % ISI
         
+% Add trigger instructions
+% smell.trial(1).io(1), look for trigger label smell.trial(t).io(i).label) 'waitForTrigger'
             
         
         set(h.guiHandle,'Name', ['Running trial ' num2str(sentTrialIdx,'%03d') '-' sequence.name]);

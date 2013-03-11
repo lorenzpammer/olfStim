@@ -1,5 +1,5 @@
-function [mfcCapacity, units] = getMfcFlowRateTarget(debug, olfactometerH, slave, MfcID)
-% [mfcCapacity, units] = olfactometerAccess.getMfcFlowRateTarget(debug, olfactometerH, slave, MfcID)
+function [mfcCapacity, units] = getMfcFlowRateTarget(debug, olfactometerH, slave, mfcID)
+% [mfcCapacity, units] = olfactometerAccess.getMfcFlowRateTarget(debug, olfactometerH, slave, mfcID)
 % Didn't finish coding this function. Check how to access the flow rates.
 % 
 % lorenzpammer 2012/12
@@ -27,11 +27,9 @@ end
 
 %% Connect to Lasom and write LASOM handle into appdata
 
-olfactometerH.MfcFlowRateMeasurePercent(slave, MfcID);
-
 % Query mass flow controller for its capacity
-[~,mfcTargetFlowRate,units] = olfactometerH.GetMfcFlowRateSetting(slave,mfcId,1000.0,''); % The 3rd and 4th argument don't seem to matter
-[~,mfcTargetFlowRatePercent] = olfactometerH.MfcFlowRateSettingPercent(slave,mfcId,1000.0,''); % The 3rd and 4th argument don't seem to matter
+% [~,mfcTargetFlowRate,units] = olfactometerH.GetMfcFlowRateSettingPercent(slave,mfcID,1000.0,''); % The 3rd and 4th argument don't seem to matter
+[~,mfcTargetFlowRatePercent] = get(olfactometerH,'MfcFlowRateSettingPercent',slave,mfcID); % The 3rd and 4th argument don't seem to matter
 
 % Check in which units the capacity of the MFCs is returned and convert
 % if necessary:
