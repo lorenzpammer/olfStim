@@ -49,7 +49,7 @@ SetVar, $Var1, 0                        ;
 ; Trial Sequence Definition
 ; ------------------------------------------------------
 ;
-;
+; bof
 ; eof
 SetVar, $Var1, 0    ; Set $Var1 back to initial state indicating end of trial
 EmitStatus          ; Send the new status of $Var1 to the host

@@ -1,0 +1,6 @@
+;
+startTimer, 2 ; Starts the timer for the trial
+;
+SetVar, $Var1, 1    ; Causes the sequencer to update the status, about the value of $Var1
+EmitStatus          ; Causes the sequencer to emit the updated status to the host computer. This way the host computer knows, when the trial starts.
+;

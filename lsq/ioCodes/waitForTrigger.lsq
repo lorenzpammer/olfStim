@@ -4,6 +4,5 @@ IfIn, $DigIn1, @startTrial
 EndWhile
 ;
 label, @startTrial
+; bof
 ;
-SetVar, $Var1, 1    ; Causes the sequencer to update the status, about the value of $Var1
-EmitStatus          ; Causes the sequencer to emit the updated status to the host computer. This way the host computer knows, when the trial starts.

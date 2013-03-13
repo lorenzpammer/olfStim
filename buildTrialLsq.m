@@ -142,7 +142,8 @@ if smell.trial(trialNum).mixture == 0
     % Write an index of which actions are used
     usedActions = [[smell.trial(trialNum).olfactometerInstructions(:).used] logical([smell.trial(trialNum).io.used])];
     
-    %%
+    %% Build sequence of actions in the right order from lsq building blocks
+    %
     % Go through a sorted loop, and add the sequencer commands for the
     % each action to the end of the lsq file. The order of the
     % resulting sequence of actions corresponds to the defined timing
@@ -187,14 +188,10 @@ if smell.trial(trialNum).mixture == 0
                 if ismember(i,olfactometerSettingsActions)
                     waitTime = smell.trial(trialNum).olfactometerInstructions(i).value(currentActionValueIndex)*1000;% *1000 because LASOM expects ms, values in smell are in s
                     currentActionLsq = sprintf([';\nwait, %d \n' currentActionLsq], waitTime);
-                    % Start the timer in the beginning of the trial:
-                    currentActionLsq = sprintf([';\nstartTimer, 2 ; Starts the timer for the trial \n' currentActionLsq]);
                 elseif ismember(i,ioActions)
                     index = i - max(olfactometerSettingsActions);
                     waitTime = smell.trial(trialNum).io(index).time(currentActionValueIndex)*1000;% *1000 because LASOM expects ms, values in smell are in s
                     currentActionLsq = sprintf([';\nwait, %d \n' currentActionLsq], waitTime);
-                    % Start the timer in the beginning of the trial:
-                    currentActionLsq = sprintf([';\nstartTimer, 2 ; Starts the timer for the trial \n' currentActionLsq]);
                 end
                 
 %                 % Add the command to send a timestamp:
@@ -286,13 +283,18 @@ if smell.trial(trialNum).mixture == 0
     clear loopIteration currentActionLsq actionNumber ...
         timeLapseLsq sendTimestampLsq sortedTimesOfAction sequenceIndexOfActions
     
+    
+    
+    %%
     % Add the sequence of actions (actionLsq) for the current trial into
     % the lsq file for the current trial (trialLsq):
-    replaceString = '; eof';
+    replaceString = 'eof';
     trialLsq = replacePlaceHolderInLsq(trialLsq,replaceString, actionLsq);
     
-    
-%     disp(trialLsq)
+    %% Place some necessary actions at the beginning of the file.
+    currentActionLsq = fileread([lsqPath 'initiation.lsq']);
+    replaceString = 'bof';
+    trialLsq = replacePlaceHolderInLsq(trialLsq,replaceString, currentActionLsq,'last');
     
 elseif smell.trial(trialNum).mixture == 1
     error(': Creating Lsq files for mixtures is not yet programmed.')
@@ -315,27 +317,59 @@ end
     
 %% Utility functions
 
-function updatedLsqFile = replacePlaceHolderInLsq(lsqFile,replaceString,replacementString)
-% updatedLsqFile = replacePlaceHolderInLsq(lsqFile, replaceString, replacementString)
+function updatedLsqFile = replacePlaceHolderInLsq(lsqFile,replaceString,replacementString,instruction)
+% updatedLsqFile = replacePlaceHolderInLsq(lsqFile, replaceString, replacementString,instruction)
 % This function replaces the string defined by replaceString with the
 % string defined in replacementString in the lsq file and oututs the
-% updated lsq file. All 3 arguments are necessary.
+% updated lsq file. The firest 3 arguments are necessary.
+% The last argument instruction can be one of the following:
+% - 'one' : THis is the default if nothing is specified. This means there
+%           should not be more than one instance of the replaceString found
+%           in the lsqFile. If there are more than one an error will be
+%           thrown.
+% - 'last' : If there is more than one instance of the replaceString in the
+%           lsq file, this argument will result in replacing the last of
+%           the replaceString instances to be replaced by replacementString.
 %
 %%
 
 if nargin < 3
+    updatedLsqFile=[];
     error('Not enough input arguments. Type >> help replacePlaceHolderInLsq to get information. ')
 end
+if nargin < 4
+   instruction = 'one'; 
+end
 
-%% 
+%% Fint the replaceString in lsqFile and replace it
 
+% Find all instances of replaceString in lsqFile:
 replaceLocation = strfind(lsqFile,replaceString);
-
+% If no instance of replaceString can be found throw an error:
 if isempty(replaceLocation)
     error([replaceString ' not found in lsq file. No updating possible.'])
 end
 
-updatedLsqFile = sprintf([lsqFile(1:replaceLocation-1) '%s' lsqFile(replaceLocation+length(replaceString):end)], replacementString);
+% Only one instance should be found:
+if strmatch(instruction,'one')
+    if length(replaceLocation) > 1
+        error('Too many instances of a string to replace.')
+    end
+    updatedLsqFile = sprintf([lsqFile(1:replaceLocation-1) '%s' lsqFile(replaceLocation+length(replaceString):end)], replacementString);
+
+% This will only replace the last instance of replaceString in lsqFile:
+elseif strmatch(instruction,'last')    
+    updatedLsqFile = sprintf([lsqFile(1:replaceLocation(end)-1) '%s' lsqFile(replaceLocation(end)+length(replaceString):end)], replacementString);
+
+% If all instances of replaceString in lsqFile should be replaced:
+elseif strmatch(instruction,'all')    
+    numberOfLoops = length(replaceLocation);
+    for i = 1 : numberOfLoops
+        replaceLocation = strfind(lsqFile,replaceString);
+        lsqFile = sprintf([lsqFile(1:replaceLocation(1)-1) '%s' lsqFile(replaceLocation(1)+length(replaceString):end)], replacementString);
+    end
+    updatedLsqFile = lsqFile;
+end
 
 end
 
