@@ -11,9 +11,9 @@
 ; They are usually overridden with external definitions.
 ; ------------------------------------------------------
 ;
-Param, odorValveIndex, 2 		; odorValveIndex specifies two gating odor valves to be opened (N & air stream). Specified for each valve from host computer. range 1:9
+Param, odorValveIndex, 5 		; odorValveIndex specifies two gating odor valves to be opened (N & air stream). Specified for each valve from host computer. range 1:9
 Param, numberComponents, 1     ; number of components in the presented odorant. If only a single odor then equals 1.
-Param, trialNum, 5		; Number of the current trial
+Param, trialNum, 7		; Number of the current trial
 Param, startTrialTrigger, $DigIn1 		; defines line which when high, will start the trial
 ;
 ; ------------------------------------------------------
@@ -49,14 +49,29 @@ SetVar, $Var1, 0                        ;
 ; Trial Sequence Definition
 ; ------------------------------------------------------
 ;
+; bof
+; ;
+wait, 0 
+;
+WhileAlways
+IfIn, $DigIn1, @startTrial
+EndWhile
+;
+label, @startTrial
 ; ;
 startTimer, 2 ; Starts the timer for the trial
 ;
 SetVar, $Var1, 1    ; Causes the sequencer to update the status, about the value of $Var1
 EmitStatus          ; Causes the sequencer to emit the updated status to the host computer. This way the host computer knows, when the trial starts.
 ;
-; ;
-wait, 0 
+;;
+WhileAlways 			; enter an indefinite loop. 
+SinceTimer, 2, 3        ; Find relative time since start of timer
+CheckLapse, 3, 0	; Check whether the timer >= P2
+IfLapse, 3, @lapsedOut2		; If that's the case jump to the label indicated in P2.
+EndWhile
+;
+label, @lapsedOut2
 ;
 Odor, slaveIndex, odorValveIndex		; Odor will open the specified two odor valves and will automatically trigger the dummy vial valves and thereby close the two dummy valves.
 Output, $XLogicOut4, 1			;
@@ -64,10 +79,10 @@ Output, $XLogicOut4, 1			;
 WhileAlways 			; enter an indefinite loop. 
 SinceTimer, 2, 3        ; Find relative time since start of timer
 CheckLapse, 3, 3000	; Check whether the timer >= P2
-IfLapse, 3, @lapsedOut2		; If that's the case jump to the label indicated in P2.
+IfLapse, 3, @lapsedOut3		; If that's the case jump to the label indicated in P2.
 EndWhile
 ;
-label, @lapsedOut2
+label, @lapsedOut3
 ;
 Gate, slaveIndex, finalValveIndex	; Triggers the final valve. The index is set in the core lsq file
 Output, $XLogicOut1, 1			;
@@ -75,24 +90,13 @@ Output, $XLogicOut1, 1			;
 WhileAlways 			; enter an indefinite loop. 
 SinceTimer, 2, 3        ; Find relative time since start of timer
 CheckLapse, 3, 3500	; Check whether the timer >= P2
-IfLapse, 3, @lapsedOut3		; If that's the case jump to the label indicated in P2.
-EndWhile
-;
-label, @lapsedOut3
-;
-Gate, slaveIndex, sniffingValveIndex     ; Opens the sniffing valve. The index is set in the core lsq file
-Output, $XLogicOut2, 1			;
-;;
-WhileAlways 			; enter an indefinite loop. 
-SinceTimer, 2, 3        ; Find relative time since start of timer
-CheckLapse, 3, 5000	; Check whether the timer >= P2
 IfLapse, 3, @lapsedOut4		; If that's the case jump to the label indicated in P2.
 EndWhile
 ;
 label, @lapsedOut4
 ;
-Dummy, slaveIndex           ; Dummy will open the dummy valve and close all odor valves
-Output, $XLogicOut4, 0			;
+Gate, slaveIndex, sniffingValveIndex     ; Opens the sniffing valve. The index is set in the core lsq file
+Output, $XLogicOut2, 1			;
 ;;
 WhileAlways 			; enter an indefinite loop. 
 SinceTimer, 2, 3        ; Find relative time since start of timer
@@ -102,8 +106,8 @@ EndWhile
 ;
 label, @lapsedOut5
 ;
-UnGate, slaveIndex, finalValveIndex	; Closes the final valve. The index is set in the core lsq file
-Output, $XLogicOut1, 0			;
+Dummy, slaveIndex           ; Dummy will open the dummy valve and close all odor valves
+Output, $XLogicOut4, 0			;
 ;;
 WhileAlways 			; enter an indefinite loop. 
 SinceTimer, 2, 3        ; Find relative time since start of timer
@@ -113,22 +117,19 @@ EndWhile
 ;
 label, @lapsedOut6
 ;
-UnGate, slaveIndex, sniffingValveIndex     ; Closes the sniffing valve. The index is set in the core lsq file
-Output, $XLogicOut2, 0			;
+UnGate, slaveIndex, finalValveIndex	; Closes the final valve. The index is set in the core lsq file
+Output, $XLogicOut1, 0			;
 ;;
 WhileAlways 			; enter an indefinite loop. 
 SinceTimer, 2, 3        ; Find relative time since start of timer
-CheckLapse, 3, 10000	; Check whether the timer >= P2
+CheckLapse, 3, 5000	; Check whether the timer >= P2
 IfLapse, 3, @lapsedOut7		; If that's the case jump to the label indicated in P2.
 EndWhile
 ;
 label, @lapsedOut7
-; Cleaning the nose:
-Gate, slaveIndex, sniffingValveIndex     ; Opens the sniffing valve. The index is set in the core lsq file
-;
-Wait, 2000				; Wait for 2000ms
 ;
 UnGate, slaveIndex, sniffingValveIndex     ; Closes the sniffing valve. The index is set in the core lsq file
+Output, $XLogicOut2, 0			;
 ;
 SetVar, $Var1, 0    ; Set $Var1 back to initial state indicating end of trial
 EmitStatus          ; Send the new status of $Var1 to the host

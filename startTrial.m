@@ -125,7 +125,7 @@ delete(timerfindall);
 % of the sequencer.
 % Problem, that measuring takes quite a long time, therefore long
 % intervals:
-measurementInterval = 2; % measurement interval in seconds
+measurementInterval = 0.5; % measurement interval in seconds
 slave = smell.trial(trialNum).slave;
 
 
@@ -211,7 +211,7 @@ clear measurementPoints index olfactometerTimes timeOfLastAction measurementInte
 % the sequencer queuing a status message to the USB host. Here the function
 % waits until receiving that message. Then continue.
 
-readStatusInterval = 1.5; % measurement interval in seconds 1000Hz
+readStatusInterval = 1; % measurement interval in seconds 1000Hz
 tasksToExecute = 10e7; % this high number is a hack, because if infinite tasks should be executed one cannot hold the function until the timer is done.
 % Set up the timer, and its callbacks for measuring the mfc flow
 readLasomStatusTimer = timer('ExecutionMode','fixedRate','Period',readStatusInterval,...
@@ -247,7 +247,7 @@ end
 
 %% Callback functions of timer:
     function readLasomStatusUntilTrialStart(obj,event)
-        % Every 1500 ms, jump into this function and read the last emitted
+        % Every 1000 ms, jump into this function and read the last emitted
         % status:
         measurementNo = get(readLasomStatusTimer,'TasksExecuted');
         if ~olfStimTestMode % only execute when we aren't in test mode
