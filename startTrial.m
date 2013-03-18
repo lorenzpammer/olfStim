@@ -8,9 +8,6 @@ function smell = startTrial(trialNum, smell)
 % To do:
 % -get the actual timing of events from LASOM and write it into the
 %   smell structure.
-% - prompt LASOM to get the maximum flow rate of the Mfcs
-% - Continuously get flow rate of MFCs and write them into smell. I'm doing
-% this now but variables are not returned from callbacks.
 %
 % lorenzpammer dec 2011
 

@@ -11,9 +11,9 @@
 ; They are usually overridden with external definitions.
 ; ------------------------------------------------------
 ;
-Param, odorValveIndex, 5 		; odorValveIndex specifies two gating odor valves to be opened (N & air stream). Specified for each valve from host computer. range 1:9
+Param, odorValveIndex, 2 		; odorValveIndex specifies two gating odor valves to be opened (N & air stream). Specified for each valve from host computer. range 1:9
 Param, numberComponents, 1     ; number of components in the presented odorant. If only a single odor then equals 1.
-Param, trialNum, 7		; Number of the current trial
+Param, trialNum, 2		; Number of the current trial
 Param, startTrialTrigger, $DigIn1 		; defines line which when high, will start the trial
 ;
 ; ------------------------------------------------------
@@ -130,6 +130,20 @@ label, @lapsedOut7
 ;
 UnGate, slaveIndex, sniffingValveIndex     ; Closes the sniffing valve. The index is set in the core lsq file
 Output, $XLogicOut2, 0			;
+;;
+WhileAlways 			; enter an indefinite loop. 
+SinceTimer, 2, 3        ; Find relative time since start of timer
+CheckLapse, 3, 10000	; Check whether the timer >= P2
+IfLapse, 3, @lapsedOut8		; If that's the case jump to the label indicated in P2.
+EndWhile
+;
+label, @lapsedOut8
+; Cleaning the nose:
+Gate, slaveIndex, sniffingValveIndex     ; Opens the sniffing valve. The index is set in the core lsq file
+;
+Wait, 2000				; Wait for 2000ms
+;
+UnGate, slaveIndex, sniffingValveIndex     ; Closes the sniffing valve. The index is set in the core lsq file
 ;
 SetVar, $Var1, 0    ; Set $Var1 back to initial state indicating end of trial
 EmitStatus          ; Send the new status of $Var1 to the host

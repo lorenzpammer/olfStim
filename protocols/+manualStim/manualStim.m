@@ -60,6 +60,8 @@ h = progressPanel(h,'setUp'); % progressPanel is a function in the protocolUtili
 % 8. Pause session button % not necessary for manualStim
 % pauseSession; % pauseSession is a function in the protocolUtilities package. Sets up a functional button to pause the session
 
+% 9. Put a log window on top of the gui
+h = logWindow.setup(h,h.guiHandle); % Add a log window on top of the gui.
 
 % Add protocol specific handles"
 h.protocolSpecificHandles = [];
