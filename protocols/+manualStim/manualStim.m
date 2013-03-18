@@ -261,7 +261,7 @@ trialOdor.concentrationAtPresentation = str2num(get(h.protocolSpecificHandles.co
 % 4. update the progress panel on the gui
  progressPanel(h,'update',trialOdor,trialNum);
 
-% 5. star the new trial
+% 5. Start the new trial
 %   This will build the lsq file for the current trial, send the
 %   instructions to the olfactometer and trigger the trial.
 smell = startTrial(trialNum, smell);

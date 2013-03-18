@@ -38,7 +38,10 @@ success = invoke(olfactometerH, 'ClearSequence');
 if success ~= 0
     lastError = invoke(olfactometerH, 'GetLastError');
     disp(lastError)
-    error('Could not clear old sequence on LASOM.')
+    errormsg = 'Could not clear old sequence on LASOM.';
+    protocolUtilities.logWindow.issueLogMessage(['Fatal error: ' errormsg]);
+    error(errormsg)
+    
 end
 % Send new sequence defined by it's location on the hard drive to the
 % LASOM
@@ -46,14 +49,18 @@ parseSuccess = invoke(olfactometerH, 'ParseSeqFile', pathToTrialLsq);
 if parseSuccess ~= 0
     lastError = invoke(olfactometerH, 'GetLastError');
     disp(lastError)
-    error('Could not send trial sequence LASOM.')
+    errormsg = 'Could not send trial sequence LASOM.';
+    protocolUtilities.logWindow.issueLogMessage(['Fatal error: ' errormsg]);
+    error(errormsg)
 end
 % Compile the new sequence:
 compileSuccess = invoke(olfactometerH, 'CompileSequence');
 if compileSuccess ~= 0
     lastError = invoke(olfactometerH, 'GetLastError');
     disp(lastError)
-    error('Could not compile trial sequence.')
+    errormsg = 'Could not compile trial sequence.';
+    protocolUtilities.logWindow.issueLogMessage(['Fatal error: ' errormsg]);
+    error(errormsg)
 end
 
 end

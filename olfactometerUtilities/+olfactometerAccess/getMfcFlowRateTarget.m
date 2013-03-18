@@ -42,6 +42,7 @@ elseif strncmp(units,'mln/min',7)
     units = 'l/min';
 else
     errormsg = sprintf('Mass flow controllers returned flow rate in ''%s''.\nUnknown unit, add another case for this unit.',unit);
+    protocolUtilities.logWindow.issueLogMessage(['Fatal error: ' errormsg]);
     error(errormsg)
 end
 

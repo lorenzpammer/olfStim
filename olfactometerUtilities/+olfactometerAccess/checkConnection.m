@@ -38,7 +38,9 @@ if success == 0
 else
     lastError = invoke(olfactometerH, 'GetLastError');
     disp(lastError)
-    error('Could not establish connection to LASOM.')
+    warnStr = sprintf('Could not establish connection to LASOM.');
+    protocolUtilities.logWindow.issueLogMessage(['Fatal error: ' warnStr]);
+    error(warnStr)
 end
 
 end

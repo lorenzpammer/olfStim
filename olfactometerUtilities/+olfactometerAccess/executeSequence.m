@@ -30,7 +30,9 @@ end
 % Load the sequencer and run it:
 success = invoke(olfactometerH, 'LoadAndRunSequencer',1);
 if success ~= 0
-    error(fprintf('Could not start sequencer with new sequence file.\nLasom handle = %s, Load and run sequencer = %d',olfactometerH,success))
+    warnStr = sprintf('Could not start sequencer with new sequence file.\nLasom handle = %s, Load and run sequencer = %d',olfactometerH,success);
+    protocolUtilities.logWindow.issueLogMessage(['Fatal error: ' warnStr]);
+    error(warnStr)
 end
 
 end

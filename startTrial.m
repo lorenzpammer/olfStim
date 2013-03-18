@@ -13,8 +13,8 @@ function smell = startTrial(trialNum, smell)
 
 %% Decide whether to output information to the command window for debugging;
 
-debug = true;
-% debug = false;
+%debug = true;
+ debug = false;
 
 %% Fetch some variables from the gui appdata
 
@@ -30,7 +30,8 @@ olfactometerH = appdataManager('olfStimGui','get','olfactometerH');
 %% 
 % Check whether olfactometerH has not been released properly. If so, close it.
 if iscom(olfactometerH)
-    disp('The connection to the LASOM wasn''t released properly in a previous trial. Closing it now.')
+    warnStr = sprintf('The connection to the LASOM wasn''t released properly in a previous trial. Closing it now.');
+    protocolUtilities.logWindow.issueLogMessage(warnStr);
     release(olfactometerH);
 end
 clear olfactometerH;
@@ -170,13 +171,15 @@ mfcMeasureTimer = timer('ExecutionMode','fixedRate','Period',measurementInterval
                         
             deviationAirFlow = abs(smell.trial(trialNum).lasomEventLog.flowRateMfcAir(2,measurementNo) - percentOfCapacityAir);
             if deviationAirFlow > 5
-                fprintf('ATTENTION! Air flow rate deviates by more than 5%% from target flow. Measured air flow: %.3f %%, Target air flow: %.3f %%.\n',...
+                warnStr = sprintf('ATTENTION! Air flow rate deviates by more than 5%% from target flow. Measured air flow: %.3f %%, Target air flow: %.3f %%.\n',...
                 smell.trial(trialNum).lasomEventLog.flowRateMfcAir(2,measurementNo), percentOfCapacityAir);
+                protocolUtilities.logWindow.issueLogMessage(warnStr);
             end 
             deviationNFlow = abs(smell.trial(trialNum).lasomEventLog.flowRateMfcN(2,measurementNo) - percentOfCapacityN);
             if  deviationNFlow > 5
-                fprintf('ATTENTION! Nitrogen flow rate deviates by more than 5%% from target flow. Measured N flow: %.3f %%, Target N flow: %.3f %%.\n',...
+                warnStr = sprintf('ATTENTION! Nitrogen flow rate deviates by more than 5%% from target flow. Measured N flow: %.3f%%, Target N flow: %.3f%%.\n',...
                 smell.trial(trialNum).lasomEventLog.flowRateMfcN(2,measurementNo), percentOfCapacityN);
+                protocolUtilities.logWindow.issueLogMessage(warnStr);
             end
             
             % Print the measured flow rates to the command window:
@@ -194,7 +197,8 @@ mfcMeasureTimer = timer('ExecutionMode','fixedRate','Period',measurementInterval
         end
     end
     function measureMfcErrorFcn(~,~)
-        warning('Can''t fulfill MFC measuring requests at the set interval. Giving up.')
+        warnStr = sprintf('Can''t fulfill MFC measuring requests at the set interval. Giving up.');
+        protocolUtilities.logWindow.issueLogMessage(warnStr);
         stop(mfcMeasureTimer)
     end
 
@@ -265,17 +269,18 @@ end
         % exiting the initial whileloop).
         if lasomStatus == 1 && ...
                 startVariableStatus == 1;    
-            
-            if debug
-                fprintf('Started to execute trial.\n');
-            end
+%             
+%             if debug
+%                 fprintf('Started to execute trial.\n');
+%             end
             
             ticID = tic;
             set(mfcMeasureTimer,'UserData',ticID);
             start(mfcMeasureTimer);
             
             stop(readLasomStatusTimer) % will execute trialStarted subfunction.
-            fprintf('Trial #%d started.\n',trialNum)
+            msg = sprintf('Started to execute trial #%d.\n',trialNum);
+            protocolUtilities.logWindow.issueLogMessage(msg);
            
         end
         if measurementNo >= 2 && (lasomStatus == 205 || startVariableStatus == 205)

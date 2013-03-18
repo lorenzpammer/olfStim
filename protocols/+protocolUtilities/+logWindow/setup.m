@@ -28,7 +28,7 @@ if nargin < 3
     guiPos = get(h.guiHandle,'Position');
     % Expand the gui:
     set(h.guiHandle,'Position',guiPos+[0 0 0 heightOfLog])
-    guiPos = get(h.guiHandle,'Position')
+    guiPos = get(h.guiHandle,'Position');
     panelPosition = [5 guiPos(4)-heightOfLog+5 guiPos(3)-10 heightOfLog-10];
 end
 
