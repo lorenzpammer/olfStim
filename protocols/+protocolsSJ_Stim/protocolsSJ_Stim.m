@@ -176,6 +176,7 @@ set([h.progress.panel h.progress.figure], 'Visible','off');
 
 % Trial list
 pos = [5 120 panelWidth(1) 300];
+sizes.trials = pos;
 h.protocolControls.trials.panel = uipanel('Parent',h.guiHandle,'Units','pixel','Position',pos, 'Title','Trial definitions','TitlePosition','centertop');
 h.protocolControls.trials.listbox =  uicontrol('Style','listbox','parent',h.protocolControls.trials.panel,'Units','pixel','Position',[5 55 pos(3)-12  pos(4)-70], 'Callback', @updateTrialSelection,'Max',2);
 h.protocolControls.trials.run =  uicontrol('Style','pushbutton','parent',h.protocolControls.trials.panel,'Units','pixel','Position',[5 5 50 20], 'String','Run', 'FontWeight','bold','Callback',@runTrial);
@@ -188,12 +189,25 @@ h.protocolControls.trials.save=  uicontrol('Style','pushbutton','parent',h.proto
 h.protocolControls.trials.load =  uicontrol('Style','pushbutton','parent',h.protocolControls.trials.panel,'Units','pixel','Position',[170 27 50 20], 'String','Load', 'FontWeight','bold','Callback',@loadTrials);
 
 % Done list
-pos = [235 5 guiPos(3)-235 guiPos(4)-15];
+p = get(h.panelProtocolChooser, 'Position');
+pos = [235 p(4)+10 guiPos(3)-235 guiPos(4)-p(4)-20];
+sizes.donePanel.smallGui = pos;
+sizes.donePanel.bigGui = [panelWidth(1)+20+2*panelWidth(2) 5 panelWidth(2) round((guiPos(4)+30)/2)];
+sizes.doneList.bigGui = [5 30 panelWidth(2)-12 round((guiPos(4)+30)/2)-45];
+sizes.doneList.smallGui = [5 30 pos(3)-12 pos(4)-45];
 h.protocolControls.doneList.panel = uipanel('Parent',h.guiHandle,'Units','pixel','Position',pos, 'Title','Executed trials','TitlePosition','centertop');
 h.protocolControls.doneList.list = uicontrol('Style','listbox','parent',h.protocolControls.doneList.panel ,'Units','pixel','Position',[5 30 pos(3)-12 pos(4)-45]);
 h.protocolControls.doneList.clear = uicontrol('Style','pushbutton','parent',h.protocolControls.doneList.panel ,'Units','pixel','Position',[5 5 round((pos(3)-20)/3) 20], 'String','Clear', 'FontWeight', 'bold');
 h.protocolControls.doneList.guiSize = uicontrol('Style','pushbutton','parent',h.protocolControls.doneList.panel ,'Units','pixel','Position',[15+2*round((pos(3)-20)/3) 5 round((pos(3)-20)/3) 20], 'String','>>>','Callback',@changeGuiSize, 'FontWeight', 'bold');
 h.protocolControls.doneList.abort = uicontrol('Style','pushbutton','parent',h.protocolControls.doneList.panel ,'Units','pixel','Position',[10+round((pos(3)-20)/3) 5 round((pos(3)-20)/3) 20], 'String','Abort','Callback',@abortExecution, 'FontWeight', 'bold','ForegroundColor',[0.8 0 0]);
+
+% Log panel
+h = protocolUtilities.logWindow.setup(h,h.guiHandle, [235 5 guiPos(3)-235 p(4)]);
+sizes.logPanel.smallGui = [235 5 guiPos(3)-235 p(4)];
+sizes.logPanel.bigGui = [235 5 panelWidth(2) p(4)];
+sizes.logList.smallGui = get(h.log.logWindow, 'Position');
+sizes.logList.bigGui = [sizes.logList.smallGui(1:2) panelWidth(2)-12 sizes.logList.smallGui(4)];
+% Output warnings in listbox: protocolsUtilities.logWindow.issueLogMessage(logMessageString)
 
 % Sequence definition list
 h.protocolControls.sequencesDef.panel = uipanel('Parent',h.guiHandle,'Units','pixel','Position',[235 round((guiPos(4)+30)/2)+15 panelWidth(2) guiPos(4)-(round((guiPos(4)+30)/2))-25], 'Title','Sequence definition','TitlePosition','centertop','Visible','off');
@@ -203,8 +217,8 @@ h.protocolControls.sequencesDef.newSeq = uicontrol('Style','pushbutton','parent'
 h.protocolControls.sequencesDef.updateSeq = uicontrol('Style','pushbutton','parent',h.protocolControls.sequencesDef.panel,'Units','pixel','Position',[129 5 55 20], 'String', 'Update', 'FontWeight', 'bold','Callback',@updateSequence);
 
 % Sequence list
-h.protocolControls.sequences.panel = uipanel('Parent',h.guiHandle,'Units','pixel','Position',[235 5 panelWidth(2) round((guiPos(4)+30)/2)], 'Title','Sequences','TitlePosition','centertop','Visible','off');
-h.protocolControls.sequences.listbox =  uicontrol('Style','listbox','parent',h.protocolControls.sequences.panel,'Units','pixel','Position',[5 55 panelWidth(2)-12 round((pos(4)-50)/2)-25],'Callback',@updateSeqSelection);
+h.protocolControls.sequences.panel = uipanel('Parent',h.guiHandle,'Units','pixel','Position',[235 p(4)+10 panelWidth(2) round((guiPos(4)+30)/2)-p(4)-5], 'Title','Sequences','TitlePosition','centertop','Visible','off');
+h.protocolControls.sequences.listbox =  uicontrol('Style','listbox','parent',h.protocolControls.sequences.panel,'Units','pixel','Position',[5 55 panelWidth(2)-12 round((guiPos(4)+30)/2)-p(4)-75],'Callback',@updateSeqSelection);
 h.protocolControls.sequences.run = uicontrol('Style','pushbutton','parent',h.protocolControls.sequences.panel,'Units','pixel','Position',[5 5 50 20], 'String', 'Run', 'FontWeight', 'bold','Callback',@runSelection);
 h.protocolControls.sequences.delete = uicontrol('Style','pushbutton','parent',h.protocolControls.sequences.panel,'Units','pixel','Position',[5 27 50 20], 'String', 'Delete', 'FontWeight', 'bold','Callback',@deleteSequence);
 h.protocolControls.sequences.add2Protocol = uicontrol('Style','pushbutton','parent',h.protocolControls.sequences.panel,'Units','pixel','Position',[57 27 50 20], 'String', '+Protocol', 'FontWeight', 'bold','Callback',@addSeq2Prot);
@@ -221,7 +235,7 @@ h.protocolControls.protocolDef.updateProt = uicontrol('Style','pushbutton','pare
 
 % Protocol list
 h.protocolControls.protocols.panel = uipanel('Parent',h.guiHandle,'Units','pixel','Position',[panelWidth(1)+panelWidth(2)+15 5 panelWidth(2) round((guiPos(4)+30)/2)], 'Title','Protocols','TitlePosition','centertop','Visible','off');
-h.protocolControls.protocols.listbox =  uicontrol('Style','listbox','parent',h.protocolControls.protocols.panel,'Units','pixel','Position',[5 55 panelWidth(2)-12 round((pos(4)-50)/2)-25],'Callback',@updateProtSelection);
+h.protocolControls.protocols.listbox =  uicontrol('Style','listbox','parent',h.protocolControls.protocols.panel,'Units','pixel','Position',[5 55 panelWidth(2)-12 round((guiPos(4)+30)/2)-70],'Callback',@updateProtSelection);
 h.protocolControls.protocols.run = uicontrol('Style','pushbutton','parent',h.protocolControls.protocols.panel,'Units','pixel','Position',[5 5 50 20], 'String', 'Run', 'FontWeight', 'bold','Callback',@runProtocol);
 h.protocolControls.protocols.delete = uicontrol('Style','pushbutton','parent',h.protocolControls.protocols.panel,'Units','pixel','Position',[5 27 50 20], 'String', 'Delete', 'FontWeight', 'bold','Callback',@deleteProtocol);
 h.protocolControls.protocols.add2Todo = uicontrol('Style','pushbutton','parent',h.protocolControls.protocols.panel,'Units','pixel','Position',[57 5 50 20], 'String', '+ToDo', 'FontWeight', 'bold');
@@ -252,6 +266,23 @@ toDoList = struct([]);
 nToDo = 0;
 sessionRunningFlag = 0;
 
+%% Check which odor is in which vial in which slave
+% Find which slaves are used
+mixtures = [olfactometerOdors.sessionOdors.mixture]; % Find which session odors are mixtures
+activeSlaves = {olfactometerOdors.sessionOdors.slave}; % Find for every session odor which slaves are used
+activeSlaves = cell2mat(activeSlaves(~mixtures)); % Throw away the entries for the mixtures
+activeSlaves = unique(activeSlaves); % Find all unique slaves which are used
+ct = 0;
+for j = 1 : length(activeSlaves)
+    usedVials = [olfactometerOdors.slave(j).sessionOdors(:).vial];
+    for i = 1 : 9 % go through every position of the olfactometer
+        if sum(ismember(usedVials,i))>0.1 % checks whether there is an odor vial in the current (i) position of the olfactometer
+            ct = ct+1;
+            odorIdx(ct).slave = j;
+            odorIdx(ct).vial = i;
+        end
+    end
+end
 %% Update h structure in the appdata
 % Write the structure h containing all handles for the figure as appdata:
 appdataManager('olfStimGui','set',h)
@@ -283,9 +314,15 @@ appdataManager('olfStimGui','set',h)
         smell.trial(sentTrialIdx).olfactometerInstructions(13).used = sequence.enable(8);  % Clean nose
 %         smell.trial(sentTrialIdx).olfactometerInstructions(14).used = sequence.enable{9}; % Triggered
 %         smell.trial(sentTrialIdx).olfactometerInstructions(3).used = sequence.enable{1,9};  % ISI
-        
-% Add trigger instructions
-% smell.trial(1).io(1), look for trigger label smell.trial(t).io(i).label) 'waitForTrigger'
+        % Delete all but the input trigger. Change later for additional
+        % trigger options.
+        smell.trial(sentTrialIdx).io = [];
+        smell.trial(sentTrialIdx).io(1).label = 'waitForTrigger';
+        smell.trial(sentTrialIdx).io(1).type  = 'input';
+        smell.trial(sentTrialIdx).io(1).value = 1;
+        smell.trial(sentTrialIdx).io(1).time  = 0;
+        smell.trial(sentTrialIdx).io(1).used  = get(h.olfactometerSettings.check(14), 'Value');
+
             
         
         set(h.guiHandle,'Name', ['Running trial ' num2str(sentTrialIdx,'%03d') '-' sequence.name]);
@@ -332,6 +369,11 @@ appdataManager('olfStimGui','set',h)
         sessionRunningFlag = 0;
     end
 %% Trial functions
+    function checkConcentration(varargin)
+        %Does not work!!!!! Implement!!!
+        oi = get(h.olfactometerSettings.odorPop, 'Value');
+        concentrationEditCallback(0,0,odorIdx(oi).slave,odorIdx(oi).vial);
+    end
     function runTrial(varargin)
         switch varargin{1}
             case h.runControls.runTrialFromSettings
@@ -446,13 +488,18 @@ appdataManager('olfStimGui','set',h)
             case 'Replace'
                 trialList = newTrials;
             case 'Add'
-                trialList(end+1:end+numel(newTrials)) = newTrials;
+                if ~isempty(trialList)
+                    trialList(end+1:end+numel(newTrials)) = newTrials;
+                else
+                    trialList = newTrials;
+                end
         end
         set(h.protocolControls.trials.listbox, 'Value', 1);
         for ii = 1:numel(trialList)
             trialStr{ii} = trialList(ii).name;
         end
         set(h.protocolControls.trials.listbox, 'String', trialStr);
+        set([h.protocolControls.trials.rename h.protocolControls.trials.delete], 'Enable','on');
         updateTrialSelection;
     end
     function updateTrialSelection(varargin)
@@ -462,7 +509,6 @@ appdataManager('olfStimGui','set',h)
             set([h.protocolControls.updateCurrTrial h.protocolControls.trials.rename],'Enable','on');
             set(h.olfactometerSettings.edit(1),'String',num2str(trialList(currTrial).value{1,1})); % MFC
             for ii = 1:5
-                set([h.protocolControls.updateCurrTrial h.protocolControls.trials.rename],'Enable','off');
                 if numel( trialList(currTrial).value{1,ii+1})>1
                     set(h.olfactometerSettings.edit(2*ii),'String', ['[' num2str(trialList(currTrial).value{1,ii+1}) ']']);
                     set(h.olfactometerSettings.edit(2*ii+1),'String',['[' num2str(trialList(currTrial).value{2,ii+1}) ']']);
@@ -699,21 +745,26 @@ appdataManager('olfStimGui','set',h)
 %% GUI functions
     function changeGuiSize(varargin)
         gp = get(h.guiHandle,'Position');
-        pos = [235 5 guiPos(3)-235 guiPos(4)-15];
+        p = get(h.panelProtocolChooser, 'Position');
+        pos = [235 5 guiPos(3)-235 guiPos(4)-p(4)-20];
         if smallGui
             smallGui = 0;
             set(h.protocolControls.doneList.guiSize, 'String', '<<<');
             set(h.guiHandle, 'Position', [gp(1:2) guiPosLarge(3:4)]);
-            set(h.protocolControls.doneList.panel, 'Position',[panelWidth(1)+20+2*panelWidth(2) 5 panelWidth(2) round((guiPos(4)+30)/2)]);
-            set(h.protocolControls.doneList.list, 'Position', [5 30 panelWidth(2)-12 round((pos(4)-50)/2)]);
+            set(h.protocolControls.doneList.panel, 'Position',sizes.donePanel.bigGui);
+            set(h.protocolControls.doneList.list, 'Position', sizes.doneList.bigGui );
+            set(h.log.panel, 'Position', sizes.logPanel.bigGui);
+            set(h.log.logWindow, 'Position', sizes.logList.bigGui);
             set([h.protocolControls.sequences.panel h.protocolControls.protocols.panel h.protocolControls.todo.panel h.protocolControls.sequencesDef.panel h.protocolControls.protocolDef.panel], 'Visible','on');
             set([h.protocolControls.trials.add2Seq h.protocolControls.trials.add2Prot h.protocolControls.trials.add2Todo], 'Enable','on');
         else
             smallGui = 1;
             set(h.protocolControls.doneList.guiSize, 'String', '>>>');
             set(h.guiHandle, 'Position', [gp(1:2) guiPos(3:4)]);
-            set(h.protocolControls.doneList.panel, 'Position',[235 5 guiPos(3)-235 guiPos(4)-15]);
-            set(h.protocolControls.doneList.list, 'Position', [5 30 pos(3)-12 pos(4)-45]);
+            set(h.protocolControls.doneList.panel, 'Position',sizes.donePanel.smallGui);
+            set(h.protocolControls.doneList.list, 'Position', sizes.doneList.smallGui );
+            set(h.log.panel, 'Position', sizes.logPanel.smallGui);
+            set(h.log.logWindow, 'Position', sizes.logList.smallGui);
             set([h.protocolControls.sequences.panel h.protocolControls.protocols.panel h.protocolControls.todo.panel h.protocolControls.sequencesDef.panel h.protocolControls.protocolDef.panel], 'Visible','off');
             set([h.protocolControls.trials.add2Seq h.protocolControls.trials.add2Prot h.protocolControls.trials.add2Todo], 'Enable','off');
         end
