@@ -23,6 +23,8 @@ if isfield(h,'log')
             log = get(h.log.logWindow,'String');
             % Append the structure with the new message
             log{end+1} = logMessage;
+            % Add timestamp to the log message
+            log = [datestr(clock,'HH:MM:SS') ': ' log];
             % Update the log:
             set(h.log.logWindow,'String',log);
             % Show the last log entry:
