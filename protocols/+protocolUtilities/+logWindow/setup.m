@@ -46,4 +46,18 @@ logPosition = [5 5 panelPosition(3)-10 panelPosition(4)-20];
 % will be displayed.
 h.log.logWindow = uicontrol('parent',h.log.panel,'Style','listbox','String','','Position',logPosition);
 
+% Calculate the position of the clearing button:
+buttonPosition = [logPosition(3)-41 logPosition(4)-20 30 25];
+h.log.clearButton = uicontrol('parent',h.log.panel,'Style','pushbutton','String','Clear',...
+    'Position',buttonPosition,'Callback',@clearLogWindow);
+
+end
+
+function clearLogWindow(~,~)
+%% Get a couple of needed variables
+
+h = appdataManager('olfStimGui','get','h');
+
+%% Clear the window
+set(h.log.logWindow,'String','');
 end

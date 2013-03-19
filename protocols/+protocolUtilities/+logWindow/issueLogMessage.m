@@ -21,10 +21,10 @@ if isfield(h,'log')
         if ~isempty(h.log.logWindow)
             % Extract the current log from the window:
             log = get(h.log.logWindow,'String');
+            % Add timestamp to the log message
+            logMessage = [datestr(clock,'HH:MM:SS') ': ' logMessage];
             % Append the structure with the new message
             log{end+1} = logMessage;
-            % Add timestamp to the log message
-            log = [datestr(clock,'HH:MM:SS') ': ' log];
             % Update the log:
             set(h.log.logWindow,'String',log);
             % Show the last log entry:
