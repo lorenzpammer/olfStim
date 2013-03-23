@@ -1,89 +1,259 @@
-function varargout = odorSelectionGui(varargin)
-% ODORSELECTIONGUI M-file for odorSelectionGui.fig
-%      ODORSELECTIONGUI, by itself, creates a new ODORSELECTIONGUI or raises the existing
-%      singleton*.
-%
-%      H = ODORSELECTIONGUI returns the handle to a new ODORSELECTIONGUI or
-%      the handle to
-%      the existing singleton*.
-%
-%      ODORSELECTIONGUI('CALLBACK',hObject,eventData,handles,...) calls the local
-%      function named CALLBACK in ODORSELECTIONGUI.M with the given input arguments.
-%
-%      ODORSELECTIONGUI('Property','Value',...) creates a new ODORSELECTIONGUI or raises the
-%      existing singleton*.  Starting from the left, property value pairs are
-%      applied to the GUI before odorSelectionGui_OpeningFcn gets called.  An
-%      unrecognized property name or invalid value makes property application
-%      stop.  All inputs are passed to odorSelectionGui_OpeningFcn via varargin.
-%
-%      *See GUI Options on GUIDE's Tools menu.  Choose "GUI allows only one
-%      instance to run (singleton)".
-%
-% See also: GUIDE, GUIDATA, GUIHANDLES
+function olfactometerOdors = odorSelectionGuiNew
 
-% Edit the above text to modify the response to help odorSelectionGui
 
-% Last Modified by GUIDE v2.5 10-Jul-2011 16:02:15
 
-% Begin initialization code - DO NOT EDIT
-gui_Singleton = 1;
-gui_State = struct('gui_Name',       mfilename, ...
-                   'gui_Singleton',  gui_Singleton, ...
-                   'gui_OpeningFcn', @odorSelectionGui_OpeningFcn, ...
-                   'gui_OutputFcn',  @odorSelectionGui_OutputFcn, ...
-                   'gui_LayoutFcn',  [] , ...
-                   'gui_Callback',   []);
-if nargin && ischar(varargin{1})
-    gui_State.gui_Callback = str2func(varargin{1});
+%% Set up some default variables
+
+numberOfVialsPerSlave = 9; % The number of odor vials loaded into each slave. The default value can be set here.
+numberOfSlavesTables = 1; % Number of slaves that should be shown by default.
+showMixtureTables = 0;
+
+%% Set up main figure
+
+figurePosition = [300 200 400 500];
+handles.main = figure('Visible','on','Position',figurePosition,'Name','odorSelectionGui', 'Tag', 'odorSelectionGui'); %'CloseRequestFcn',@myCloseFcn
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Set up the gui components
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% Loading olfactometerOdors file
+height=70;
+panelPosition = [5 figurePosition(4)-height-5 figurePosition(3)-10 height];
+% Note panel
+handles.fileSelection.panel = uipanel('Parent',handles.main,'Title','Load olfactometer odors file',...
+    'FontSize',8,'TitlePosition','righttop',...
+    'Units','pixels','Position',panelPosition); % 'Position',[x y width height]
+
+% Find button to search hard drive for olfactometerOdors file.
+% Define position:
+buttonPosition(3) = 50; % pushButtonWidth
+buttonPosition(4) = 25; % pushButtonHeight
+buttonPosition(1) = 5;
+buttonPosition(2) = 5;
+% Set up the push button:
+handles.sessionNotes.pushButton = uicontrol('Parent',handles.fileSelection.panel,'Style','togglebutton',...
+    'String','Find','Units','pixels','Position',buttonPosition,'Callback',@findCallback);
+
+% Find button to search hard drive for olfactometerOdors file.
+% Define position:
+buttonPosition(3) = 50; % pushButtonWidth
+buttonPosition(4) = 25; % pushButtonHeight
+buttonPosition(1) = 60;
+buttonPosition(2) = 5;
+% Set up the push button:
+handles.sessionNotes.pushButton = uicontrol('Parent',handles.fileSelection.panel,'Style','togglebutton',...
+    'String','Load','Units','pixels','Position',buttonPosition,'Callback',@loadCallback);
+
+% Edit field for the path
+editFieldPosition = [5 buttonPosition(2)+buttonPosition(4)+5 panelPosition(3)-10 25];
+handles.olfactometerOdorFilePath = uicontrol('Parent',handles.fileSelection.panel,'Style','edit',...
+    'String','','Units','pixels','Position',editFieldPosition);
+
+
+%% Set up the "add olfactometer odor table" and "add mixture table" buttons
+
+width = 60;
+height = 40;
+spacing = 10;
+pushButtonPosition = [spacing spacing width height];
+handles.goButton = uicontrol('Parent',handles.main,...
+    'Style','Pushbutton','String','Go', 'Tag','go',...
+    'Callback',{@goCallback, handles},'Position',pushButtonPosition);
+
+pushButtonPosition = [spacing spacing*2+height width height];
+handles.saveButton = uicontrol('Parent',handles.main,...
+    'Style','Pushbutton','String','Save', 'Tag','save',...
+    'Callback',@saveCallback,'Position',pushButtonPosition);
+
+pushButtonPosition = [spacing spacing*3+height*2 width height];
+
+handles.addMixtureTableButton = uicontrol('Parent',handles.main,...
+    'Style','Pushbutton','String','Add mix table', 'Tag','addMixtureTable',...
+    'Callback',@addMixtureTable,'Position',pushButtonPosition);
+
+pushButtonPosition = [spacing spacing*4+height*3 width height];
+handles.addOlfactometerOdorTableButton = uicontrol('Parent',handles.main,...
+    'Style','Pushbutton','String','Add table', 'Tag','addOdorTable',...
+    'Callback',@addOdorTableForSlave,'Position',pushButtonPosition);
+
+% Write updated handles to gui appdata
+appdataManager('odorSelectionGui','set',handles);
+appdataManager('odorSelectionGui','set',numberOfVialsPerSlave);
+
+
+%% Set up the olfactometer odor tables for the default number of slaves 
+
+for i = 1 : numberOfSlavesTables
+    addOdorTableForSlave();
 end
 
-if nargout
-    [varargout{1:nargout}] = gui_mainfcn(gui_State, varargin{:});
+%%
+% UIWAIT makes odorSelectionGui wait for user response (see UIRESUME)
+uiwait(handles.main);
+
+%% Extract the data from the gui and 
+olfactometerOdors = extractSlaveDataFromGui();
+olfactometerOdors = extractMixtureDataFromGui([],[],olfactometerOdors);
+
+%% Close the gui
+delete(handles.main)
+
+end
+
+
+%% SUBFUNCTIONS
+
+function addOdorTableForSlave(~,~)
+% This will add a table for describing which odorant is in which position
+% in a slave module of the olfactometer.
+
+handles = appdataManager('odorSelectionGui','get','handles');
+numberOfVialsPerSlave = appdataManager('odorSelectionGui','get','numberOfVialsPerSlave');
+%% Figure out which slave we have to set up
+
+% See how many slaves we already have and set up a new one
+if isfield(handles,'olfactometerOdorTableSlave')
+    slaveNum = length(handles.olfactometerOdorTableSlave);
+    slaveNum = slaveNum+1;
+    position = get(handles.olfactometerOdorTableSlave(end).panel,'Position');
+    width = position(3);
+    height = position(4);
 else
-    gui_mainfcn(gui_State, varargin{:});
+    slaveNum = 1;
+    width = 200;
+    height = 300;
 end
-% End initialization code - DO NOT EDIT
+    
+%% Set up the gui components for the slave table
 
+% Set up the panel
+spacing = 5;
+panelPosition(1) = width * (slaveNum-1) + spacing * (slaveNum-1) + spacing;
+panelPosition(2) = 5;
+panelPosition(3) = width;
+panelPosition(4) = height;
+handles.olfactometerOdorTableSlave(slaveNum).panel = uipanel('Parent',handles.main,...
+    'Title',['Odorants in Slave #' num2str(slaveNum)],'tag',['slaveTablePanel' num2str(slaveNum)],...
+    'Units','pixels','Position',panelPosition);
 
-% --- Executes just before odorSelectionGui is made visible.
-function odorSelectionGui_OpeningFcn(hObject, eventdata, handles, varargin)
-% This function has no output args, see OutputFcn.
-% hObject    handle to figure
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-% varargin   command line arguments to odorSelectionGui (see VARARGIN)
+%% Set up the table and populate with data
 
-% Choose default command line output for odorSelectionGui
-handles.output = hObject;
+handles.olfactometerOdorTableSlave(slaveNum).table = uitable('Parent',handles.olfactometerOdorTableSlave(slaveNum).panel,...
+    'tag',['olfactometerOdorTable' num2str(slaveNum)],'Fontsize',10);
 
-% UpdateSlave1 handles structure
-guidata(hObject, handles);
-
-
-% Following commands of this function set up the gui corectly:
-
-% Define the olfactometer tables for the two olfactometer slaves
-odorLibrary=odorLibraryGenerator;
-popUpMenuOdors = {odorLibrary.odorName};
-%columnDefinition = {'logical','numeric',[{'popupmenuChoice1'} {'popupmenuChoice1'}],'numeric','numeric'}
+odorLibrary=odorLibraryGenerator; % load the odor database
+popUpMenuOdors = {odorLibrary.odorName}; % List for the popupmenu
 columnFormat = {'logical','numeric',popUpMenuOdors,'numeric','numeric'};
 columnName =   {'Present', 'Vial', 'Odor','Dilution','Concentration'};
 columnEditable = [true false true true true];
 columnWidth = {40, 25, 95, 60,60};
-set(handles.olfactometerOdorTableSlave1, 'ColumnFormat',columnFormat, ...
+set(handles.olfactometerOdorTableSlave(slaveNum).table, 'ColumnFormat',columnFormat, ...
     'ColumnName',columnName,'ColumnEditable',columnEditable, 'ColumnWidth', columnWidth, ...
-    'CellEditCallback',@updateOlfactometerTable)
-set(handles.olfactometerOdorTableSlave2, 'ColumnFormat',columnFormat, ...
-    'ColumnName',columnName,'ColumnEditable',columnEditable, 'ColumnWidth', columnWidth, ...
-    'CellEditCallback',@updateOlfactometerTable)
-tableData = cell(9,4);
-for i = 1 : 9
+    'CellEditCallback',@updateOlfactometerTable);
+tableData = cell(numberOfVialsPerSlave,4);
+for i = 1 : numberOfVialsPerSlave
     tableData{i,1} = logical(0);
     tableData{i,2} = i;
     tableData{i,3} = '';
 end
-set(handles.olfactometerOdorTableSlave1,'Data',tableData)
-set(handles.olfactometerOdorTableSlave2,'Data',tableData)
+set(handles.olfactometerOdorTableSlave(slaveNum).table,'Data',tableData);
+
+%% Reorder gui components
+
+tableExtent = get(handles.olfactometerOdorTableSlave(slaveNum).table,'Extent');
+spacing = 3;
+tablePosition = tableExtent + [spacing spacing 0 0];
+set(handles.olfactometerOdorTableSlave(slaveNum).table,'Position',tablePosition);
+
+% Relocate position of panel
+panelPosition = [panelPosition(1:2) tableExtent(3)+(spacing*3) tableExtent(4)+(spacing*2)+10];
+set(handles.olfactometerOdorTableSlave(slaveNum).panel,'Position',panelPosition);
+
+% Relocate olfactometer mixture table if it exists
+if isfield(handles,'olfactometerMixtureTable')
+    % Calculate new position for mixture table
+    mixturePanelPosition = get(handles.olfactometerMixtureTable.panel,'Position');
+    mixturePanelPosition(1) = panelPosition(1) + panelPosition(3) + 5;
+    % Relocate position of panel
+    set(handles.olfactometerMixtureTable.panel,'Position',mixturePanelPosition);
+end
+
+% Relocate Add Panel buttons and save & go button
+if isfield(handles,'olfactometerMixtureTable')
+    panelPosition = get(handles.olfactometerMixtureTable.panel,'Position');
+else
+    panelPosition = get(handles.olfactometerOdorTableSlave(end).panel,'Position');
+end
+spacing = 10;
+% Move all buttons
+buttonHandles = [handles.saveButton handles.goButton handles.addMixtureTableButton handles.addOlfactometerOdorTableButton];
+for i = 1 : length(buttonHandles)
+    buttonPosition = get(buttonHandles(i),'Position');
+    buttonPosition(1) = panelPosition(1) + panelPosition(3) + spacing;
+    set(buttonHandles(i),'Position',buttonPosition);
+end
+
+% Update the size of the figure
+% Set the width of the main gui:
+width = buttonPosition(1) + buttonPosition(3) + 10;
+guiPosition = get(handles.main,'Position');
+guiPosition(3) = width;
+set(handles.main,'Position',guiPosition);
+
+% Set the y position of the file selection panel
+height = panelPosition(2) + panelPosition(4) + 10;
+filePanelPosition = get(handles.fileSelection.panel,'Position');
+filePanelPosition(2) = height;
+set(handles.fileSelection.panel,'Position',filePanelPosition);
+
+% Set the height of the main gui
+height = filePanelPosition(2) + filePanelPosition(4) + 10;
+guiPosition = get(handles.main,'Position');
+guiPosition(4) = height;
+set(handles.main,'Position',guiPosition);
+
+
+%% Write updated handles to gui appdata
+appdataManager('odorSelectionGui','set',handles);
+end
+
+
+function addMixtureTable(~,~)
+% Add the table for defining the mixtures
+
+handles = appdataManager('odorSelectionGui','get','handles');
+%% See whether mixture table already exists
+
+% See how many slaves we already have and set up a new one
+if isfield(handles,'olfactometerMixtureTable')
+    disp('There is already one mixture table present.')
+    return
+else % No mixture table is present 
+    % Variable called slaveNum, but just means the # of table.
+    slaveNum = length(handles.olfactometerOdorTableSlave);
+    slaveNum = slaveNum+1;
+    position = get(handles.olfactometerOdorTableSlave(end).panel,'Position');
+    width = position(3);
+    height = position(4);
+end
+    
+%% Set up the gui components for the slave table
+
+% Set up the panel
+spacing = 5;
+panelPosition(1) = width * (slaveNum-1) + spacing * (slaveNum-1) + spacing;
+panelPosition(2) = 5;
+panelPosition(3) = width;
+panelPosition(4) = height;
+handles.olfactometerMixtureTable.panel = uipanel('Parent',handles.main,...
+    'Title',['Mixtures to present' num2str(slaveNum)],'tag','mixtureTablePanel',...
+    'Units','pixels','Position',panelPosition);
+
+%% Set up the table and populate with data
+
+handles.olfactometerMixtureTable.table = uitable('Parent',handles.olfactometerMixtureTable.panel,...
+    'tag','mixtureTable','Fontsize',10);
 
 % Defining mixtures
 vials = {'1' '2' '3' '4' '5' '6' '7' '8' '9'};
@@ -91,7 +261,7 @@ columnFormat = {'logical','numeric',vials,'numeric',vials,'numeric'};
 columnName =   {'Present','Mix', 'S1 vial', 'Conc', 'S2 vial','Conc'};
 columnEditable = [true false true true true true];
 columnWidth = {25, 23, 40, 45, 40, 45};
-set(handles.olfactometerMixtureTable, 'ColumnFormat',columnFormat, ...
+set(handles.olfactometerMixtureTable.table, 'ColumnFormat',columnFormat, ...
     'ColumnName',columnName,'ColumnEditable',columnEditable, 'ColumnWidth', columnWidth, ...
     'CellEditCallback',@(x,y) updatedOdorMixtureTable(x,y,handles));
 
@@ -101,237 +271,86 @@ for i = 1 : 50
     tableData{i,2} = i;
 %     tableData{i,3} = '';
 end
-set(handles.olfactometerMixtureTable,'Data',tableData)
+set(handles.olfactometerMixtureTable.table,'Data',tableData)
+
+%% Reorder panel and figure
+
+tableExtent = get(handles.olfactometerMixtureTable.table,'Extent');
+odorTableExtent = get(handles.olfactometerOdorTableSlave(end).table,'Extent');
+spacing = 3;
+tablePosition(1:3) = tableExtent(1:3) + [spacing spacing 15];
+tablePosition(4) = odorTableExtent(4);
+set(handles.olfactometerMixtureTable.table,'Position',tablePosition);
+
+% Relocate position of panel
+panelPosition = [panelPosition(1:2) tablePosition(3)+(spacing*3) tablePosition(4)+(spacing*2)+10];
+set(handles.olfactometerMixtureTable.panel,'Position',panelPosition);
+
+% Relocate Add Panel buttons and save & go button
+panelPosition = get(handles.olfactometerMixtureTable.panel,'Position');
+spacing = 10;
+% Move all buttons
+buttonHandles = [handles.saveButton handles.goButton handles.addMixtureTableButton handles.addOlfactometerOdorTableButton];
+for i = 1 : length(buttonHandles)
+    buttonPosition = get(buttonHandles(i),'Position');
+    buttonPosition(1) = panelPosition(1) + panelPosition(3) + spacing;
+    set(buttonHandles(i),'Position',buttonPosition);
+end
+
+% Update the size of the figure
+% Set the width of the main gui:
+width = buttonPosition(1) + buttonPosition(3) + 10;
+guiPosition = get(handles.main,'Position');
+guiPosition(3) = width;
+set(handles.main,'Position',guiPosition);
+
+% Set the y position of the file selection panel
+height = panelPosition(2) + panelPosition(4) + 10;
+filePanelPosition = get(handles.fileSelection.panel,'Position');
+filePanelPosition(2) = height;
+set(handles.fileSelection.panel,'Position',filePanelPosition);
+
+% Set the height of the main gui
+height = filePanelPosition(2) + filePanelPosition(4) + 10;
+guiPosition = get(handles.main,'Position');
+guiPosition(4) = height;
+set(handles.main,'Position',guiPosition);
 
 
-% UIWAIT makes odorSelectionGui wait for user response (see UIRESUME)
-uiwait(handles.odorSelectionGui);
+%% Write updated handles to gui appdata
+appdataManager('odorSelectionGui','set',handles)
+
+end
+
+function olfactometerOdors = extractSlaveDataFromGui(~,~)
 
 
-%%
+handles = appdataManager('odorSelectionGui','get','handles');
 
-% --- Outputs from this function are returned to the command line.
-function varargout = odorSelectionGui_OutputFcn(hObject, eventdata, handles)
-% varargout  cell array for returning output args (see VARARGOUT);
-% hObject    handle to figure
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
+%% 
 
-% Get default command line output from handles structure
+for i = 1 : length(handles.olfactometerOdorTableSlave)
+    olfactometerOdors.slave(i) = struct('used',[],'slaveTable',[]); % set up data structure which contains information what's loaded in olfactometer modules and which odor/mixture to present
+    olfactometerOdors.slave(i).slaveTable = get(handles.olfactometerOdorTableSlave(i).table,'Data'); % extract all data from table
+end
     
-    olfactometerOdors = extractSlaveDataFromGui(hObject,eventdata,handles); % extracts information entered into 2 slave tables
-    
-    mixtureTable = get(handles.olfactometerMixtureTable,'Data');
-    present = [mixtureTable{:,1}]'; % extract 'Present' column - whether to present odor or not
-    mixturesUsed = sum(present) > 0.5; % see whether any mixture is selected as to 'Present', if nothing to present, mixtures are not used
-%     if mixturesUsed
-        % If mixtures are used extract them from the gui:
-        olfactometerOdors = extractMixtureDataFromGui(hObject,eventdata,handles,olfactometerOdors);
-%     else
-%         % if mixtures aren't used write a zero into the structure:
-%         olfactometerOdors.mixtures.used = logical(0); 
-%     end
-    for i = 1 : length(olfactometerOdors.sessionOdors) % Hacked! At some point add the field nicely in the subfunctions
-        olfactometerOdors.sessionOdors(i).sessionOdorNumber = i;
-        currentOdorSlave = olfactometerOdors.sessionOdors(i).slave;
-        currentOdorVial = olfactometerOdors.sessionOdors(i).vial;
-        index = find([olfactometerOdors.slave(currentOdorSlave).sessionOdors.vial]==currentOdorVial);
-        olfactometerOdors.slave(currentOdorSlave).sessionOdors(index).sessionOdorNumber = i;
-    end
-    varargout{1} = olfactometerOdors; % define output of the gui
-    
-    odorSelectionGui_CloseRequestFcn(hObject, eventdata, handles);
-
-
-
-
-
-function olfactometerOdorFilePath_Callback(hObject, eventdata, handles)
-% hObject    handle to olfactometerOdorFilePath (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of olfactometerOdorFilePath as text
-%        str2double(get(hObject,'String')) returns contents of olfactometerOdorFilePath as a double
-
-
-% --- Executes during object creation, after setting all properties.
-function olfactometerOdorFilePath_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to olfactometerOdorFilePath (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-% --- Executes on button press in Find.
-function Find_Callback(hObject, eventdata, handles)
-% hObject    handle to Find (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-callingFunctionName = 'initOlfStim.m'; % Define the name of the initalizing function
-olfStimPath = which(callingFunctionName);
-olfStimPath(length(olfStimPath)-length(callingFunctionName):length(olfStimPath))=[];
-[fileName,pathName,filterIndex] = uigetfile([olfStimPath filesep '*.mat'],'Select a .mat file, specifying the odors in the olfactometer.');
-if fileName == 0
-    return
-end
-set(handles.olfactometerOdorFilePath,'String', [pathName fileName])
-
-
-% --- Executes on button press in Load.
-function Load_Callback(hObject, eventdata, handles)
-% hObject    handle to Load (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-path = get(handles.olfactometerOdorFilePath,'String');
-load(path);
-set(handles.olfactometerOdorTableSlave1, 'Data', olfactometerOdors.slave(1).slaveTable);
-set(handles.olfactometerOdorTableSlave2, 'Data', olfactometerOdors.slave(2).slaveTable);
-set(handles.olfactometerMixtureTable, 'Data', olfactometerOdors.mixtures.mixtureTable);
-
-
-
-function updateOlfactometerTable(varargin)
-editInformation = varargin{2}; % includes information which cell was edited
-tableHandle = varargin{1}; % the handle of the table in which cell was edited
-tableData = get(tableHandle,'Data'); % extract the data currently in the table
-if editInformation.Indices(2) == 3 % if column 3 (name of the odor) was changed do the following commands
-    editedOdor = editInformation.NewData; % extract odor name of the edited odor
-    odorLibrary=odorLibraryGenerator; % load the odor library
-    odors = {odorLibrary.odorName}; % create a cell array containing all popular odor names within the library
-    odorLibraryIndex = strmatch(editedOdor, odors,'exact'); % find the index 
-    tableData{editInformation.Indices(1),4} = odorLibrary(odorLibraryIndex).odorantDilution;
-    tableData{editInformation.Indices(1),5} = odorLibrary(odorLibraryIndex).concentrationAtPresentation;
-    set(tableHandle, 'Data', tableData);
-end
-
-function updatedOdorMixtureTable(tableHandle,editInformation,handles)
-% Checks whether the selected vials to use in mixtures were d
-% function is defined when setting up the gui, see line 97. I define which
-% inputs the function gets. 
-% editInformation is a structure which includes information which cell was edited
-% tableHandle is the handle of the table in which cell was edited
-% handles includes all handles of the gui
-editedVial = editInformation.NewData; % extract vial number of the edited vial
-if editInformation.Indices(2) == 3 % if column 3 (number of Vial in Slave1) was changed do the following commands
-    tableData = get(handles.olfactometerOdorTableSlave1,'Data'); % extract the data currently in the slave 1 table
-    if isempty(tableData{editedVial,3})
-        errordlg('Specify the odor in the selected vial of olfactometer slave 1')
-        updatedMixtureTable = get(handles.olfactometerMixtureTable,'Data');
-        updatedMixtureTable{editInformation.Indices(1),editInformation.Indices(2)} = [];
-        set(handles.olfactometerMixtureTable,'Data',updatedMixtureTable);
-    end
-elseif editInformation.Indices(2) == 5 % if column 5 (number of Vial in Slave2) was changed do the following commands
-    tableData = get(handles.olfactometerOdorTableSlave2,'Data'); % extract the data currently in the slave 2 table
-    if isempty(tableData{editedVial,3})
-        errordlg('Specify the odor in the selected vial of olfactometer slave 2')
-        updatedMixtureTable = get(handles.olfactometerMixtureTable,'Data');
-        updatedMixtureTable{editInformation.Indices(1),editInformation.Indices(2)} = [];
-        set(handles.olfactometerMixtureTable,'Data',updatedMixtureTable);
-    end
-    
-end
-
-
-% --- Executes on button press in Save.
-function Save_Callback(hObject, eventdata, handles,fhandles) % add fhandles to inputs in order to access other subfunctions within this script
-% hObject    handle to Save (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-olfactometerOdors = extractSlaveDataFromGui(hObject,eventdata,handles);
-
-% mixtureTable = get(handles.olfactometerMixtureTable,'Data');
-% present = [mixtureTable{:,1}]'; % extract 'Present' column - whether to present odor or not
-% mixturesUsed = sum(present) > 0.5; % see whether any mixture is selected as to 'Present', if nothing to present, mixtures are not used
-% if mixturesUsed
-    olfactometerOdors = extractMixtureDataFromGui(hObject,eventdata,handles,olfactometerOdors);
-% end
-for i = 1 : length(olfactometerOdors.sessionOdors) % Hacked! At some point add the field nicely in the subfunctions
-        olfactometerOdors.sessionOdors(i).sessionOdorNumber = i;
-end
-defaultTitle = [datestr(date,'yyyy.mm.dd') '_olfactometerOdors.mat'];
-
-% Open olfStim directory
-callingFunctionName = 'initOlfStim.m'; % Define the name of the initalizing function
-olfStimPath = which(callingFunctionName);
-olfStimPath(length(olfStimPath)-length(callingFunctionName):length(olfStimPath))=[];
-extendedPath = [olfStimPath filesep 'User Data' filesep 'olfactometerOdors' filesep]
-[filename,pathname]=uiputfile('.mat','Save olfactometer odors',[extendedPath defaultTitle]);
-if ischar(filename) && ischar(pathname) % only if filename and path specified
-    extendedPath = [pathname filename];
-    save(extendedPath,'olfactometerOdors')
-else
-    disp('To save the olfactometer odors please select a filename and path.')
-end
-
-
-
-%columnName = get(handles.olfactometerOdorTableSlave1,'ColumnName');
-
-    
-
-% --- Executes on button press in Go.
-function Go_Callback(hObject, eventdata, handles)
-% hObject    handle to Go (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% olfactometerOdors = extractSlaveDataFromGui(hObject,eventdata,handles); % extracts information entered into 2 slave tables
-% 
-% mixtureTable = get(handles.olfactometerMixtureTable,'Data');
-% present = [mixtureTable{:,1}]'; % extract 'Present' column - whether to present odor or not
-% mixturesUsed = sum(present) > 0.5; % see whether any mixture is selected as to 'Present', if nothing to present, mixtures are not used
-% if mixturesUsed
-% olfactometerOdors = extractMixtureDataFromGui(hObject,eventdata,handles,olfactometerOdors);
-% end
-% 
-% eventdata.go = 1;
-% eventdata.olfactometerOdors = olfactometerOdors;
-% odorSelectionGui_OutputFcn(hObject, eventdata, handles) 
-
-uiresume(handles.odorSelectionGui);
-
-
-
-function olfactometerOdors = extractSlaveDataFromGui(hObject,eventdata,handles)
-% This function is written specifically for the table structure of the slave gui.
-% It looks at columns of the tables by their number not names. 
-% To do: 
-% - index into columns by names so code becomes more general. Also
-% - make more general for it to be able to handle more than two slaves.
-
-olfactometerOdors.slave(1:2) = struct('used',[],'slaveTable',[]); % set up data structure which contains information what's loaded in olfactometer modules and which odor/mixture to present
-olfactometerOdors.slave(1).slaveTable = get(handles.olfactometerOdorTableSlave1,'Data'); % extract all data from table
-olfactometerOdors.slave(2).slaveTable = get(handles.olfactometerOdorTableSlave2,'Data'); % extract all data from table
 for i = 1 : length(olfactometerOdors.slave) % go through slaves
     present{i} = [olfactometerOdors.slave(i).slaveTable{:,1}]'; % extract 'Present' column - whether to present odor or not
     olfactometerOdors.slave(i).used = sum(present{i}) > 0.5; % see whether any vial is selected as to 'Present', if nothing to present, slave is not used
 end
-if olfactometerOdors.slave(1).used
-    disp('Olfactometer Module 1 is used.')
-end
-if olfactometerOdors.slave(2).used
-    disp('Olfactometer Module 2 is used.')
-end
 
 % For loop checks whether for every vial where 'Present' is chosen, also an
 % odor is defined:
-for i = 1 : 9 
-   if olfactometerOdors.slave(1).slaveTable{i,1}  && isempty(olfactometerOdors.slave(1).slaveTable{i,3})
-       error(['In olfactometer slave 1 no odor is defined in vial ' num2str(i) '. Please resolve, then save.'])
-   end
-   if  olfactometerOdors.slave(2).slaveTable{i,1} && isempty(olfactometerOdors.slave(2).slaveTable{i,3})
-       error(['In olfactometer slave 2 no odor is defined in vial ' num2str(i) '.  Please resolve, then save.'])
-   end
+for j = 1 : length(olfactometerOdors.slave)
+    tmp=size(olfactometerOdors.slave(j).slaveTable);
+    for i = 1 : tmp(1) % go through every row of the table (ie every vial)
+        if olfactometerOdors.slave(j).slaveTable{i,1}  && isempty(olfactometerOdors.slave(j).slaveTable{i,3})
+            error(['In olfactometer slave ' num2str(j) 'no odor is defined in vial ' num2str(i) '. Please resolve, then save.'])
+        end
+    end
 end
 
-% 
+% Load data
 odorLibrary = odorLibraryGenerator;
 for i = 1 : length(odorLibrary)
    odorLibrary(i).slave = []; 
@@ -339,7 +358,9 @@ for i = 1 : length(odorLibrary)
    odorLibrary(i).mixture = [];
 end
 
-for i = 1 : length(olfactometerOdors.slave) % write
+% Go through every slave and create the sessionOdors field, which contains
+% all odors which were chosen to be used.
+for i = 1 : length(olfactometerOdors.slave)
     if olfactometerOdors.slave(i).used
         odorsToPresent = olfactometerOdors.slave(i).slaveTable(present{i},3); % odorsToPresent - odors which have been checked to present in the gui
         
@@ -368,17 +389,21 @@ for i = 1 : length(olfactometerOdors.slave) % write
     end
     
 end
+
+% Concatenate odors from different slaves into one field
+% olfactometerOdors.sessionOdors:
+olfactometerOdors.sessionOdors = [];
 try
-    olfactometerOdors.sessionOdors = [olfactometerOdors.slave(1).sessionOdors olfactometerOdors.slave(2).sessionOdors];
-    
+    for i = 1 : length(olfactometerOdors.slave)
+        olfactometerOdors.sessionOdors = [olfactometerOdors.sessionOdors olfactometerOdors.slave(i).sessionOdors];
+    end
 catch
     warning('No odors were chosen to be presented.')
-    olfactometerOdors.sessionOdors = [];
+end
 end
 
 
-
-function olfactometerOdors = extractMixtureDataFromGui(hObject,eventdata,handles,olfactometerOdors)
+function olfactometerOdors = extractMixtureDataFromGui(hObject,eventdata,olfactometerOdors)
 % This function is written specifically for the table structure of the slave gui.
 % It looks at columns of the tables by their number not names.
 % To do:
@@ -387,10 +412,21 @@ function olfactometerOdors = extractMixtureDataFromGui(hObject,eventdata,handles
 % - Don't know whether the code will work if there are say three slaves,
 % but mixtures are drawn only from slave 1 and 3
 
+handles = appdataManager('odorSelectionGui','get','handles');
+
+% If no mixture table is set up return from the function without updating
+% olfactometerOdors.
+if ~isfield(handles,'olfactometerMixtureTable')
+    olfactometerOdors.mixtures.used = false;
+    return
+end
+
+%%
+
 olfactometerOdors.mixtures = struct('used',[],'mixtureTable',[]); % set up data structure which contains information about mixtures
 
 % Mixtures
-olfactometerOdors.mixtures.mixtureTable = get(handles.olfactometerMixtureTable,'Data');
+olfactometerOdors.mixtures.mixtureTable = get(handles.olfactometerMixtureTable.table,'Data');
 present = [olfactometerOdors.mixtures.mixtureTable{:,1}]'; % extract 'Present' column - whether to present odor or not
 olfactometerOdors.mixtures.used = sum(present) > 0.5; % see whether any mixture is selected as to 'Present', if nothing to present, mixtures are not used
 if olfactometerOdors.mixtures.used
@@ -400,7 +436,7 @@ else
 end
 
 % Check whether all necessary information for a mixture was entered
-for i = 1 : length(olfactometerOdors.mixtures.mixtureTable) % go through entire mixture table
+for i = 1 : length(olfactometerOdors.mixtures.mixtureTable) % go through every row ofmixture table
     mixtureToPresent = olfactometerOdors.mixtures.mixtureTable{i,1}; % extract whether mixture is marked to be presented
     vial1Unspecified = isempty(olfactometerOdors.mixtures.mixtureTable{i,3}); % extract whether vial 1 information was entered
     concentration1Unspecified = isempty(olfactometerOdors.mixtures.mixtureTable{i,4});  % extract whether concentration 1 was entered
@@ -425,14 +461,13 @@ for i = 1 : length(odorLibrary)
 end
 
 %
-% This is mostly written in a general way, if specific marked 'not general'
 for i = 1 : length(mixtureIndex) % go through every mixture that was marked to present in table
     fieldNames = fieldnames(odorLibrary);
     olfactometerOdors.mixtures.sessionOdors(i) = cell2struct(cell(1,length(fieldNames)),fieldNames,2); % set up structure
 %     olfactometerOdors.mixtures.sessionOdors(i).sessionOdorNumber = [];
     
     for j = 1 : length(olfactometerOdors.slave) % go through the slaves
-        columnNames = get(handles.olfactometerMixtureTable,'ColumnName'); % extract column names, general approach
+        columnNames = get(handles.olfactometerMixtureTable.table,'ColumnName'); % extract column names, general approach
         slaveColumnName = ['S' num2str(j) ' vial']; % create string that is the name of the column in the table that specifies the vial of the slave
         for k = 1 : length(columnNames)
             currentSlaveColumnIndex(k) = ~isempty(strmatch(slaveColumnName,columnNames{k},'exact')); % gives an index which column specifies the vial of the current slave
@@ -498,13 +533,161 @@ try
 catch
     disp('No mixtures were chosen to be presented.')
 end
+end
 
 
-% --- Executes when user attempts to close odorSelectionGui.
-function odorSelectionGui_CloseRequestFcn(hObject, eventdata, handles)
-% hObject    handle to odorSelectionGui (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
+function findCallback(hObject, eventdata)
+% Callback for clicking the find button to get olfactometerOdors file
 
-% Hint: delete(hObject) closes the figure
-delete(handles.odorSelectionGui);
+handles = appdataManager('odorSelectionGui','get','handles');
+
+callingFunctionName = 'initOlfStim.m'; % Define the name of the initalizing function
+olfStimPath = which(callingFunctionName);
+olfStimPath(length(olfStimPath)-length(callingFunctionName):length(olfStimPath))=[];
+[fileName,pathName,filterIndex] = uigetfile([olfStimPath filesep '*.mat'],'Select a .mat file, specifying the odors in the olfactometer.');
+if fileName == 0
+    return
+end
+set(handles.olfactometerOdorFilePath,'String', [pathName fileName])
+loadCallback();
+end
+
+
+function loadCallback(hObject, eventdata)
+% Callback for clicking the load button to load olfactometerOdors file and
+% populate the tables
+
+handles = appdataManager('odorSelectionGui','get','handles');
+
+path = get(handles.olfactometerOdorFilePath,'String');
+load(path);
+
+%% Check whether we have enough odorant tables on the gui for the data
+% If not set up new ones
+numberOfSlaveTables = length(handles.olfactometerOdorTableSlave);
+numberOfSlaves = find(1==[olfactometerOdors.slave.used]);
+numberOfSlaves = max(numberOfSlaves);
+
+if numberOfSlaves > numberOfSlaveTables
+    missingNumberOfSlaveTables = numberOfSlaves - numberOfSlaveTables;
+    for i = 1 : missingNumberOfSlaveTables
+        addOdorTableForSlave();
+    end
+end
+
+
+%% Check whether we need/have a mixture table
+% If not set it up
+
+if isfield(olfactometerOdors,'mixtures')
+    if olfactometerOdors.mixtures.used
+        if ~isfield(handles,'olfactometerMixtureTable')
+            addMixtureTable();
+        end
+    end
+end
+
+
+%% Write updated handles to gui appdata
+handles = appdataManager('odorSelectionGui','get','handles');
+
+%% Populate the odor tables for all slaves
+
+for i = 1 : length(olfactometerOdors.slave)
+    set(handles.olfactometerOdorTableSlave(i).table, 'Data', olfactometerOdors.slave(i).slaveTable);
+end
+
+%% Populate the mixture table
+set(handles.olfactometerMixtureTable.table, 'Data', olfactometerOdors.mixtures.mixtureTable);
+end
+
+function populateOlfactometerTable()
+
+end
+
+function populateMixtureTable()
+
+end
+
+function updateOlfactometerTable(varargin)
+% If an odor is chosen from the popup menu, find the odorant in the odor
+% library and update the fields in the row from the database.
+
+editInformation = varargin{2}; % includes information which cell was edited
+tableHandle = varargin{1}; % the handle of the table in which cell was edited
+tableData = get(tableHandle,'Data'); % extract the data currently in the table
+if editInformation.Indices(2) == 3 % if column 3 (name of the odor) was changed do the following commands
+    editedOdor = editInformation.NewData; % extract odor name of the edited odor
+    odorLibrary=odorLibraryGenerator; % load the odor library
+    odors = {odorLibrary.odorName}; % create a cell array containing all popular odor names within the library
+    odorLibraryIndex = strmatch(editedOdor, odors,'exact'); % find the index 
+    tableData{editInformation.Indices(1),4} = odorLibrary(odorLibraryIndex).odorantDilution;
+    tableData{editInformation.Indices(1),5} = odorLibrary(odorLibraryIndex).concentrationAtPresentation;
+    set(tableHandle, 'Data', tableData);
+end
+end
+
+function updatedOdorMixtureTable(tableHandle,editInformation,handles)
+% Checks whether the selected vials to use in mixtures were d
+% function is defined when setting up the gui, see line 97. I define which
+% inputs the function gets. 
+% editInformation is a structure which includes information which cell was edited
+% tableHandle is the handle of the table in which cell was edited
+% handles includes all handles of the gui
+editedVial = editInformation.NewData; % extract vial number of the edited vial
+if editInformation.Indices(2) == 3 % if column 3 (number of Vial in Slave1) was changed do the following commands
+    tableData = get(handles.olfactometerOdorTableSlave1,'Data'); % extract the data currently in the slave 1 table
+    if isempty(tableData{editedVial,3})
+        errordlg('Specify the odor in the selected vial of olfactometer slave 1')
+        updatedMixtureTable = get(handles.olfactometerMixtureTable,'Data');
+        updatedMixtureTable{editInformation.Indices(1),editInformation.Indices(2)} = [];
+        set(handles.olfactometerMixtureTable,'Data',updatedMixtureTable);
+    end
+elseif editInformation.Indices(2) == 5 % if column 5 (number of Vial in Slave2) was changed do the following commands
+    tableData = get(handles.olfactometerOdorTableSlave2,'Data'); % extract the data currently in the slave 2 table
+    if isempty(tableData{editedVial,3})
+        errordlg('Specify the odor in the selected vial of olfactometer slave 2')
+        updatedMixtureTable = get(handles.olfactometerMixtureTable,'Data');
+        updatedMixtureTable{editInformation.Indices(1),editInformation.Indices(2)} = [];
+        set(handles.olfactometerMixtureTable,'Data',updatedMixtureTable);
+    end
+    
+end
+end
+
+function saveCallback(hObject, eventdata,fhandles) % add fhandles to inputs in order to access other subfunctions within this script
+
+% Get newest handles:
+handles = appdataManager('odorSelectionGui','get','handles');
+
+%%
+olfactometerOdors = extractSlaveDataFromGui(hObject,eventdata);
+
+% mixtureTable = get(handles.olfactometerMixtureTable,'Data');
+% present = [mixtureTable{:,1}]'; % extract 'Present' column - whether to present odor or not
+% mixturesUsed = sum(present) > 0.5; % see whether any mixture is selected as to 'Present', if nothing to present, mixtures are not used
+% if mixturesUsed
+    olfactometerOdors = extractMixtureDataFromGui(hObject,eventdata,olfactometerOdors);
+% end
+for i = 1 : length(olfactometerOdors.sessionOdors) % Hacked! At some point add the field nicely in the subfunctions
+        olfactometerOdors.sessionOdors(i).sessionOdorNumber = i;
+end
+defaultTitle = [datestr(date,'yyyy.mm.dd') '_olfactometerOdors.mat'];
+
+% Open olfStim directory
+callingFunctionName = 'initOlfStim.m'; % Define the name of the initalizing function
+olfStimPath = which(callingFunctionName);
+olfStimPath(length(olfStimPath)-length(callingFunctionName):length(olfStimPath))=[];
+extendedPath = [olfStimPath filesep 'User Data' filesep 'olfactometerOdors' filesep]
+[filename,pathname]=uiputfile('.mat','Save olfactometer odors',[extendedPath defaultTitle]);
+if ischar(filename) && ischar(pathname) % only if filename and path specified
+    extendedPath = [pathname filename];
+    save(extendedPath,'olfactometerOdors')
+else
+    disp('To save the olfactometer odors please select a filename and path.')
+end
+end
+
+function goCallback(hObject, eventdata, handles)
+uiresume(handles.main);
+end

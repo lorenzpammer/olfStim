@@ -11,9 +11,9 @@
 ; They are usually overridden with external definitions.
 ; ------------------------------------------------------
 ;
-Param, odorValveIndex, 2 		; odorValveIndex specifies two gating odor valves to be opened (N & air stream). Specified for each valve from host computer. range 1:9
+Param, odorValveIndex, 5 		; odorValveIndex specifies two gating odor valves to be opened (N & air stream). Specified for each valve from host computer. range 1:9
 Param, numberComponents, 1     ; number of components in the presented odorant. If only a single odor then equals 1.
-Param, trialNum, 5		; Number of the current trial
+Param, trialNum, 4		; Number of the current trial
 Param, startTrialTrigger, $DigIn1 		; defines line which when high, will start the trial
 ;
 ; ------------------------------------------------------
@@ -34,7 +34,7 @@ Param, finalValveIndex, 31              ; the final valve is the valve in front 
 Param, sniffingValveIndex, 32			; the sniffing valve is the valve which gates the suction of air through the nose
 Param, suctionValveIndex, 28			; the suction valve gates the suction around the delivery tube
 Param, humidityValveIndex, 27			; the humidity valve gates the delivery of humid air to the nose
-Param, slaveIndex, 1                         ; defines from which slave module the valves are driven
+Param, slaveIndex, 2                         ; defines from which slave module the valves are driven
 ;
 ;
 ; ------------------------------------------------------
