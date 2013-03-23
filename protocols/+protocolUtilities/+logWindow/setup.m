@@ -59,5 +59,5 @@ function clearLogWindow(~,~)
 h = appdataManager('olfStimGui','get','h');
 
 %% Clear the window
-set(h.log.logWindow,'String','');
+set(h.log.logWindow,'String','','Value',1);
 end
