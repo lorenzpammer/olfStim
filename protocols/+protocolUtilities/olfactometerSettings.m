@@ -82,26 +82,15 @@ if strcmp(instruction,'setUp') || strcmp(instruction,'setUpStructure')
     
     %% Set up olfactometerInstructions structure
     
-%     olfactometerInstructions = struct('name',{'mfcTotalFlow' 'powerGatingValve' 'unpowerGatingValve' ,...
-%         'powerFinalValve' 'unpowerFinalValve' 'closeSuctionValve' 'openSuctionValve',...
-%         'openSniffingValve' 'closeSniffingValve' 'powerHumidityValve' 'unpowerHumidityValve',...
-%         'purge' 'cleanNose' 'startOnExternalTrigger'},...
-%         'value',cell(1,14),...
-%         'unit',{ 'l/m' 's' 's' 's' 's' 's' 's' 's' 's' 's' 's' 's' 's' 'type'},...
-%         'userSettingNumber',[],...
-%         'used',{1 1 1 1 1 0 0 1 1 0 0 1 1 1},...
-%         'timeStampID',[]);
-%     
-
  olfactometerInstructions = struct('name',{'mfcTotalFlow' 'powerGatingValve' 'unpowerGatingValve' ,...
         'powerFinalValve' 'unpowerFinalValve' 'closeSuctionValve' 'openSuctionValve',...
         'openSniffingValve' 'closeSniffingValve' 'powerHumidityValve' 'unpowerHumidityValve',...
         'purge' 'cleanNose'},...
         'value',cell(1,13),...
         'unit',{ 'l/m' 's' 's' 's' 's' 's' 's' 's' 's' 's' 's' 's' 's'},...
-        'userSettingNumber',[],...
         'used',{1 1 1 1 1 0 0 1 1 0 0 1 1},...
         'timeStampID',[]);
+    %        'userSettingNumber',[],...
     
     %% Hard code time stamp code for the different events
     % timeStampDefinitions holds the definitions for the mapping of
@@ -207,7 +196,7 @@ if strcmp(instruction,'setUp') || strcmp(instruction,'setUpStructure')
             
             % Set up some missing parameters for the current setting:
             userSettingNumber = settingNumber;
-            olfactometerInstructions(settingNumber).userSettingNumber = userSettingNumber;
+            %olfactometerInstructions(settingNumber).userSettingNumber = userSettingNumber;
             olfactometerInstructions(settingNumber).value = settingValue(settingNumber);
             
             % Set up the user controls for the current setting in the GUI:
@@ -344,17 +333,30 @@ end
 function olfactometerInstructions = extractOlfactometerSettings(olfactometerInstructions,h)
 
 % Extract field from gui and update olfactometerInstructions structure
-% As not all necessary olfactometer settings are present in the gui, these numbers allow cross referencing
-pointersToGui = [olfactometerInstructions(:).userSettingNumber]; 
+% As not all necessary olfactometer settings are present in the gui, the
+% name of the olfactometerInstruction has to be found in the gui element
+% tags.
+pointersToGui = {olfactometerInstructions(:).name}; % Get all the names of the instructions
 for i = 1 : length(h.olfactometerSettings.edit)
     % finds the corresponding olfactometerInstructions index to the current gui field
-    indexStruct2GuiField = find(pointersToGui==i); 
+    
+    % Some settings only have edit fields, other only check fields, others
+    % have both.
+    if h.olfactometerSettings.edit(i)~=0
+        fieldName = get(h.olfactometerSettings.edit(i),'Tag'); % get the tag of the edit field
+        indexStruct2GuiField = find(strcmp(fieldName,pointersToGui)); % The tag has the same name as the 
+    elseif h.olfactometerSettings.check(i)~=0
+        fieldName = get(h.olfactometerSettings.check(i),'Tag');
+        indexStruct2GuiField = find(strcmp(fieldName,pointersToGui));
+    else
+        indexStruct2GuiField = [];
+    end
     if ~isempty(indexStruct2GuiField)
         
         % Extract whether the timepoint of triggering the current action:
         % only if there is a edit field for the current action in the
         % olfactometer settings update the olfactometerInstructions
-        if h.olfactometerSettings.edit(i) ~= 0
+        if h.olfactometerSettings.edit(i) ~= 0 % settings fields which don't have a possibility to check have a 0 entry
             olfactometerInstructions(indexStruct2GuiField).value = str2num(get(h.olfactometerSettings.edit(i),'String')); % entry in the field is a string therefore change to number
         end
         
@@ -673,5 +675,3 @@ clear callingFunctionName; clear path;
 % Write the structure h containing all handles for the figure as appdata:
 appdataManager('olfStimGui','set',h)
 end
-      
-%% Add subfunctions to add additional settings

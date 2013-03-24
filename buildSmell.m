@@ -44,14 +44,11 @@ function  buildSmell(instruction,trialOdor,trialNum,stimProtocol,protocolSpecifi
 %
 %
 % TO DO: 
-% - Get accurate timing information after trial from LASOM module and
-% write this into the smell structure, as a sanity check.
 % - check whether it's possible to "lock" the structure of smell. ie no new
 % fields are allowed to be added after the structure is once defined when
 % calling buildSmell('update').
 % - Write the numbers which will be output as 8-bit digital timestamps to
 % the recording software for each valve and for each trial into the smell structure.
-% - prompt LASOM to get the maximum flow rate of the Mfcs
 % - Document for every field of smell, in which step of an olfactory
 % session it should be populated, updated etc.
 %

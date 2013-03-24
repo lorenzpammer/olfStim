@@ -11,9 +11,9 @@
 ; They are usually overridden with external definitions.
 ; ------------------------------------------------------
 ;
-Param, odorValveIndex, 2 		; odorValveIndex specifies two gating odor valves to be opened (N & air stream). Specified for each valve from host computer. range 1:9
+Param, odorValveIndex, 3 		; odorValveIndex specifies two gating odor valves to be opened (N & air stream). Specified for each valve from host computer. range 1:9
 Param, numberComponents, 1     ; number of components in the presented odorant. If only a single odor then equals 1.
-Param, trialNum, 12		; Number of the current trial
+Param, trialNum, 6		; Number of the current trial
 Param, startTrialTrigger, $DigIn1 		; defines line which when high, will start the trial
 ;
 ; ------------------------------------------------------
