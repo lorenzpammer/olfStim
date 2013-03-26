@@ -44,7 +44,8 @@ logPosition = [5 5 panelPosition(3)-10 panelPosition(4)-20];
 
 % Set up the listbox as a child of the panel. This is where the warnings
 % will be displayed.
-h.log.logWindow = uicontrol('parent',h.log.panel,'Style','listbox','String','','Position',logPosition);
+h.log.logWindow = uicontrol('parent',h.log.panel,'Style','listbox','String','',...
+    'Tag','logWindow','Position',logPosition);
 
 % Calculate the position of the clearing button:
 buttonPosition = [logPosition(3)-41 logPosition(4)-20 30 25];
@@ -60,4 +61,6 @@ h = appdataManager('olfStimGui','get','h');
 
 %% Clear the window
 set(h.log.logWindow,'String','','Value',1);
+
+%appdataManager('olfStimGui','get',h);
 end

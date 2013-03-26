@@ -163,9 +163,15 @@ h.olfactometerSettings.check(14) = uicontrol('Style','checkbox','Parent',h.olfac
 set(h.olfactometerSettings.trialSeqButton,'Parent',h.olfactometerSettings.panel, 'Position',[5 newSize(2)-40-(i+4)*22 195 20]);
 
 % Add odor selection controls
+% Calculate max possible concentration for odor #1 (which will be selected
+% in popup menu)
+settingNames = get(h.olfactometerSettings.text,'Tag');
+settingIndex = strcmp('mfcTotalFlow',settingNames);
+totalFlow = str2double(get(h.olfactometerSettings.edit(settingIndex),'String'));
+maximumPossibleConcentration = smell.olfactometerSettings.slave(1).maxFlowRateMfcNitrogen / totalFlow * smell.olfactometerOdors.slave(1).sessionOdors(1).odorantDilution;
 h.olfactometerSettings.odorTxt = uicontrol('Style','Text','Parent',h.olfactometerSettings.panel,'Position',[5 newSize(2)-47-(i+5)*22 40 20],'String','Odor','HorizontalAlignment','left');
-h.olfactometerSettings.odorPop = uicontrol('Style','popupmenu','Parent',h.olfactometerSettings.panel, 'Position',[50 newSize(2)-45-(i+5)*22 105 20],'String',{olfactometerOdors.sessionOdors.odorName});
-h.olfactometerSettings.odorEdt = uicontrol('Style','Edit','Parent',h.olfactometerSettings.panel, 'Position',[160 newSize(2)-47-(i+5)*22 40 20], 'String','0.1', 'BackgroundColor','w');
+h.olfactometerSettings.odorPop = uicontrol('Style','popupmenu','Parent',h.olfactometerSettings.panel, 'Position',[50 newSize(2)-45-(i+5)*22 105 20],'String',{olfactometerOdors.sessionOdors.odorName},'Callback',@checkConcentration);
+h.olfactometerSettings.odorEdt = uicontrol('Style','Edit','Parent',h.olfactometerSettings.panel, 'Position',[160 newSize(2)-47-(i+5)*22 40 20], 'String',num2str(maximumPossibleConcentration,'%6.3f'), 'BackgroundColor','w','Callback',@checkConcentration);
 
 % Add Run controls
 h.runControls.runTrialFromSettings = uicontrol('Style','Pushbutton','Parent',h.olfactometerSettings.panel, 'Position',[5 newSize(2)-50-(i+6)*22 70 20], 'String','Run trial','FontWeight','Bold','Callback',@runTrial);
@@ -203,11 +209,16 @@ h.protocolControls.doneList.abort = uicontrol('Style','pushbutton','parent',h.pr
 
 % Log panel
 h = protocolUtilities.logWindow.setup(h,h.guiHandle, [235 5 guiPos(3)-235 p(4)]);
+set(h.log.logWindow, 'ForeGroundColor','r');
+
 sizes.logPanel.smallGui = [235 5 guiPos(3)-235 p(4)];
 sizes.logPanel.bigGui = [235 5 panelWidth(2) p(4)];
 sizes.logList.smallGui = get(h.log.logWindow, 'Position');
 sizes.logList.bigGui = [sizes.logList.smallGui(1:2) panelWidth(2)-12 sizes.logList.smallGui(4)];
-% Output warnings in listbox: protocolsUtilities.logWindow.issueLogMessage(logMessageString)
+sizes.logClear.bigGui = [sizes.logPanel.bigGui(3)-24 2 20 20];
+sizes.logClear.smallGui = [sizes.logPanel.smallGui(3)-24 2 20 20];
+set(h.log.clearButton, 'Position', sizes.logClear.smallGui, 'String','X','FontWeight','bold');
+% Output warnings in listbox: protocolUtilities.logWindow.issueLogMessage(logMessageString)
 
 % Sequence definition list
 h.protocolControls.sequencesDef.panel = uipanel('Parent',h.guiHandle,'Units','pixel','Position',[235 round((guiPos(4)+30)/2)+15 panelWidth(2) guiPos(4)-(round((guiPos(4)+30)/2))-25], 'Title','Sequence definition','TitlePosition','centertop','Visible','off');
@@ -286,6 +297,7 @@ end
 %% Update h structure in the appdata
 % Write the structure h containing all handles for the figure as appdata:
 appdataManager('olfStimGui','set',h)
+protocolUtilities.logWindow.issueLogMessage('Ready to go!')
 %% Odor presentation functions
     function send2Olfactometer(sequence)
         appdataManager('olfStimGui','set',h)
@@ -369,11 +381,6 @@ appdataManager('olfStimGui','set',h)
         sessionRunningFlag = 0;
     end
 %% Trial functions
-    function checkConcentration(varargin)
-        %Does not work!!!!! Implement!!!
-        oi = get(h.olfactometerSettings.odorPop, 'Value');
-        concentrationEditCallback(0,0,odorIdx(oi).slave,odorIdx(oi).vial);
-    end
     function runTrial(varargin)
         switch varargin{1}
             case h.runControls.runTrialFromSettings
@@ -755,6 +762,7 @@ appdataManager('olfStimGui','set',h)
             set(h.protocolControls.doneList.list, 'Position', sizes.doneList.bigGui );
             set(h.log.panel, 'Position', sizes.logPanel.bigGui);
             set(h.log.logWindow, 'Position', sizes.logList.bigGui);
+            set(h.log.clearButton, 'Position', sizes.logClear.bigGui);
             set([h.protocolControls.sequences.panel h.protocolControls.protocols.panel h.protocolControls.todo.panel h.protocolControls.sequencesDef.panel h.protocolControls.protocolDef.panel], 'Visible','on');
             set([h.protocolControls.trials.add2Seq h.protocolControls.trials.add2Prot h.protocolControls.trials.add2Todo], 'Enable','on');
         else
@@ -765,9 +773,18 @@ appdataManager('olfStimGui','set',h)
             set(h.protocolControls.doneList.list, 'Position', sizes.doneList.smallGui );
             set(h.log.panel, 'Position', sizes.logPanel.smallGui);
             set(h.log.logWindow, 'Position', sizes.logList.smallGui);
+            set(h.log.clearButton, 'Position', sizes.logClear.smallGui);
             set([h.protocolControls.sequences.panel h.protocolControls.protocols.panel h.protocolControls.todo.panel h.protocolControls.sequencesDef.panel h.protocolControls.protocolDef.panel], 'Visible','off');
             set([h.protocolControls.trials.add2Seq h.protocolControls.trials.add2Prot h.protocolControls.trials.add2Todo], 'Enable','off');
         end
     end
-
+%% Consistency checks
+    function checkConcentration(varargin)
+        import protocolUtilities.*
+        %Does not work!!!!! Implement!!!
+        oi = get(h.olfactometerSettings.odorPop, 'Value');
+        h.protocolSpecificHandles.concentration(odorIdx(oi).slave,odorIdx(oi).vial) = h.olfactometerSettings.odorEdt;
+        appdataManager('olfStimGui','set',h);
+        concentrationEditCallback(0,0,odorIdx(oi).slave,odorIdx(oi).vial);
+    end
 end

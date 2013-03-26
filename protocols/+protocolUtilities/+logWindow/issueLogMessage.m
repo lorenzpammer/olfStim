@@ -28,7 +28,7 @@ if isfield(h,'log')
             % Update the log:
             set(h.log.logWindow,'String',log);
             % Show the last log entry:
-            set(h.log.logWindow,'ListboxTop',length(log));
+            set(h.log.logWindow,'ListboxTop',length(log),'Value',length(log));
             else success = false; 
         end
     else success = false;

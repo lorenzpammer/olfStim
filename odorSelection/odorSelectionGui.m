@@ -593,12 +593,14 @@ handles = appdataManager('odorSelectionGui','get','handles');
 
 %% Populate the odor tables for all slaves
 
-for i = 1 : length(olfactometerOdors.slave)
+for i = 1 : length(find([olfactometerOdors.slave.used]))
     set(handles.olfactometerOdorTableSlave(i).table, 'Data', olfactometerOdors.slave(i).slaveTable);
 end
 
 %% Populate the mixture table
-set(handles.olfactometerMixtureTable.table, 'Data', olfactometerOdors.mixtures.mixtureTable);
+if olfactometerOdors.mixtures.used
+    set(handles.olfactometerMixtureTable.table, 'Data', olfactometerOdors.mixtures.mixtureTable);
+end
 end
 
 function populateOlfactometerTable()
