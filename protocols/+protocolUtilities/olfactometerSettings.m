@@ -204,25 +204,12 @@ dependentOnSetting = [dependentOnSetting dependentOnSettingUser];
         % be closed as well)
         position = [panelPosition(1)+panelPosition(3)-53 panelPosition(2)+spacing 50 25];
         h.olfactometerSettings.trialSeqButton = uicontrol(h.guiHandle,'Position',position,'String','Trial Seq',...
-            'Callback',@trialSeqButton); % give input to function handle: 'Callback',{@trialSeqButton, olfactometerInstructions}
+            'Callback',{@trialSeqButton,dependentOnSetting}); % give input to function handle: 'Callback',{@trialSeqButton, olfactometerInstructions}
         
         
         %% Define the options which can be set to control the olfactometer
         
-        % Order of Olfactometer settings fields
-        %     {'mfcTotalFlow' 'powerGatingValve' 'unpowerGatingValve' ,...
-        %     'powerFinalValve' 'unpowerFinalValve' 'closeSuctionValve' 'openSuctionValve',...
-        %     'openSniffingValve' 'closeSniffingValve' 'powerHumidityValve'
-        %     'unpowerHumidityValve',...
-%         %          'purge' 'cleanNose'}
 
-%         settingValue = [1 0 5 3 5 3.25 5 3.5 5 9 12 NaN 10]; % value for the different settings (in the according units)
-%         useEditField = logical([1 1 1 1 1 1 1 1 1 1 1 0 1]); % whether or not an editing field should be added to the gui for each setting
-%         useCheckBox = logical([0 1 0 1 0 1 0 1 0 1 0 1 1]); % whether or not a checkbox indicating used/non-used should be added to the gui
-%         dependentOnSetting = {0 0 'powerGatingValve' 0 'powerFinalValve' 0 ... % on which setting (written as a string) a given setting (sequence) is dependent.
-%             'closeSuctionValve' 0 'openSniffingValve' 0 'powerHumidityValve' 0 0};
-%         
-        
         for settingNumber = 1 : length(olfactometerInstructions)
             
             % Set up some missing parameters for the current setting:
@@ -273,7 +260,6 @@ dependentOnSetting = [dependentOnSetting dependentOnSettingUser];
             
         end
         
-        clear settingValue userSettingNumber settingNumber useCheckBox tagName relatedSettingIndex dependentOnSetting
         
         
         % Set Callback function
@@ -289,39 +275,50 @@ dependentOnSetting = [dependentOnSetting dependentOnSettingUser];
         
         
         
-        % Color code the setting fields
-        names = get(h.olfactometerSettings.edit,'Tag');
+        %% Color code the setting fields
         
-        i = 1;
-        index1(i) = strmatch('powerGatingValve',names);
-        index2(i) = strmatch('unpowerGatingValve',names);
+        % Get the field names from the gui:
+        guiFieldNames = get(h.olfactometerSettings.edit,'Tag');
+        % Get the instruction names:
+        instructionNames = {olfactometerInstructions.name};
         
-        i = 2;
-        index1(i) = strmatch('powerFinalValve',names);
-        index2(i) = strmatch('unpowerFinalValve',names);
+        % Define which of the gui fields should be colorized (this is
+        % needed to show the sequence of trials):
+        for i = 1 : length(guiFieldNames)
+            % Change the dependentOnSetting cell array, so it can be used
+            % in the function strmatch:
+            if dependentOnSetting{i}==0
+                dependentOnSetting{i} = '';
+            end
+            
+            % If the setting doesn't have an edit field or is a setting
+            % that should not be colored, index it in the colorize variable:
+            if ~isempty(strmatch(guiFieldNames{i},{'purge','mfcTotalFlow'},'exact')) || h.olfactometerSettings.edit(i) == 0
+                colorize(i) = false;
+            else
+                colorize(i) = true;
+            end
+        end
         
-        i = 3;
-        index1(i) = strmatch('closeSuctionValve',names);
-        index2(i) = strmatch('openSuctionValve',names);
-        
-        i = 4;
-        index1(i) = strmatch('openSniffingValve',names);
-        index2(i) = strmatch('closeSniffingValve',names);
-        
-        i = 5;
-        index1(i) = strmatch('powerHumidityValve',names);
-        index2(i) = strmatch('unpowerHumidityValve',names);
-        
-%         i = 6;
-%         index1(i) = strmatch('purge',names);
-%         index2(i) = 0;
-        
-        i = 6;
-        index1(i) = strmatch('cleanNose',names);
-        index2(i) = 0;
-        
-        
-        
+        % Create indices for coloring the fields: 
+        counter = 0;
+        for i = 1:length(instructionNames)
+            if isempty(dependentOnSetting{i}) && colorize(i)
+                counter = counter + 1;
+                % index for progressing coloring
+                index1(counter) = strmatch(instructionNames{i},guiFieldNames);
+                tmpind = strmatch(instructionNames{i},dependentOnSetting);
+                if ~isempty(tmpind)
+                    % index for coloring the dependent setting in the same
+                    % color as the sister setting:
+                    index2(counter) = tmpind;
+                else 
+                    index2(counter) = 0;
+                end
+                
+            end
+        end
+%         
         color = hsv(length(index1));
         
         for i = 1 : length(color(:,1))
@@ -406,7 +403,7 @@ clear pointersToGui; clear indexStruct2GuiField;
 end
 
 
-function trialSeqButton(src, event)
+function trialSeqButton(src, event,dependentOnSetting)
 
 global olfactometerInstructions
 
@@ -446,94 +443,92 @@ catch
     
     olfactometerInstructions = extractOlfactometerSettings(olfactometerInstructions,h);
     
-    names = {olfactometerInstructions.name}; % Extract names of the parameters in the structure
-    settingsName = get(h.olfactometerSettings.edit,'Tag'); % Extract names of the parameters in the gui
+    instructionNames = {olfactometerInstructions.name}; % Extract names of the parameters in the structure
+    guiFieldNames = get(h.olfactometerSettings.edit,'Tag'); % Extract names of the parameters in the gui
     
     % Go through every user settable parameter
     % Find it in the olfactometerInstructions structure, and extract the
     % value
-    lookFor = 'powerGatingValve'; % define parameter to check
-    pgv = strcmp(lookFor,names); % Find the entry of the structure corresponding to the parameter
-    lookFor = 'unpowerGatingValve'; % define parameter to check
-    ugv = strcmp(lookFor,names'); % Find the entry of the structure corresponding to the parameter
-    
-    lookFor = 'powerFinalValve';
-    pfv = strcmp(lookFor,names);
-    lookFor = 'unpowerFinalValve';
-    ufv = strcmp(lookFor,names);
-    
-    lookFor = 'closeSuctionValve';
-    csv = strcmp(lookFor,names);
-    lookFor = 'openSuctionValve';
-    osv = strcmp(lookFor,names);
-    
-    lookFor = 'openSniffingValve';
-    osnv = strcmp(lookFor,names);
-    lookFor = 'closeSniffingValve';
-    csnv = strcmp(lookFor,names);
-    
-    lookFor = 'purge';
-    purge = strcmp(lookFor,names);
-    
-    lookFor = 'cleanNose';
-    cn = strcmp(lookFor,names);
-    
-    lookFor = 'powerHumidityValve';
-    phv = strcmp(lookFor,names);
-    lookFor = 'unpowerHumidityValve';
-    uhv = strcmp(lookFor,names);
-    
-    clear names;
-    
-    % Now check wether problems exist
-    % a. Are all valves turned off after they have been turned on?
-    % b. purge starting after end of sniffing and unpowering final valve?
-    % c. Warn if none of the three presentation valves are used: final,
-    % suction & sniffing
-    % d. Is nose cleaning done after the end of presentation?
     
     
-    % a.
+    % Define which of the gui fields should be colorized (this is
+    % needed to show the sequence of trials):
+    for i = 1 : length(guiFieldNames)
+        % Change the dependentOnSetting cell array, so it can be used
+        % in the function strmatch:
+        if dependentOnSetting{i}==0
+            dependentOnSetting{i} = '';
+        end
+        
+        % If the setting doesn't have an edit field or is a setting
+        % that should not be plotted, index it in the colorize variable:
+        if ~isempty(strmatch(guiFieldNames{i},{'purge','mfcTotalFlow'},'exact')) || h.olfactometerSettings.edit(i) == 0
+            plotSetting(i) = false;
+        else
+            plotSetting(i) = true;
+        end
+    end
     
-    % Gating valve
-    if olfactometerInstructions(pgv).used == 1
-        for i=1:length(olfactometerInstructions(pgv).value)
-            if any(olfactometerInstructions(pgv).value(i) >= olfactometerInstructions(ugv).value(i) | ... % if powering of gating valve is later or at the same time than unpowering
-                    isempty(olfactometerInstructions(pgv).value(i)) | isempty(olfactometerInstructions(ugv).value(i)) | ... % if powering or unpowering values are not defined
-                    ~isreal(olfactometerInstructions(pgv).value(i)) | ~isreal(olfactometerInstructions(ugv).value(i)) | ... % if any of the values is not a real number also works for vector elements
-                    olfactometerInstructions(pgv).value(i) < 0 | olfactometerInstructions(pgv).value(i) < 0) % if any of the values is negative
-                warning('Gating valve: Only real positive values. Powering must precede unpowering. Change settings!')
-                cla
-                return
+    % Create indices for coloring the fields:
+    counter = 0;
+    for i = 1:length(instructionNames)
+        if isempty(dependentOnSetting{i}) && plotSetting(i)
+            counter = counter + 1;
+            % index for progressing coloring
+            
+            index1(counter) = strmatch(instructionNames{i},guiFieldNames);
+            tmpind = strmatch(instructionNames{i},dependentOnSetting);
+            if ~isempty(tmpind)
+                % index for coloring the dependent setting in the same
+                % color as the sister setting:
+                index2(counter) = tmpind;
+            else
+                % If no dependent setting, we don't know what to plot.
+                % Ignore this 
+                index1(counter) = [];
+                counter = counter - 1;
+                warnstr = sprintf('Valve setting %s: You have to provide on and off values for all valves.\nGraphical depiction of sequence of trial might not be shown correctly.',instructionNames{i});
+                warning(warnstr)
             end
         end
     end
     
-    % Final valve
-    if olfactometerInstructions(pfv).used == 1
-        if any(olfactometerInstructions(pfv).value >= olfactometerInstructions(ufv).value | ... % if powering of final valve is later or at the same time than unpowering
-                isempty(olfactometerInstructions(pfv).value) | isempty(olfactometerInstructions(ufv).value) | ... % if powering or unpowering values are not defined
-                ~isreal(olfactometerInstructions(pfv).value) | ~isreal(olfactometerInstructions(ufv).value) | ... % if any of the values is not a real number
-                olfactometerInstructions(pfv).value < 0 | olfactometerInstructions(ufv).value < 0) % if any of the values is negative
-            warning('Final valve: Only positive, real values allowed. Powering must precede unpowering. Change settings!')
-            cla
-            return
+    
+    
+    
+%     % Now check wether problems exist
+%     % a. Are all valves turned off after they have been turned on?
+%     % b. purge starting after end of sniffing and unpowering final valve?
+%     % c. Warn if none of the three presentation valves are used: final,
+%     % suction & sniffing
+%     % d. Is nose cleaning done after the end of presentation?
+%
+for j = 1 : length(index1)
+    if olfactometerInstructions(index1(j)).used == 1
+        for i=1:length(olfactometerInstructions(index1(j)).value)
+            if any(olfactometerInstructions(index1(j)).value(i) >= olfactometerInstructions(index2(j)).value(i) | ... % if powering of gating valve is later or at the same time than unpowering
+                    isempty(olfactometerInstructions(index1(j)).value(i)) | isempty(olfactometerInstructions(index1(j)).value(i)) | ... % if powering or unpowering values are not defined
+                    ~isreal(olfactometerInstructions(index1(j)).value(i)) | ~isreal(olfactometerInstructions(index1(j)).value(i)) | ... % if any of the values is not a real number also works for vector elements
+                    olfactometerInstructions(index1(j)).value(i) < 0 | olfactometerInstructions(index1(j)).value(i) < 0) % if any of the values is negative
+                warnstr = sprintf('Valve setting %s and %s: Only real positive values. Powering must precede unpowering. Change settings!',instructionNames{index1(j)},instructionNames{index2(j)});
+                warning(warnstr)
+                cla
+                % Plot that something's wrong
+                xPosition = get(gca(h.olfactometerSettings.trialSeqFig),'xlim');
+                xPosition = sum(xPosition)/2 - 2;
+                currentYlim = get(gca(h.olfactometerSettings.trialSeqFig),'ylim');
+                yPosition = (currentYlim(2)-currentYlim(1)) * 0.33;
+                width=4;height = 3;
+                rectangle('Parent',gca(h.olfactometerSettings.trialSeqFig),...
+                    'Position',[xPosition yPosition width height],'FaceColor', [0.8 0.8 0.8]); % plot rectangle in the progress figure
+                warnstr = sprintf('Wrong in values in valve setting %s or %s.',instructionNames{index1(j)},instructionNames{index2(j)});
+                text(xPosition+0.2,yPosition+1.5,warnstr,'Fontsize',18,'Color','r');
+                message = sprintf('\n \n Is claning solution in the vials? \n \n');
+                return
+            end
         end
     end
-    
-    % Purging
-    if olfactometerInstructions(purge).used == 1
-        if any(~isreal(olfactometerInstructions(purge).value) | ... % if any of the values is not a real number
-                isempty(olfactometerInstructions(purge).value) | ... % if powering or unpowering values are not defined
-                olfactometerInstructions(purge).value < 0 | ... % if any of the values is negative
-                length(olfactometerInstructions(purge).value) > 1)
-            warning('Purge: Only positive, real, single values allowed. Change settings!')
-            cla
-            return
-        end
-    end
-    
-    
+end
     
     %% If no problems exist plot the following:
     
@@ -541,119 +536,25 @@ catch
     cla(axisHandle); % clear all children (=plotted data) of the axis
     hold(axisHandle,'on')
     
-    i=1;
-    index = strcmp('powerGatingValve',settingsName);
-    color = get(h.olfactometerSettings.edit(index),'BackgroundColor');
-    xvalues = 0;
-    yvalues = i;
-    for j = 1 : length(olfactometerInstructions(pgv).value)
-        xvalues(end+1:end+4) = [olfactometerInstructions(pgv).value(j) olfactometerInstructions(pgv).value(j) olfactometerInstructions(ugv).value(j) olfactometerInstructions(ugv).value(j)];
-        yvalues(end+1:end+4) = [i i+0.5 i+0.5 i];
+    for i = 1 : length(index1)
+        clear xvalues yvalues
+        color = get(h.olfactometerSettings.edit(index1(i)),'BackgroundColor');
+        xvalues = 0;
+        yvalues = i;
+        for j = 1 : length(olfactometerInstructions(index1(i)).value)
+            xvalues(end+1:end+4) = [olfactometerInstructions(index1(i)).value(j) olfactometerInstructions(index1(i)).value(j) olfactometerInstructions(index2(i)).value(j) olfactometerInstructions(index2(i)).value(j)];
+            yvalues(end+1:end+4) = [i i+0.5 i+0.5 i];
+        end
+        xvalues(end+1) = 100;
+        yvalues(end+1) = i;
+        if olfactometerInstructions(index1(i)).used == 1
+            plot(axisHandle,xvalues,yvalues,'-k','Linewidth',1.5,'Color',color)
+            value{i} = olfactometerInstructions(index2(i)).value;
+        end
     end
-    xvalues(end+1) = 100;
-    yvalues(end+1) = i;
-    if olfactometerInstructions(pgv).used == 1
-        plot(axisHandle,xvalues,yvalues,'-k','Linewidth',1.5,'Color',color)
-        value{i} = olfactometerInstructions(ugv).value;
-    end
-    
-    
-    i=2;
-    index = strcmp('powerFinalValve',settingsName);
-    color = get(h.olfactometerSettings.edit(index),'BackgroundColor');
-    xvalues = 0;
-    yvalues = i;
-    for j = 1 : length(olfactometerInstructions(pfv).value)
-        xvalues(end+1:end+4) = [olfactometerInstructions(pfv).value(j) olfactometerInstructions(pfv).value(j) olfactometerInstructions(ufv).value(j) olfactometerInstructions(ufv).value(j)];
-        yvalues(end+1:end+4) = [i i+0.5 i+0.5 i];
-    end
-    xvalues(end+1) = 100;
-    yvalues(end+1) = i;
-    if olfactometerInstructions(pfv).used == 1
-        plot(axisHandle,xvalues,yvalues,'-k','Linewidth',1.5,'Color',color)
-        value{i} = olfactometerInstructions(ufv).value;
-    end
-    
-    
-    i=3;
-    index = strcmp('closeSuctionValve',settingsName);
-    color = get(h.olfactometerSettings.edit(index),'BackgroundColor');
-    xvalues = 0;
-    yvalues = i;
-    for j = 1 : length(olfactometerInstructions(csv).value)
-        xvalues(end+1:end+4) = [olfactometerInstructions(csv).value(j) olfactometerInstructions(csv).value(j) olfactometerInstructions(osv).value(j) olfactometerInstructions(osv).value(j)];
-        yvalues(end+1:end+4) = [i i+0.5 i+0.5 i];
-    end
-    xvalues(end+1) = 100;
-    yvalues(end+1) = i;
-    if olfactometerInstructions(csv).used == 1
-        plot(axisHandle,xvalues,yvalues,'-k','Linewidth',1.5,'Color',color)
-        value{i} = olfactometerInstructions(osv).value;
-    end
-    
-    
-    i=4;
-    index = strcmp('openSniffingValve',settingsName);
-    color = get(h.olfactometerSettings.edit(index),'BackgroundColor');
-    xvalues = 0;
-    yvalues = i;
-    for j = 1 : length(olfactometerInstructions(osnv).value)
-        xvalues(end+1:end+4) = [olfactometerInstructions(osnv).value(j) olfactometerInstructions(osnv).value(j) olfactometerInstructions(csnv).value(j) olfactometerInstructions(csnv).value(j)];
-        yvalues(end+1:end+4) = [i i+0.5 i+0.5 i];
-    end
-    xvalues(end+1) = 100;
-    yvalues(end+1) = i;
-    if olfactometerInstructions(osnv).used == 1
-        plot(axisHandle,xvalues,yvalues,'-k','Linewidth',1.5,'Color',color)
-        value{i} = olfactometerInstructions(csnv).value;
-    end
-    
-    
-    i=5;
-    index = strcmp('powerHumidityValve',settingsName);
-    color = get(h.olfactometerSettings.edit(index),'BackgroundColor');
-    xvalues = 0;
-    yvalues = i;
-    for j = 1 : length(olfactometerInstructions(phv).value)
-        xvalues(end+1:end+4) = [olfactometerInstructions(phv).value(j) olfactometerInstructions(phv).value(j) olfactometerInstructions(uhv).value(j) olfactometerInstructions(uhv).value(j)];
-        yvalues(end+1:end+4) = [i i+0.5 i+0.5 i];
-    end
-    xvalues(end+1) = 100;
-    yvalues(end+1) = i;
-    if olfactometerInstructions(phv).used == 1
-        plot(axisHandle,xvalues,yvalues,'-k','Linewidth',1.5,'Color',color)
-        value{i} = olfactometerInstructions(uhv).value;
-    end
-    
-    
-    %     i=6;
-    %     index = strcmp('purge',settingsName);
-    %     color = get(h.olfactometerSettings.edit(index),'BackgroundColor');
-    %     if olfactometerInstructions(purge).used == 1
-    %     plot(axisHandle,[0 olfactometerInstructions(purge).value olfactometerInstructions(purge).value 100],[i i i+0.5 i+0.5],'-k','Linewidth',1.5,'Color',color)
-    %     value{i} = olfactometerInstructions(purge).value;
-    %     end
-    
-    
-    i=6;
-    index = strcmp('cleanNose',settingsName);
-    color = get(h.olfactometerSettings.edit(index),'BackgroundColor');
-    xvalues = 0;
-    yvalues = i;
-    for j = 1 : length(olfactometerInstructions(cn).value)
-        xvalues(end+1:end+4) = [olfactometerInstructions(cn).value(j) olfactometerInstructions(cn).value(j) olfactometerInstructions(cn).value(j)+2 olfactometerInstructions(cn).value(j)+2];
-        yvalues(end+1:end+4) = [i i+0.5 i+0.5 i];
-    end
-    xvalues(end+1) = 100;
-    yvalues(end+1) = i;
-    if olfactometerInstructions(cn).used == 1
-        plot(axisHandle,xvalues,yvalues,'-k','Linewidth',1.5,'Color',color)
-        value{i} = olfactometerInstructions(cn).value+2; % Nose cleaning will take 2 seconds.
-    end
-    
     
     % Get I/O data and plot it
-    i=7;
+    i=i+1;
     io = appdataManager('olfStimGui','get','io');  
     if ~isempty(io)
         color = [0 0 0];
@@ -675,8 +576,8 @@ catch
     plot(axisHandle,[finalAction finalAction], get(axisHandle,'Ylim') + [-1 +1],'--k','Linewidth',1.2)
     
     % Set the figure limits:
-    ylim([0 i+1])
-    xlim([0 max(cell2mat(value))+1])
+    ylim(axisHandle,[0 i+1])
+    xlim(axisHandle,[0 max(cell2mat(value))+1])
     
     clear axisHandle
 end
