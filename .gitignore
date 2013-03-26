@@ -20,6 +20,7 @@
 # Specific ignoring rules for olfStim:
 #################################
 # The trial.lsq file is updated for every trial.
+*trial.lsq
 */lsq/trial.lsq
 
 # The trial.lsq file is updated for every trial.

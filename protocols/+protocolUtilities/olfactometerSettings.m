@@ -82,22 +82,52 @@ if strcmp(instruction,'setUp') || strcmp(instruction,'setUpStructure')
     
     %% Set up olfactometerInstructions structure
     
- olfactometerInstructions = struct('name',{'mfcTotalFlow' 'powerGatingValve' 'unpowerGatingValve' ,...
-        'powerFinalValve' 'unpowerFinalValve' 'closeSuctionValve' 'openSuctionValve',...
-        'openSniffingValve' 'closeSniffingValve' 'powerHumidityValve' 'unpowerHumidityValve',...
-        'purge' 'cleanNose'},...
-        'value',cell(1,13),...
-        'unit',{ 'l/m' 's' 's' 's' 's' 's' 's' 's' 's' 's' 's' 's' 's'},...
-        'used',{1 1 1 1 1 0 0 1 1 0 0 1 1},...
-        'timeStampID',[]);
-    %        'userSettingNumber',[],...
-    
+%     olfactometerInstructions = struct('name',{'mfcTotalFlow' 'powerGatingValve' 'unpowerGatingValve' ,...
+%         'powerFinalValve' 'unpowerFinalValve' 'closeSuctionValve' 'openSuctionValve',...
+%         'openSniffingValve' 'closeSniffingValve' 'powerHumidityValve' 'unpowerHumidityValve',...
+%         'purge' 'cleanNose'},...
+%         'value',cell(1,13),...
+%         'unit',{ 'l/m' 's' 's' 's' 's' 's' 's' 's' 's' 's' 's' 's' 's'},...
+%         'used',{1 1 1 1 1 0 0 1 1 0 0 1 1},...
+%         'timeStampID',[]);
+
+olfactometerInstructions = struct('name',{'mfcTotalFlow' 'purge'},...
+    'value', {1 NaN},...
+    'unit',{ 'l/m' 's'},...
+    'used',{1 1},...
+    'timeStampID',[]);
+
+useEditField = [true false]; % whether or not an editing field should be added to the gui for each setting
+useCheckBox = [false true]; % whether or not a checkbox indicating used/non-used should be added to the gui
+dependentOnSetting = {0 0}; % on which setting (written as a string) a given setting (sequence) is dependent.
+
+[names, values, used, timestamps, useEditFieldUser, useCheckBoxUser, dependentOnSettingUser] = ...
+    olfStimConfiguration('valves');
+
+% all units are in seconds
+for i = 1 : length(names)
+    unit{i} = 's';
+end
+
+tmp = struct('name',names,...
+    'value',values,...
+    'unit',unit,...
+    'used',used,...
+    'timeStampID',timestamps);
+
+% append olfactometerInstructions by user configurations:
+olfactometerInstructions = [olfactometerInstructions tmp];
+useEditField = [useEditField useEditFieldUser];
+useCheckBox = [useCheckBox useCheckBoxUser];
+dependentOnSetting = [dependentOnSetting dependentOnSettingUser];
+
+    %         settingValue = [1 0 5 3 5 3.25 5 3.5 5 9 12 NaN 10]; % value for the different settings (in the according units)
     %% Hard code time stamp code for the different events
     % timeStampDefinitions holds the definitions for the mapping of
     % olfactometer events to time stamp values, and adds this information
     % to the olfactometerInstructions structure.
     
-    olfactometerInstructions = timeStampDefinitions(olfactometerInstructions);
+    %olfactometerInstructions = timeStampDefinitions(olfactometerInstructions);
     
     
     if strcmp(instruction,'setUp')
@@ -184,20 +214,21 @@ if strcmp(instruction,'setUp') || strcmp(instruction,'setUpStructure')
         %     'powerFinalValve' 'unpowerFinalValve' 'closeSuctionValve' 'openSuctionValve',...
         %     'openSniffingValve' 'closeSniffingValve' 'powerHumidityValve'
         %     'unpowerHumidityValve',...
-        %          'purge' 'cleanNose'}
-        settingValue = [1 0 5 3 5 3.25 5 3.5 5 9 12 NaN 10]; % value for the different settings (in the according units)
-        useEditField = logical([1 1 1 1 1 1 1 1 1 1 1 0 1]); % whether or not an editing field should be added to the gui for each setting
-        useCheckBox = logical([0 1 0 1 0 1 0 1 0 1 0 1 1]); % whether or not a checkbox indicating used/non-used should be added to the gui
-        dependentOnSetting = {0 0 'powerGatingValve' 0 'powerFinalValve' 0 ... % on which setting (written as a string) a given setting (sequence) is dependent.
-            'closeSuctionValve' 0 'openSniffingValve' 0 'powerHumidityValve' 0 0};
-        
+%         %          'purge' 'cleanNose'}
+
+%         settingValue = [1 0 5 3 5 3.25 5 3.5 5 9 12 NaN 10]; % value for the different settings (in the according units)
+%         useEditField = logical([1 1 1 1 1 1 1 1 1 1 1 0 1]); % whether or not an editing field should be added to the gui for each setting
+%         useCheckBox = logical([0 1 0 1 0 1 0 1 0 1 0 1 1]); % whether or not a checkbox indicating used/non-used should be added to the gui
+%         dependentOnSetting = {0 0 'powerGatingValve' 0 'powerFinalValve' 0 ... % on which setting (written as a string) a given setting (sequence) is dependent.
+%             'closeSuctionValve' 0 'openSniffingValve' 0 'powerHumidityValve' 0 0};
+%         
         
         for settingNumber = 1 : length(olfactometerInstructions)
             
             % Set up some missing parameters for the current setting:
             userSettingNumber = settingNumber;
             %olfactometerInstructions(settingNumber).userSettingNumber = userSettingNumber;
-            olfactometerInstructions(settingNumber).value = settingValue(settingNumber);
+            %olfactometerInstructions(settingNumber).value = settingValue(settingNumber);
             
             % Set up the user controls for the current setting in the GUI:
             
