@@ -203,11 +203,16 @@ h.protocolControls.doneList.abort = uicontrol('Style','pushbutton','parent',h.pr
 
 % Log panel
 h = protocolUtilities.logWindow.setup(h,h.guiHandle, [235 5 guiPos(3)-235 p(4)]);
+set(h.log.logWindow, 'ForeGroundColor','r');
+
 sizes.logPanel.smallGui = [235 5 guiPos(3)-235 p(4)];
 sizes.logPanel.bigGui = [235 5 panelWidth(2) p(4)];
 sizes.logList.smallGui = get(h.log.logWindow, 'Position');
 sizes.logList.bigGui = [sizes.logList.smallGui(1:2) panelWidth(2)-12 sizes.logList.smallGui(4)];
-% Output warnings in listbox: protocolsUtilities.logWindow.issueLogMessage(logMessageString)
+sizes.logClear.bigGui = [sizes.logPanel.bigGui(3)-24 2 20 20];
+sizes.logClear.smallGui = [sizes.logPanel.smallGui(3)-24 2 20 20];
+set(h.log.clearButton, 'Position', sizes.logClear.smallGui, 'String','X','FontWeight','bold');
+% Output warnings in listbox: protocolUtilities.logWindow.issueLogMessage(logMessageString)
 
 % Sequence definition list
 h.protocolControls.sequencesDef.panel = uipanel('Parent',h.guiHandle,'Units','pixel','Position',[235 round((guiPos(4)+30)/2)+15 panelWidth(2) guiPos(4)-(round((guiPos(4)+30)/2))-25], 'Title','Sequence definition','TitlePosition','centertop','Visible','off');
@@ -286,6 +291,7 @@ end
 %% Update h structure in the appdata
 % Write the structure h containing all handles for the figure as appdata:
 appdataManager('olfStimGui','set',h)
+protocolUtilities.logWindow.issueLogMessage('Ready to go!')
 %% Odor presentation functions
     function send2Olfactometer(sequence)
         appdataManager('olfStimGui','set',h)
@@ -755,6 +761,7 @@ appdataManager('olfStimGui','set',h)
             set(h.protocolControls.doneList.list, 'Position', sizes.doneList.bigGui );
             set(h.log.panel, 'Position', sizes.logPanel.bigGui);
             set(h.log.logWindow, 'Position', sizes.logList.bigGui);
+            set(h.log.clearButton, 'Position', sizes.logClear.bigGui);
             set([h.protocolControls.sequences.panel h.protocolControls.protocols.panel h.protocolControls.todo.panel h.protocolControls.sequencesDef.panel h.protocolControls.protocolDef.panel], 'Visible','on');
             set([h.protocolControls.trials.add2Seq h.protocolControls.trials.add2Prot h.protocolControls.trials.add2Todo], 'Enable','on');
         else
@@ -765,6 +772,7 @@ appdataManager('olfStimGui','set',h)
             set(h.protocolControls.doneList.list, 'Position', sizes.doneList.smallGui );
             set(h.log.panel, 'Position', sizes.logPanel.smallGui);
             set(h.log.logWindow, 'Position', sizes.logList.smallGui);
+            set(h.log.clearButton, 'Position', sizes.logClear.smallGui);
             set([h.protocolControls.sequences.panel h.protocolControls.protocols.panel h.protocolControls.todo.panel h.protocolControls.sequencesDef.panel h.protocolControls.protocolDef.panel], 'Visible','off');
             set([h.protocolControls.trials.add2Seq h.protocolControls.trials.add2Prot h.protocolControls.trials.add2Todo], 'Enable','off');
         end
