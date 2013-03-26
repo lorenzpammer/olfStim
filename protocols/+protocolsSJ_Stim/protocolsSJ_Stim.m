@@ -163,9 +163,15 @@ h.olfactometerSettings.check(14) = uicontrol('Style','checkbox','Parent',h.olfac
 set(h.olfactometerSettings.trialSeqButton,'Parent',h.olfactometerSettings.panel, 'Position',[5 newSize(2)-40-(i+4)*22 195 20]);
 
 % Add odor selection controls
+% Calculate max possible concentration for odor #1 (which will be selected
+% in popup menu)
+settingNames = get(h.olfactometerSettings.text,'Tag');
+settingIndex = strcmp('mfcTotalFlow',settingNames);
+totalFlow = str2double(get(h.olfactometerSettings.edit(settingIndex),'String'));
+maximumPossibleConcentration = smell.olfactometerSettings.slave(1).maxFlowRateMfcNitrogen / totalFlow * smell.olfactometerOdors.slave(1).sessionOdors(1).odorantDilution;
 h.olfactometerSettings.odorTxt = uicontrol('Style','Text','Parent',h.olfactometerSettings.panel,'Position',[5 newSize(2)-47-(i+5)*22 40 20],'String','Odor','HorizontalAlignment','left');
-h.olfactometerSettings.odorPop = uicontrol('Style','popupmenu','Parent',h.olfactometerSettings.panel, 'Position',[50 newSize(2)-45-(i+5)*22 105 20],'String',{olfactometerOdors.sessionOdors.odorName});
-h.olfactometerSettings.odorEdt = uicontrol('Style','Edit','Parent',h.olfactometerSettings.panel, 'Position',[160 newSize(2)-47-(i+5)*22 40 20], 'String','0.1', 'BackgroundColor','w');
+h.olfactometerSettings.odorPop = uicontrol('Style','popupmenu','Parent',h.olfactometerSettings.panel, 'Position',[50 newSize(2)-45-(i+5)*22 105 20],'String',{olfactometerOdors.sessionOdors.odorName},'Callback',@checkConcentration);
+h.olfactometerSettings.odorEdt = uicontrol('Style','Edit','Parent',h.olfactometerSettings.panel, 'Position',[160 newSize(2)-47-(i+5)*22 40 20], 'String',num2str(maximumPossibleConcentration,'%6.3f'), 'BackgroundColor','w','Callback',@checkConcentration);
 
 % Add Run controls
 h.runControls.runTrialFromSettings = uicontrol('Style','Pushbutton','Parent',h.olfactometerSettings.panel, 'Position',[5 newSize(2)-50-(i+6)*22 70 20], 'String','Run trial','FontWeight','Bold','Callback',@runTrial);
@@ -375,11 +381,6 @@ protocolUtilities.logWindow.issueLogMessage('Ready to go!')
         sessionRunningFlag = 0;
     end
 %% Trial functions
-    function checkConcentration(varargin)
-        %Does not work!!!!! Implement!!!
-        oi = get(h.olfactometerSettings.odorPop, 'Value');
-        concentrationEditCallback(0,0,odorIdx(oi).slave,odorIdx(oi).vial);
-    end
     function runTrial(varargin)
         switch varargin{1}
             case h.runControls.runTrialFromSettings
@@ -777,5 +778,13 @@ protocolUtilities.logWindow.issueLogMessage('Ready to go!')
             set([h.protocolControls.trials.add2Seq h.protocolControls.trials.add2Prot h.protocolControls.trials.add2Todo], 'Enable','off');
         end
     end
-
+%% Consistency checks
+    function checkConcentration(varargin)
+        import protocolUtilities.*
+        %Does not work!!!!! Implement!!!
+        oi = get(h.olfactometerSettings.odorPop, 'Value');
+        h.protocolSpecificHandles.concentration(odorIdx(oi).slave,odorIdx(oi).vial) = h.olfactometerSettings.odorEdt;
+        appdataManager('olfStimGui','set',h);
+        concentrationEditCallback(0,0,odorIdx(oi).slave,odorIdx(oi).vial);
+    end
 end
