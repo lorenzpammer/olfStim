@@ -356,7 +356,8 @@ end
         % measuring can take longer than the defined measurement interval,
         % and then has to be stopped, as it would result overloading the
         % computer and a lot of unwanted behavior.
-        warning('Can''t fulfill LASOM reading requests at the set interval. Giving up.')
+        warnStr = sprintf('Can''t fulfill LASOM reading requests at the set interval. Giving up.');
+        protocolUtilities.logWindow.issueLogMessage(warnStr);
         disp(lasterror)
         stop(readLasomStatusTimer)
     end
