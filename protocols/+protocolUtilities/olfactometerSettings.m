@@ -496,7 +496,7 @@ catch
     
     
     
-%     % Now check wether problems exist
+%% Now check wether problems exist
 %     % a. Are all valves turned off after they have been turned on?
 %     % b. purge starting after end of sniffing and unpowering final valve?
 %     % c. Warn if none of the three presentation valves are used: final,
@@ -530,7 +530,7 @@ for j = 1 : length(index1)
     end
 end
     
-    %% If no problems exist plot the following:
+    %% If no problems exist plot the actions
     
     axisHandle = gca(h.olfactometerSettings.trialSeqFig);
     cla(axisHandle); % clear all children (=plotted data) of the axis

@@ -1,7 +1,0 @@
-;
-WhileAlways
-IfIn, $DigIn1, @startTrial
-EndWhile
-;
-label, @startTrial
-;
