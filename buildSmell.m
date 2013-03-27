@@ -22,6 +22,8 @@ function  buildSmell(instruction,trialOdor,trialNum,stimProtocol,protocolSpecifi
 %     - 'time': no propertyValue necessary.
 %     - 'notes': no propertyValue necessary. Will extract notes
 %        automatically from gui.
+%     - 'log': no propertyValue necessary. Will extract the log messages
+%        for the previous trial from the gui.
 %     - 'olfactometerInstructions': no propertyValue necessary. Will
 %        extract instructions automatically from gui.
 %     - 'protocolSpecificInfo': no propertyValue necessary.
@@ -284,6 +286,12 @@ end
 
 if any(strcmpi('notes',fieldsToUpdate))
     smell.trial(trialNum).notes = protocolUtilities.getUserNotes(h); % extract the notes
+end
+
+if any(strcmpi('log',fieldsToUpdate)) && trialNum > 1
+    % Extract the log messages for the last trial, because at the time of
+    % calling update smell  the current trial hasn't even started yet.
+    smell.trial(trialNum-1).log = protocolUtilities.logWindow.extract(1); 
 end
 
 if any(strcmpi('olfactometerInstructions',fieldsToUpdate))
