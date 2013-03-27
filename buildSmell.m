@@ -224,7 +224,7 @@ smell.trial(trialNum).trialNum = trialNum;
 smell.trial(trialNum).stimProtocol = stimProtocol;
 smell.trial(trialNum).time = clock; % This only gives an approximate time, as the odor might be presented to the animal multiple seconds later.
 smell.trial(trialNum).protocolSpecificInfo = protocolSpecificInfo;
-smell.trial(trialNum).notes = protocolUtilities.getUserNotes(h); % extract the notes
+smell.trial(trialNum).notes = protocolUtilities.notes.extract(h); % extract the notes
 if trialNum > 1
     % Extract the log messages for the last trial, because at the time of
     % calling update smell  the current trial hasn't even started yet.
@@ -285,7 +285,7 @@ if any(strcmpi('time',fieldsToUpdate))
 end
 
 if any(strcmpi('notes',fieldsToUpdate))
-    smell.trial(trialNum).notes = protocolUtilities.getUserNotes(h); % extract the notes
+    smell.trial(trialNum).notes = protocolUtilities.notes.extract(h); % extract the notes
 end
 
 if any(strcmpi('log',fieldsToUpdate)) && trialNum > 1

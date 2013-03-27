@@ -11,7 +11,8 @@ showMixtureTables = 0;
 %% Set up main figure
 
 figurePosition = [300 200 400 500];
-handles.main = figure('Visible','on','Position',figurePosition,'Name','odorSelectionGui', 'Tag', 'odorSelectionGui'); %'CloseRequestFcn',@myCloseFcn
+handles.main = figure('Visible','on','Position',figurePosition,'NumberTitle','off',...
+    'Name','odorSelectionGui', 'Tag', 'odorSelectionGui'); %'CloseRequestFcn',@myCloseFcn
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Set up the gui components

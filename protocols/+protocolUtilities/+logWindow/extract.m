@@ -20,24 +20,28 @@ if isfield(h,'log')
         if ~isempty(h.log.logWindow)
             % Extract the current log from the window:
             log = get(h.log.logWindow,'String');
-            % Find the log messages which denote beginning of trials:
-            trialStartIndex = strfind(log,'Started to execute trial');
-            trialStartIndex = cellfun(@(x) ~isempty(x),trialStartIndex);
-            if all(trialStartIndex == 0)
-                warnstr = sprintf('No strings indicating the beginning of trials could be found in the log window. Did the log message change?');
-                issueLogMessage(warnstr);
-            elseif ~isempty(numberOfTrials)
-                trialStartIndex = find(trialStartIndex);
-                index = trialStartIndex(end-numberOfTrials+1:end);
-                log = log(min(index):end);
+            if isempty(log)
+                log = {};
+            else
+                % Find the log messages which denote beginning of trials:
+                trialStartIndex = strfind(log,'Started to execute trial');
+                trialStartIndex = cellfun(@(x) ~isempty(x),trialStartIndex);
+                if all(trialStartIndex == 0)
+%                     warnstr = sprintf('No strings indicating the beginning of trials could be found in the log window. Did the log message change?');
+%                     issueLogMessage(warnstr);
+                elseif ~isempty(numberOfTrials)
+                    trialStartIndex = find(trialStartIndex);
+                    index = trialStartIndex(end-numberOfTrials+1:end);
+                    log = log(min(index):end);
+                end
             end
         else
-            log = '';
+            log = [];
         end
     else
         log = [];
     end
-else 
+else
     log = [];
 end
 

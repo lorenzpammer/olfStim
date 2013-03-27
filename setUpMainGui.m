@@ -5,7 +5,6 @@ function setUpMainGui(position)
 % The handle structure h is set up and written as appdata 'h' to the figure.
 %
 %
-%
 % lorenzpammer 2012/08
 %%
 if nargin < 1

@@ -9,7 +9,7 @@ function smell = startTrial(trialNum, smell)
 % -get the actual timing of events from LASOM and write it into the
 %   smell structure.
 %
-% lorenzpammer dec 2011
+% lorenzpammer 2011/12
 
 %% Decide whether to output information to the command window for debugging;
 

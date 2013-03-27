@@ -1,5 +1,5 @@
-function success = issueLogMessage(logMessage)
-% success = issueLogMessage(logMessage)
+function success = issueLogMessage(logMessage,printToCommandLine)
+% success = issueLogMessage(logMessage,printToCommandLine)
 % Will print the logMessage to the log window if existent and to the
 % command line. Returns true if log window is present, and false if not.
 % Will issue log messages to the listbox defined in the h.log.logWindow
@@ -7,11 +7,16 @@ function success = issueLogMessage(logMessage)
 %
 % lorenzpammer 2013/03
 
-%% Get a couple of needed variables and packages
+%% Check inputs
+
+if nargin < 2
+    printToCommandLine = true;
+end
+
+%% Get a couple of needed variables
 
 h = appdataManager('olfStimGui','get','h');
 
-import protocolUtilities.logWindow.*
 
 %% Write the new log message to the bottom of the logWindow
 
@@ -38,6 +43,8 @@ else success = false;
 end
 
 % And print everything to the command line:
-disp(logMessage);
+if printToCommandLine
+    disp(logMessage);
+end
 
 end

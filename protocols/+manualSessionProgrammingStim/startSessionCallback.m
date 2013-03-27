@@ -5,7 +5,8 @@ function startSessionCallback(~,~,callbackFunctionName)
 % lorenzpammer september 2012
 
 
-%%
+%% Fetch some globals and variables from the gui
+
 global smell
 global trialNum
 
@@ -108,7 +109,7 @@ if get(h.startSession,'Value') == 1 % if the startSessionButton is pressed
         
         % 3. Update certain smell fields:
         buildSmell('updateFields',[],trialNum,stimProtocol,[],...
-            'notes','stimProtocol','time','scientist','animalName')
+            'notes','stimProtocol','time','scientist','animalName','log');
         
         % 4. update the progress panel on the gui
         protocolUtilities.progressPanel(h,'update',trialOdor,trialNum);
@@ -116,7 +117,7 @@ if get(h.startSession,'Value') == 1 % if the startSessionButton is pressed
         % 5. start the new trial
         %   This will build the lsq file for the current trial, send the
         %   instructions to the olfactometer and trigger the trial.
-%          smell = startTrial(trialNum, smell);
+        smell = startTrial(trialNum, smell);
         
         % % Wait for a time period, defined in interTrialInterval until
         % doing the next loop iteration.
