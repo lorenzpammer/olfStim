@@ -7,10 +7,11 @@ function success = issueLogMessage(logMessage)
 %
 % lorenzpammer 2013/03
 
-%% Get a couple of needed variables
+%% Get a couple of needed variables and packages
 
 h = appdataManager('olfStimGui','get','h');
 
+import protocolUtilities.logWindow.*
 
 %% Write the new log message to the bottom of the logWindow
 

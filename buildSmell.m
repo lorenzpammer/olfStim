@@ -7,7 +7,7 @@ function  buildSmell(instruction,trialOdor,trialNum,stimProtocol,protocolSpecifi
 %
 % Instruction:
 % - 'setUp'
-% - 'update'
+% - 'update': assumes there is a gui
 % - 'updateFields'
 %
 % stimProtocol does not have to be given as an input argument. If
@@ -162,8 +162,9 @@ smell.trial(1).stimProtocol = []; % which stimulation protocol was used for this
 smell.trial(1).time = []; % time at time of start of a new trial (not the time of actual odor presentation)
 %     smell.trial(1).interTrialInterval = 0; % First trial has a intertrial-interval of 0 seconds.
 smell.trial(1).notes = []; % Notes that are taken during the session will be saved here. Every trial the notes are extracted from the field and written into this field in form of a string.\
-smell.trial(1).flowRateMfcAir = [];
-smell.trial(1).flowRateMfcN = [];
+smell.trial(1).flowRateMfcAir = []; % Field contains the target flow rate for the air mass flow controller 
+smell.trial(1).flowRateMfcN = []; % Field contains the target flow rate for the Nitrogen mass flow controller
+smell.trial(1).log = []; % field for storing log messages
 
 % User defined times to instruct the olfactometer.
 % olfactometerInstructions structure is handled by
@@ -180,8 +181,8 @@ smell.trial(1).sessionInstructions = sessionInstructions;
 
 % Field for storing the event log from the LASOM after the execution of
 % the trial:
-smell.trial(1).lasomEventLog.flowRateMfcAir = [];
-smell.trial(1).lasomEventLog.flowRateMfcN = [];
+smell.trial(1).olfactometerEventLog.flowRateMfcAir = [];
+smell.trial(1).olfactometerEventLog.flowRateMfcN = [];
 % Field for storing the lsq file (lasom sequencer script) for each
 % trial:
 smell.trial(1).trialLsqFile = [];
@@ -206,8 +207,9 @@ h=appdataManager('olfStimGui','get','h');
 % Import all utility functions
 import protocolUtilities.*
 
-%%
-smell.version = smellVersion; % Define here which version of the smell structure was used - if anything has to change in the future downstream algorithms know what to do.
+%% Update the relevant fields for the current trial
+
+smell.version = smellVersion; % Define which version of the smell structure was used - if anything has to change in the future downstream algorithms know what to do.
 smell.trial(trialNum).odorName = []; % to set up a new struct array (1xtrialNum)
 % Find out how to extract information which function called buildSmell
 trialOdorFields = fields(trialOdor); % get name of fields in trialOdor (also present in smell
@@ -221,6 +223,11 @@ smell.trial(trialNum).stimProtocol = stimProtocol;
 smell.trial(trialNum).time = clock; % This only gives an approximate time, as the odor might be presented to the animal multiple seconds later.
 smell.trial(trialNum).protocolSpecificInfo = protocolSpecificInfo;
 smell.trial(trialNum).notes = protocolUtilities.getUserNotes(h); % extract the notes
+if trialNum > 1
+    % Extract the log messages for the last trial, because at the time of
+    % calling update smell  the current trial hasn't even started yet.
+    smell.trial(trialNum-1).log = protocolUtilities.logWindow.extract(1); 
+end
 
 % olfactometerInstructions structure is updated in the
 % olfactometerSettings function prior to calling build smell. Now write
