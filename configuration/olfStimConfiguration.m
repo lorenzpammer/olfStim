@@ -54,7 +54,17 @@ varargout = {names values used timestamps useEditField useCheckBox dependentOnSe
 end
 
 
-%%
+%% I/O
+% Timestamps, input
 
+if strmatch(requestedConfiguration,'io')
 
+    
+    label = {'waitForTrigger' 'sendTimestamp'};
+    type = {'input' 'output'};
+    used = {true false};
+    value = {1 2};
+    time = {0 0};
+    
+    varargout = {label type value used time};
 end

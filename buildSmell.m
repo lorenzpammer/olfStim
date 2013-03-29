@@ -190,7 +190,7 @@ smell.trial(1).olfactometerEventLog.flowRateMfcN = [];
 smell.trial(1).trialLsqFile = [];
 
 % Set up the structure containing information about I/O io (triggers, timestamps, etc.).
-smell.trial(1).io = ioConfiguration;
+smell.trial(1).io = ioControl.ioConfiguration;
 
 % Here any information specific for the current protocol can be dumped
 smell.trial(1).protocolSpecificInfo = [];

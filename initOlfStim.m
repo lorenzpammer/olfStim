@@ -62,7 +62,7 @@ selectedProtocol=appdataManager('olfStimGui','get','selectedProtocol');
 % appdataManager('olfStimGui','set',olfStimTestMode);
 %% Write some key variables to the gui
 % List of I/O actions:
-io = ioConfiguration();
+io = protocolUtilities.ioControl.ioConfiguration();
 appdataManager('olfStimGui','set',io)
 
 %% Execute selected protocol
