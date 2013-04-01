@@ -196,7 +196,7 @@ smell.trial(1).io = ioControl.ioConfiguration;
 smell.trial(1).protocolSpecificInfo = [];
 end
 
-function smell = updateSmellStructure(smell, trialOdor,trialNum,stimProtocol,protocolSpecificInfo,smellVersion)
+function smell = updateSmellStructure(smell,trialOdor,trialNum,stimProtocol,protocolSpecificInfo,smellVersion)
 
 global olfactometerOdors
 global olfactometerInstructions
@@ -219,7 +219,12 @@ trialOdorFields = fields(trialOdor); % get name of fields in trialOdor (also pre
 for i = 1 : length(trialOdorFields)
     smell.trial(trialNum) = setfield(smell.trial(trialNum),trialOdorFields{i},getfield(trialOdor,trialOdorFields{i}));
 end
-smell.trial(trialNum).isSequence = false;
+if length(smell.trial(trialNum).odorName) > 1
+    smell.trial(trialNum).isSequence = true;
+else
+    smell.trial(trialNum).isSequence = false;
+end
+
 smell.trial(trialNum).trialNum = trialNum;
 smell.trial(trialNum).stimProtocol = stimProtocol;
 smell.trial(trialNum).time = clock; % This only gives an approximate time, as the odor might be presented to the animal multiple seconds later.
@@ -235,6 +240,7 @@ end
 % olfactometerSettings function prior to calling build smell. Now write
 % the updated instructions into the smell structure.
 smell.trial(trialNum).olfactometerInstructions = olfactometerInstructions;
+
 
 % sessionInstructions structure is updated in the
 % sessionSettings function prior to calling build smell. Now write

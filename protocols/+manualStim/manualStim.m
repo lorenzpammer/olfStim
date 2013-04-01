@@ -115,17 +115,12 @@ for j = 1 : length(activeSlaves)
                 'String',olfactometerOdors.slave(j).sessionOdors(odorCounter).odorName,...
                 'Units','pixels','Position',pushButtonPosition,...
                 'Callback',{@triggerOdorCallback,olfactometerOdors.slave(j).sessionOdors(odorCounter),stimProtocol});
-            
         else
             h.protocolSpecificHandles.trigger(j,i) = uicontrol(h.guiHandle,'Style','pushbutton',...
                 'String','',...
-                'Units','pixels','Position',pushButtonPosition,'Callback',@triggerEmptyOdorCallback);
-            
+                'Units','pixels','Position',pushButtonPosition,'Callback',@triggerEmptyOdorCallback); 
         end
-        
-        pushButtonPosition(1) = pushButtonPosition(1)+pushButtonWidth+spacing; % redefine pushButtonPosition for next loop iteration
-        
-        
+        pushButtonPosition(1) = pushButtonPosition(1)+pushButtonWidth+spacing; % redefine pushButtonPosition for next loop iteration 
     end
     
     % Redefine position for concentration settings.
