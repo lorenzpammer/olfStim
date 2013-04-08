@@ -43,7 +43,8 @@ Param, slaveIndex, 1                         ; defines from which slave module t
 ; sequence of actions, which allows the host computer to monitor progress.
 ; ------------------------------------------------------
 ;
-SetVar, $Var1, 0                        ; 
+SetVar, $Var1, 0                        ; $Var1 indicates whether the sequencer started to execute the sequencer file
+SetVar, $Var2, 0                        ; $Var2 indicates the number of the current subtrial in a sequential trial
 ;
 ; ------------------------------------------------------
 ; Trial Sequence Definition
@@ -52,5 +53,6 @@ SetVar, $Var1, 0                        ;
 ; bof
 ; eof
 SetVar, $Var1, 0    ; Set $Var1 back to initial state indicating end of trial
+SetVar, $Var2, 0    ; Set $Var2 back to initial state indicating end of trial
 EmitStatus          ; Send the new status of $Var1 to the host
 Idle,0,0
