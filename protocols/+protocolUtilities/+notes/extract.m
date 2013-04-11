@@ -23,6 +23,8 @@ if isfield(h,'sessionNotes')
     uicontrol(h.sessionNotes.pushButton)
     notes = get(h.sessionNotes.notesFigureField,'String'); % Extract text in the notes field.
     set(h.sessionNotes.notesFigureField,'String',''); % Delete text of previous trial
+else
+    notes = [];
 end
 
 %% Send the notes to the log window in the main gui

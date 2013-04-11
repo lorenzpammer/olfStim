@@ -13,8 +13,8 @@ function smell = startTrial(trialNum, smell)
 
 %% Decide whether to output information to the command window for debugging;
 
-%debug = true;
- debug = false;
+debug = true;
+% debug = false;
 
 %% Fetch some variables from the gui appdata
 

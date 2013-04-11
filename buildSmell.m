@@ -194,6 +194,7 @@ smell.trial(1).io = ioControl.ioConfiguration;
 
 % Here any information specific for the current protocol can be dumped
 smell.trial(1).protocolSpecificInfo = [];
+
 end
 
 function smell = updateSmellStructure(smell,trialOdor,trialNum,stimProtocol,protocolSpecificInfo,smellVersion)

@@ -101,6 +101,7 @@ useEditField = [true false]; % whether or not an editing field should be added t
 useCheckBox = [false true]; % whether or not a checkbox indicating used/non-used should be added to the gui
 dependentOnSetting = {0 0}; % on which setting (written as a string) a given setting (sequence) is dependent.
 
+% Get the values from the general configurations file:
 [names, values, used, timestamps, useEditFieldUser, useCheckBoxUser, dependentOnSettingUser] = ...
     olfStimConfiguration('valves');
 

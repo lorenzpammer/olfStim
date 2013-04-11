@@ -1,5 +1,15 @@
-function io = ioConfiguration()
+function io = ioConfiguration(instruction)
+% io = ioConfiguration(instruction)
+% instruction can be:
+%   - 'default':user defaults as defined in olfStimConfiguration
+%   - 'empty': all I/O actions will be set to unused.
+%
 % lorenzpammer 2013/02
+
+%%
+if nargin < 1
+    instruction = 'default';
+end
 
 %% Example
 % io(i).label = 'nameOfIOAction';
@@ -8,11 +18,23 @@ function io = ioConfiguration()
 % io(i).time = 0;
 % io(i).used = 1;
 
-% Fetch the user's configuration settings:
-[label type value used time] = olfStimConfiguration('io');
+if strcmp(instruction,'default')
+    % Fetch the user's configuration settings:
+    [label type value used time] = olfStimConfiguration('io');
+    
+    % Create the structure
+    io = struct('label',label,'type',type,'value',value,...
+        'used',used,'time',time);
+end
 
-% Create the structure
-io = struct('label',label,'type',type,'value',value,...
-    'used',used,'time',time);
+if strcmp(instruction,'empty') 
+    % Fetch the user's configuration settings:
+    [label type value used time] = olfStimConfiguration('io');
+    
+    % Create the structure
+    io = struct('label',label,'type',type,'value',value,...
+        'used',used,'time',time);
+    [io.used] = deal(false);
+end
 
 end

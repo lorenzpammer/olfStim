@@ -17,6 +17,9 @@ if strmatch(requestedConfiguration,'valves')
 % the names defined in the cell array below. Therefore if you add a new
 % action or change the name of the action, you have to add or change the
 % name of a sequencer code snippet in the /lsq folder.
+% It is not advisable to alter the gating valve and final valve names. You
+% would have to alter the cleanOlfactometerStim.m file for the
+% olfactometerCleaning protocol to continue working.
 names = {'powerGatingValve' 'unpowerGatingValve' ,...
     'powerFinalValve' 'unpowerFinalValve' 'closeSuctionValve' 'openSuctionValve',...
     'openSniffingValve' 'closeSniffingValve' 'powerHumidityValve' 'unpowerHumidityValve',...
