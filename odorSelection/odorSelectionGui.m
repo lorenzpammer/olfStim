@@ -1,6 +1,4 @@
-function olfactometerOdors = odorSelectionGuiNew
-
-
+function olfactometerOdors = odorSelectionGui()
 
 %% Set up some default variables
 
@@ -154,7 +152,7 @@ set(handles.olfactometerOdorTableSlave(slaveNum).table, 'ColumnFormat',columnFor
     'CellEditCallback',@updateOlfactometerTable);
 tableData = cell(numberOfVialsPerSlave,4);
 for i = 1 : numberOfVialsPerSlave
-    tableData{i,1} = logical(0);
+    tableData{i,1} = false;
     tableData{i,2} = i;
     tableData{i,3} = '';
 end
@@ -268,7 +266,7 @@ set(handles.olfactometerMixtureTable.table, 'ColumnFormat',columnFormat, ...
 
 tableData = cell(50,6);
 for i = 1 : 50
-    tableData{i,1} = logical(0);
+    tableData{i,1} = false;
     tableData{i,2} = i;
 %     tableData{i,3} = '';
 end
@@ -545,6 +543,7 @@ handles = appdataManager('odorSelectionGui','get','handles');
 callingFunctionName = 'initOlfStim.m'; % Define the name of the initalizing function
 olfStimPath = which(callingFunctionName);
 olfStimPath(length(olfStimPath)-length(callingFunctionName):length(olfStimPath))=[];
+olfStimPath = [olfStimPath filesep 'User Data' filesep 'olfactometerOdors'];
 [fileName,pathName,filterIndex] = uigetfile([olfStimPath filesep '*.mat'],'Select a .mat file, specifying the odors in the olfactometer.');
 if fileName == 0
     return
