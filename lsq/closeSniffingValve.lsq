@@ -1,4 +1,4 @@
 ;
-UnGate, slaveIndex, sniffingValveIndex     ; Closes the sniffing valve. The index is set in the core lsq file
+UnGate, slaveIndex, 32           ; Closes the sniffing valve. The index is set in the core lsq file
 Output, $XLogicOut2, 0			;
 ;

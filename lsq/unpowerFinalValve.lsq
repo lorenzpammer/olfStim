@@ -1,4 +1,4 @@
 ;
-UnGate, slaveIndex, finalValveIndex	; Closes the final valve. The index is set in the core lsq file
+UnGate, slaveIndex, 31      	; Closes the final valve. The index is set in the core lsq file
 Output, $XLogicOut1, 0			;
 ;

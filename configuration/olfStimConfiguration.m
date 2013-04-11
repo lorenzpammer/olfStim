@@ -20,11 +20,15 @@ if strmatch(requestedConfiguration,'valves')
 % It is not advisable to alter the gating valve and final valve names. You
 % would have to alter the cleanOlfactometerStim.m file for the
 % olfactometerCleaning protocol to continue working.
-names = {'powerGatingValve' 'unpowerGatingValve' ,...
+actionNames = {'powerGatingValve' 'unpowerGatingValve' ,...
     'powerFinalValve' 'unpowerFinalValve' 'closeSuctionValve' 'openSuctionValve',...
     'openSniffingValve' 'closeSniffingValve' 'powerHumidityValve' 'unpowerHumidityValve',...
     'cleanNose'};
 
+% % Names of involved valve. For prettier Gui labelling. Currently not used
+% valveNames = {'gatingValve' 'gatingValve' 'finalValve' 'finalValve',...
+%     'suctionValve' 'suctionValve' 'sniffingValve' 'sniffingValve',...
+%     'humidityValve' 'humidityValve' ''};
 
 % Default time values (in seconds) for the actions defined above. The order
 % of values has to match the order of names defined above.
@@ -52,7 +56,7 @@ dependentOnSetting = {0 'powerGatingValve' 0 'powerFinalValve' 0 ...
 timestamps = [];
 
 
-varargout = {names values used timestamps useEditField useCheckBox dependentOnSetting};
+varargout = {actionNames values used timestamps useEditField useCheckBox dependentOnSetting};
 
 end
 

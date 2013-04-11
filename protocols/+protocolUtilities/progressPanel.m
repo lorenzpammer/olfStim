@@ -153,8 +153,7 @@ end
 %% Redefining axis limits
 
 if strmatch(instruction,'updateLimits')
-    
-   
+    disp('Not programmed yet.')
 end
 
 

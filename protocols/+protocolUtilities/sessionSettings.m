@@ -22,7 +22,6 @@ function h = sessionSettings(h,instruction,usedSettingNames,varargin)
 %       - 'I/O'
 %
 %
-%
 % lorenzpammer september 2012
 
 %% Check inputs
@@ -138,7 +137,6 @@ if strcmp(instruction,'setUp') || strcmp(instruction,'setUpStructure')
         end
         clear counter; clear width; clear height
         
-        
         %% Define the size of the edit field ('edit') and its descriptor ('text')
         textHeight = 30; textWidth = 70;
         editHeight = 20; editWidth = 50;
@@ -202,9 +200,7 @@ if strcmp(instruction,'setUp') || strcmp(instruction,'setUpStructure')
                 h.sessionSettings.check(activeSettingNumber) = false;
             end
             
-            
         end
-        
         
     end
 end

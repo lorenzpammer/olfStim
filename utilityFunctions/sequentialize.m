@@ -14,13 +14,13 @@ function sequentialStructure = sequentialize(cellArrayOfStructures)
 % corresponding field in the new sequential trialOdor structure
 fieldNames = fields(cellArrayOfStructures{1});
 sequentialStructure = [];
-for h = 1 : length(cellArrayOfStructures{1}) % step through every structure index
-    for i = 1 : length(fieldNames) % step through each field
-        for j = 1 : length(cellArrayOfStructures) % step through each 
-            temp{j} = getfield(cellArrayOfStructures{j}(h),fieldNames{i});
+for h = 1 : length(cellArrayOfStructures{1}) % step through every entry of the structures
+    for i = 1 : length(fieldNames) % step through each field of the structure
+        for j = 1 : length(cellArrayOfStructures) % step through each structure, which should be merged
+            temp{j} = getfield(cellArrayOfStructures{j}(h),fieldNames{i}); % Get values for field i of structure entry h of all structures
         end
         if h == 1
-            sequentialStructure = setfield(sequentialStructure,fieldNames{i},temp);
+            sequentialStructure = setfield(sequentialStructure,fieldNames{i},temp); % Write the values into new structure
         else
             if i == 1
                 sequentialStructure(h) = setfield(sequentialStructure(h-1),fieldNames{i},temp);

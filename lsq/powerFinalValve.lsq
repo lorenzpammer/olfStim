@@ -1,4 +1,4 @@
 ;
-Gate, slaveIndex, finalValveIndex	; Triggers the final valve. The index is set in the core lsq file
+Gate, slaveIndex, 31        	; Triggers the final valve. The index is set in the core lsq file
 Output, $XLogicOut1, 1			;
 ;
