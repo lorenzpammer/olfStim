@@ -17,6 +17,9 @@
 *~
 # Ignore all files ending with ".swp". Vim produces temporary ".swp" files.
 *.swp
+
+*Documentation/olfStimDesign/
+
 # Specific ignoring rules for olfStim:
 #################################
 # The trial.lsq file is updated for every trial.

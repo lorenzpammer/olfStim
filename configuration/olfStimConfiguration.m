@@ -12,11 +12,11 @@ function varargout = olfStimConfiguration(requestedConfiguration)
 % the gui for every trial).
 
 if strmatch(requestedConfiguration,'valves')
-% Each of these actions has a respective block of sequencer code in the
-% /lsq folder. These sequencer code snippets must have the same filename as
+% Each of these actions has to have a corresponding block of sequencer code in the
+% olfStim/lsq/ folder. These sequencer code snippets must have the same filename as
 % the names defined in the cell array below. Therefore if you add a new
 % action or change the name of the action, you have to add or change the
-% name of a sequencer code snippet in the /lsq folder.
+% name of a sequencer code snippet in the olfStim/lsq/ folder.
 % It is not advisable to alter the gating valve and final valve names. You
 % would have to alter the cleanOlfactometerStim.m file for the
 % olfactometerCleaning protocol to continue working.
@@ -25,10 +25,15 @@ actionNames = {'powerGatingValve' 'unpowerGatingValve' ,...
     'openSniffingValve' 'closeSniffingValve' 'powerHumidityValve' 'unpowerHumidityValve',...
     'cleanNose'};
 
-% % Names of involved valve. For prettier Gui labelling. Currently not used
+% % Names of involved valve. For prettier Gui labelling. Currently not used.
 % valveNames = {'gatingValve' 'gatingValve' 'finalValve' 'finalValve',...
 %     'suctionValve' 'suctionValve' 'sniffingValve' 'sniffingValve',...
 %     'humidityValve' 'humidityValve' ''};
+
+
+% Define default values and gui behaviors for each of the actions:
+% Each action has one entry in the variables below. The order of the entries
+% has to match the order of the actions in the actionNames variable.
 
 % Default time values (in seconds) for the actions defined above. The order
 % of values has to match the order of names defined above.
@@ -62,16 +67,29 @@ end
 
 
 %% I/O
-% Timestamps, input
+% Timestamps, triggers, etc.
+
 
 if strmatch(requestedConfiguration,'io')
 
-    
-    label = {'waitForTrigger' 'sendTimestamp'};
-    type = {'input' 'output'};
-    used = {true false};
-    value = {1 2};
-    time = {0 0};
-    
-    varargout = {label type value used time};
+% Each of these actions has to have a corresponding block of sequencer code in the
+% olfStim/lsq/io/ folder. These sequencer code snippets must have the same
+% filename as the names defined in the cell array below. Therefore if you
+% add a new action or change the name of the action, you have to add or change the
+% name of a sequencer code snippet in the olfStim/lsq/io/ folder.
+label = {'waitForTrigger' 'sendTimestamp'};
+
+% Define which type of I/O this is.
+type = {'input' 'output'};
+
+% Should the I/O action be used by default?
+used = {true false};
+
+% This is currently not used. 
+value = {1 2};
+
+% Time point after the start of the trial at which the action is triggered.
+time = {0 0};
+
+varargout = {label type value used time};
 end
