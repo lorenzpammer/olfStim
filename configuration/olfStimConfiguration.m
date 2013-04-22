@@ -1,11 +1,13 @@
 function varargout = olfStimConfiguration(requestedConfiguration)
 % varargout = olfStimConfiguration(requestedConfiguration)
 %
+% - 'odorants'
+% - 'valves'
+% - 'io'
+%
 % lorenzpammer 2013/03
 
-
 %% Valves
-%
 % Define the name of the valve actions you want to be able to use.
 % Define the default time values in seconds, when they should be triggered.
 % Define whether they should be active by default (you can change this from
@@ -69,7 +71,6 @@ end
 %% I/O
 % Timestamps, triggers, etc.
 
-
 if strmatch(requestedConfiguration,'io')
 
 % Each of these actions has to have a corresponding block of sequencer code in the
@@ -92,4 +93,22 @@ value = {1 2};
 time = {0 0};
 
 varargout = {label type value used time};
+end
+
+%% Odorants
+% Define the default values for the odorSelectionGui.
+
+if strmatch(requestedConfiguration,'odorSelectionGui')
+% The number of odor vials used in all slaves. The default value can be set here.
+numberOfVialsPerSlave = 12;
+
+% Number of slaves that should be shown in the odorSelectionGui by default.
+numberOfSlavesTables = 1;
+
+% Whether the mixture table should be shown in the odorSelectionGui by default.
+showMixtureTables = 0;
+
+varargout = {numberOfVialsPerSlave,numberOfSlavesTables,showMixtureTables};
+end
+
 end

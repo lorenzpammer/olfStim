@@ -68,7 +68,7 @@ end
 
 %% Setting up the progress panel
 % When setting up the gui the following lines are called
-if strmatch(instruction,'setUp')
+if strcmp(instruction,'setUp')
     
     % Set up the progress panel
     h.progress.panel = uipanel('Parent',h.guiHandle,'Title','Presented Odors',...
@@ -111,7 +111,7 @@ end
 % A new rectangle with the name of the odor and the concentration is
 % plotted in the presented odors figure (progressFigure).
 
-if strmatch(instruction,'update')
+if strcmp(instruction,'update')
     xPosition = trialNum-0.45;
     yPosition = 0.25;
     width=0.9;height = 0.5;
@@ -133,7 +133,7 @@ end
 
 %% Deleting progress from progress figure
 
-if strmatch(instruction,'remove')
+if strcmp(instruction,'remove')
     % Extract relevant properties 
     index = find(strcmpi('numberOfTrialsToRemove',varargin));
     if ~isempty(index)
@@ -152,7 +152,8 @@ end
 
 %% Redefining axis limits
 
-if strmatch(instruction,'updateLimits')
+if strcmp(instruction,'updateLimits')
+    dbstack
     disp('Not programmed yet.')
 end
 

@@ -2,9 +2,7 @@ function olfactometerOdors = odorSelectionGui()
 
 %% Set up some default variables
 
-numberOfVialsPerSlave = 9; % The number of odor vials loaded into each slave. The default value can be set here.
-numberOfSlavesTables = 1; % Number of slaves that should be shown by default.
-showMixtureTables = 0;
+[numberOfVialsPerSlave,numberOfSlavesTables,showMixtureTables] = olfStimConfiguration('odorSelectionGui');
 
 %% Set up main figure
 

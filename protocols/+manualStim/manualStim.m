@@ -72,6 +72,8 @@ h.protocolSpecificHandles = [];
 
 %% Set up push buttons for triggering odor presentation
 
+numberOfOdorVials = length(olfactometerOdors.sessionOdors);
+
 % 2. Buttons for triggering odor presentation
 % Define positions:
 figurePosition = get(h.guiHandle,'Position');
@@ -80,7 +82,7 @@ protocolChooserPosition = get(h.panelProtocolChooser,'Position');
 spacing = 3;
 pushButtonArea(1) =  protocolChooserPosition(1)+protocolChooserPosition(3) + 40; % X position to the right of protocol chooser panel
 pushButtonArea(3) = figurePosition(3)-pushButtonArea(1)-3; % Width of the area for the buttons
-pushButtonWidth = (pushButtonArea(3) - (8*spacing)) / 9;
+pushButtonWidth = (pushButtonArea(3) - (8*spacing)) / numberOfOdorVials;
 pushButtonHeight = 25;
 pushButtonArea(2)= position(2) - pushButtonHeight - 3;
 pushButtonArea(4)= pushButtonHeight;
@@ -107,7 +109,7 @@ for j = 1 : length(activeSlaves)
     % create the text saying which slave:
     h.staticText.slave(j) = uicontrol(h.guiHandle,'Style','text','String',['Slave ' num2str(j)],'Position',textPosition);
     usedVials = [olfactometerOdors.slave(j).sessionOdors(:).vial];
-    for i = 1 : 9 % go through every position of the olfactometer
+    for i = 1 : numberOfOdorVials % go through every position of the olfactometer
         
         if sum(ismember(usedVials,i))>0.1 % checks whether there is an odor vial in the current (i) position of the olfactometer
             odorCounter = odorCounter+1;
@@ -137,7 +139,7 @@ for j = 1 : length(activeSlaves)
     % create the text declaring the row of concentration edit fields
     h.protocolSpecificHandles.staticText.concentration(j) = uicontrol(h.guiHandle,'Style','text','String','Concentrations','Position',textPosition);
     usedVials = [olfactometerOdors.slave(j).sessionOdors(:).vial];
-    for i = 1 : 9 % go through every vial of the olfactometer
+    for i = 1 : numberOfOdorVials % go through every vial of the olfactometer
         
         if sum(ismember(usedVials,i))>0.1 % checks whether there is an odor vial in the current (i) position of the olfactometer
             odorCounter = odorCounter+1;
