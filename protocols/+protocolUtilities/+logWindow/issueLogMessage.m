@@ -15,7 +15,13 @@ end
 
 %% Get a couple of needed variables
 
-h = appdataManager('olfStimGui','get','h');
+global olfStimScriptMode
+
+if isempty(olfStimScriptMode)
+    h = appdataManager('olfStimGui','get','h');
+else % if we're in scripting mode
+    h=[];
+end
 
 
 %% Write the new log message to the bottom of the logWindow

@@ -1,0 +1,11 @@
+All globals:
+
+olfactometerOdors
+smell
+trialNum
+olfactometerInstructions
+olfStimMode
+
+in scripting mode:
+olfactometerH
+olfStimScriptMode0

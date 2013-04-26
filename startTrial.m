@@ -19,13 +19,27 @@ debug = false;
 %% Fetch some variables from the gui appdata
 
 global olfStimTestMode
+global olfStimScriptMode
+
+if isempty(olfStimScriptMode)
+    ~isempty(findobj('Tag', 'olfStim')); % See whether the olfStimGui is present (true) or not (false)
+end
 
 % Extract the gui handle structure from the appdata of the figure:
-h = appdataManager('olfStimGui','get','h');
-% Extract the lasom handle from the appdata of the figure:
-olfactometerH = appdataManager('olfStimGui','get','olfactometerH');
-% % Extract the olfStimTestMode variable
-% olfStimTestMode = appdataManager('olfStimGui','get','olfStimTestMode');
+
+if ~isempty(olfStimScriptMode)
+    h=[];
+   % In scripting mode, we'll declare olfactometerH a global variable, as
+   % we don't have the gui to add it as appdata. This is bad programming,
+   % try to find a better solution.
+   global olfactometerH
+else isempty(olfStimScriptMode)
+    h = appdataManager('olfStimGui','get','h');
+    % Extract the lasom handle from the appdata of the figure:
+    olfactometerH = appdataManager('olfStimGui','get','olfactometerH');
+    % % Extract the olfStimTestMode variable
+    % olfStimTestMode = appdataManager('olfStimGui','get','olfStimTestMode');
+end
 
 %% 
 % Check whether olfactometerH has not been released properly. If so, close it.
@@ -60,7 +74,9 @@ olfactometerH = olfactometerAccess.connect(debug);
 
 % Write the olfactometer activeX handle into the appdata of the figure:
 % make this conditional to allow SCRIPTING
-appdataManager('olfStimGui','set',olfactometerH);
+if isempty(olfStimScriptMode)
+    appdataManager('olfStimGui','set',olfactometerH);
+end
 
 %% Update smell:
 
@@ -204,7 +220,6 @@ mfcMeasureTimer = timer('ExecutionMode','fixedRate','Period',measurementInterval
 
 
 clear measurementPoints index olfactometerTimes timeOfLastAction measurementInterval
-
 
 
 %% Read status messages coming from LASOM
@@ -361,4 +376,5 @@ end
         disp(lasterror)
         stop(readLasomStatusTimer)
     end
+
 end

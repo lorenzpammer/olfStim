@@ -20,7 +20,6 @@ elseif nargin < 3 && ~strcmp('clear',instruction)
     error('Provide data, that should be written into figure component.')
 end
 
-
 %% Make sure to have the right handle
 % See if the provided first argument is a handle to a figure. If it isn't,
 % function assumes it's a tagname of a figure component.
