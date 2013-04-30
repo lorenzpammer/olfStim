@@ -108,7 +108,7 @@ if get(h.startSession,'Value') == 1 % if the startSessionButton is pressed
         trialOdor = smell.trial(trialNum);
         
         % 3. Update certain smell fields:
-        buildSmell('updateFields',[],trialNum,stimProtocol,[],...
+        buildSmell('updateFields',[],[],trialNum,stimProtocol,[],...
             'notes','stimProtocol','time','scientist','animalName','log');
         
         % 4. update the progress panel on the gui

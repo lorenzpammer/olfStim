@@ -9,7 +9,6 @@ function manualSessionProgrammingStim
 %% Set up needed variables
 
 global smell
-global olfactometerOdors
 global trialNum
 
 % Extract the gui handle structure from the appdata of the figure:
@@ -83,7 +82,7 @@ h.protocolSpecificHandles = [];
 %% Set up gui components for particular stimulation paradigm
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-numberOfOdorVials = length(olfactometerOdors.sessionOdors);
+numberOfOdorVials = length(smell.olfactometerOdors.sessionOdors);
 
 % 2. Buttons for triggering odor presentation
 % Define positions:
@@ -109,8 +108,8 @@ pushButtonPosition = [pushButtonArea(1) pushButtonArea(2) pushButtonWidth pushBu
 textPosition = [pushButtonArea(1)-40, pushButtonPosition(2)+5, 35, 15];
 
 % Find which slaves are used
-mixtures = [olfactometerOdors.sessionOdors.mixture]; % Find which session odors are mixtures
-activeSlaves = {olfactometerOdors.sessionOdors.slave}; % Find for every session odor which slaves are used
+mixtures = [smell.olfactometerOdors.sessionOdors.mixture]; % Find which session odors are mixtures
+activeSlaves = {smell.olfactometerOdors.sessionOdors.slave}; % Find for every session odor which slaves are used
 activeSlaves = cell2mat(activeSlaves(~mixtures)); % Throw away the entries for the mixtures
 activeSlaves = unique(activeSlaves); % Find all unique slaves which are used
 
@@ -119,15 +118,15 @@ for j = 1 : length(activeSlaves)
     odorCounter=0;
     % create the text saying which slave:
     h.staticText.slave(j) = uicontrol(h.guiHandle,'Style','text','String',['Slave ' num2str(j)],'Position',textPosition);
-    usedVials = [olfactometerOdors.slave(j).sessionOdors(:).vial];
+    usedVials = [smell.olfactometerOdors.slave(j).sessionOdors(:).vial];
     for i = 1 : numberOfOdorVials % go through every position of the olfactometer
         
         if sum(ismember(usedVials,i))>0.1 % checks whether there is an odor vial in the current (i) position of the olfactometer
             odorCounter = odorCounter+1;
             h.protocolSpecificHandles.trigger(j,i) = uicontrol(h.guiHandle,'Style','pushbutton',...
-                'String',olfactometerOdors.slave(j).sessionOdors(odorCounter).odorName,...
+                'String',smell.olfactometerOdors.slave(j).sessionOdors(odorCounter).odorName,...
                 'Units','pixels','Position',pushButtonPosition,...
-                'Callback',{@triggerOdorCallback,olfactometerOdors.slave(j).sessionOdors(odorCounter),stimProtocol});
+                'Callback',{@triggerOdorCallback,smell.olfactometerOdors.slave(j).sessionOdors(odorCounter),stimProtocol});
             
         else
             h.protocolSpecificHandles.trigger(j,i) = uicontrol(h.guiHandle,'Style','pushbutton',...
@@ -154,7 +153,7 @@ for j = 1 : length(activeSlaves)
     odorCounter=0;
     % create the text declaring the row of concentration edit fields
     h.protocolSpecificHandles.staticText.concentration(j) = uicontrol(h.guiHandle,'Style','text','String','Concentrations','Position',textPosition);
-    usedVials = [olfactometerOdors.slave(j).sessionOdors(:).vial];
+    usedVials = [smell.olfactometerOdors.slave(j).sessionOdors(:).vial];
     for i = 1 : numberOfOdorVials % go through every vial of the olfactometer
         
         if sum(ismember(usedVials,i))>0.1 % checks whether there is an odor vial in the current (i) position of the olfactometer
@@ -186,7 +185,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Mixtures fields
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if olfactometerOdors.mixtures.used
+if smell.olfactometerOdors.mixtures.used
     numberOfMixtures = length(find(mixtures));
     pushButtonWidth = (pushButtonArea(3) - ((numberOfMixtures-1)*spacing)) / numberOfMixtures; % Define pushbutton width depending on the number of mixtures
     h.staticText.mixture = uicontrol(h.guiHandle,'Style','text','String','Mixture','Position',textPosition);
@@ -196,9 +195,9 @@ if olfactometerOdors.mixtures.used
     for i = 1 : numberOfMixtures % go through every position of the olfactometer
         odorCounter = odorCounter+1;
         % Define name for mixture
-        a = cell(1,length(olfactometerOdors.mixtures.sessionOdors(odorCounter).odorName));
-        for k = 1 : length(olfactometerOdors.mixtures.sessionOdors(odorCounter).odorName)
-            a{k} = olfactometerOdors.mixtures.sessionOdors(odorCounter).odorName{k};
+        a = cell(1,length(smell.olfactometerOdors.mixtures.sessionOdors(odorCounter).odorName));
+        for k = 1 : length(smell.olfactometerOdors.mixtures.sessionOdors(odorCounter).odorName)
+            a{k} = smell.olfactometerOdors.mixtures.sessionOdors(odorCounter).odorName{k};
             a{k}(4:end)=[];
         end
         mixtureName = cell2mat(a);
@@ -207,7 +206,7 @@ if olfactometerOdors.mixtures.used
         h.trigger(j,i) = uicontrol(h.guiHandle,'Style','pushbutton',...
             'String',mixtureName,...
             'Units','pixels','Position',pushButtonPosition,...
-            'Callback',{@triggerOdorCallback,olfactometerOdors.mixtures.sessionOdors(odorCounter),stimProtocol});
+            'Callback',{@triggerOdorCallback,smell.olfactometerOdors.mixtures.sessionOdors(odorCounter),stimProtocol});
         
         pushButtonPosition(1) = pushButtonPosition(1)+pushButtonWidth+spacing; % redefine pushButtonPosition for next loop iteration
         
@@ -272,7 +271,7 @@ trialOdor.concentrationAtPresentation = str2num(get(h.protocolSpecificHandles.co
 sessionSettings(h,'get');
 
 % 4. update the smell structure
- buildSmell('update',trialOdor,trialNum,stimProtocol); % update smell structure
+ buildSmell('update',[],trialOdor,trialNum,stimProtocol); % update smell structure
 
 % 5. update the progress panel on the gui
  protocolUtilities.progressPanel(h,'update',trialOdor,trialNum,'Color',[0.5 0.5 0.5]); % 

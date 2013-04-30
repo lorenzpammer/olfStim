@@ -14,7 +14,6 @@ function cleanOlfactometerStim
 %% Set up needed variables
 
 global smell
-global olfactometerOdors
 global trialNum
 global olfactometerInstructions
 timeForEachVial = 1800; % time which is spent for every step of the cleaning procedure (eg pushing ethanol or blowing air) per vial in seconds.
@@ -142,7 +141,7 @@ delete(infoHandle.dynamicText); delete(infoHandle.nSlaves); delete(h.continue);
 for i = 1 : numberOfSlavesToClean
     stepIndex = 20 * (i-1) + 1; % calculates the cleaning step in which
     
-    trialOdor = olfactometerOdors.sessionOdors(1); %
+    trialOdor = smell.olfactometerOdors.sessionOdors(1); %
     
     buildSmell('update',trialOdor,stepIndex,'cleanOlfactometerStim')
     buildSmell('update',trialOdor,stepIndex+1,'cleanOlfactometerStim')

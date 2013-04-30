@@ -1,6 +1,5 @@
 All globals:
 
-olfactometerOdors
 smell
 trialNum
 olfactometerInstructions

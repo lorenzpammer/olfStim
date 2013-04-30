@@ -18,7 +18,6 @@ function initOlfStim(mode)
 %%
 
 global smell % smell is the data structure containing all information relevant to the session
-global olfactometerOdors % olfactometerOdors is a data structure, that contains information about which odors are loaded into the olfactometer
 global olfStimTestMode
 
 %% Set up relevant variables
@@ -49,8 +48,10 @@ olfactometerOdors = odorSelectionGui;
 %% Set up basic gui
 setUpMainGui;
 
+appdataManager('olfStimGui','set',olfactometerOdors);
+
 %% Set up smell structure
-buildSmell('setUp');
+buildSmell('setUp',olfactometerOdors);
 
 %% Next start the gui for controlling 
 protocolChooserSubGui;

@@ -1,4 +1,4 @@
-function  buildSmell(instruction,trialOdor,trialNum,stimProtocol,protocolSpecificInfo,varargin)
+function  buildSmell(instruction,olfactometerOdors,trialOdor,trialNum,stimProtocol,protocolSpecificInfo,varargin)
 % buildSmell(instruction,trialOdor,trialNum,stimProtocol,protocolSpecificInfo,varargin) creates or
 % updates the smell structure.
 % The smell structure contains the relevant information about every trial
@@ -57,7 +57,6 @@ function  buildSmell(instruction,trialOdor,trialNum,stimProtocol,protocolSpecifi
 % lorenzpammer 2011/09
 
 
-global olfactometerOdors
 global smell 
 global olfactometerInstructions
 
@@ -72,31 +71,32 @@ import protocolUtilities.*
 %% Check whether inputs are correct
 if nargin < 1
     error('No instruction defined.')
-elseif strcmp('setUp',instruction) && nargin < 2
+elseif strcmp('setUp',instruction) && nargin < 3
     trialOdor = [];
     trialNum = [];
-    stimProtocol = dbstack;
-    stimProtocol = stimProtocol(2).file(1:end-2); % 
+    %stimProtocol = dbstack;
+    %stimProtocol = stimProtocol(2).file(1:end-2); % 
+    stimProtocol = [];
     protocolSpecificInfo =[];
-elseif ~isempty(strmatch('update',instruction)) && nargin<2
-    error('For updating smell structure, trial odor information is necessary.')
 elseif ~isempty(strmatch('update',instruction)) && nargin<3
-    error('For updating smell structure, trial number is necessary.')
+    error('For updating smell structure, trial odor information is necessary.')
 elseif ~isempty(strmatch('update',instruction)) && nargin<4
+    error('For updating smell structure, trial number is necessary.')
+elseif ~isempty(strmatch('update',instruction)) && nargin<5
     stimProtocol = dbstack; % dbstack gives the function call stack, which function called the present function
     stimProtocol = stimProtocol(2).file(1:end-2); % 
-elseif ~isempty(strmatch('update',instruction)) && nargin<5
+elseif ~isempty(strmatch('update',instruction)) && nargin<6
     protocolSpecificInfo = []; % if no data is handed to the function for protocolSpecific Information this is set empty.
 end
 
-if nargin< 5
+if nargin < 6
     protocolSpecificInfo =[];
 end
 
 %% Set up smell structure
 
 if strcmp(instruction,'setUp')
-   smell = setUpSmellStructure(smell, stimProtocol,protocolSpecificInfo,smellVersion); 
+   smell = setUpSmellStructure(smell, olfactometerOdors, stimProtocol,protocolSpecificInfo,smellVersion); 
 end
 
 
@@ -118,9 +118,9 @@ end
 
 
 
-function smell = setUpSmellStructure(smell, stimProtocol,protocolSpecificInfo,smellVersion)
+function smell = setUpSmellStructure(smell, olfactometerOdors, stimProtocol,protocolSpecificInfo,smellVersion)
 
-global olfactometerOdors
+%global olfactometerOdors
 global olfactometerInstructions
 global olfStimTestMode
 
@@ -199,7 +199,7 @@ end
 
 function smell = updateSmellStructure(smell,trialOdor,trialNum,stimProtocol,protocolSpecificInfo,smellVersion)
 
-global olfactometerOdors
+%global olfactometerOdors
 global olfactometerInstructions
 
 % Extract the gui handle structure from the appdata of the figure:
@@ -261,7 +261,7 @@ end
 
 function smell = updateFields(smell,trialNum,stimProtocol,protocolSpecificInfo,smellVersion,fieldsToUpdate)
 
-global olfactometerOdors
+%global olfactometerOdors
 global olfactometerInstructions
 global olfStimTestMode
 

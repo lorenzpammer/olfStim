@@ -41,6 +41,6 @@ smell = protocolUtilities.removeHistoricalTrialDataFromSmell(smell);
 % This is necessary as we removed some session specific data as well. Eg
 % olfactometerOdors and session protocol
 
-smell = repopulateSmell(smell);
+protocolUtilities.repopulateSmell();
 
 end

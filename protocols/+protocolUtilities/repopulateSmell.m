@@ -30,7 +30,7 @@ global smell
 %if nargin < 1
  %   error('smell has to be provided to the function.')
 if nargin < 1
-    global olfactometerOdors;
+    olfactometerOdors = appdataManager('olfStimGui','get','olfactometerOdors');
     % Extract the gui handle structure from the appdata of the figure:
     h=appdataManager('olfStimGui','get','h');
     selectedProtocol = appdataManager('olfStimGui','get','selectedProtocol');
@@ -47,7 +47,7 @@ smell.olfactometerOdors = olfactometerOdors;
 
 % Set the maximum flow rate of the Mass flow controllers & the
 % olfactometerID
-buildSmell('updateFields',[],[],[],[],'maxFlowRateMfc','olfactometerID');
+buildSmell('updateFields',[],[],[],[],[],'maxFlowRateMfc','olfactometerID');
 
 %% Repopulate the trial structures
 
