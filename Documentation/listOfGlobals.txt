@@ -8,4 +8,4 @@ olfStimMode
 
 in scripting mode:
 olfactometerH
-olfStimScriptMode0
+olfStimScriptMode

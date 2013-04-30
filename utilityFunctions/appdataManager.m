@@ -10,7 +10,7 @@ function varargout = appdataManager(handle,instruction,varargin)
 %
 % lorenzpammer 2012/08
 
-%%
+%% Check inputs
 if nargin < 1
     error('Arguments handle, instruction, data missing.')
 elseif nargin < 2
@@ -18,6 +18,16 @@ elseif nargin < 2
     
 elseif nargin < 3 && ~strcmp('clear',instruction)
     error('Provide data, that should be written into figure component.')
+end
+
+global olfStimScriptMode
+
+%% Check if we're in scripting mode
+% If we're in scripting mode, return an empty variable
+
+if olfStimScriptMode
+   varargout = cell(1);
+   return
 end
 
 %% Make sure to have the right handle
@@ -28,7 +38,7 @@ if ~all(ishandle(handle))
     handle = findobj('Tag', handle);
     if isempty(handle)
         warning('problem - GUI gone?');
-        varargout={};
+        varargout = cell(1);
         return;
     end
 end

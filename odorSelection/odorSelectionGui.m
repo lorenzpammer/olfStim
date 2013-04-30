@@ -90,11 +90,23 @@ end
 uiwait(handles.main);
 
 %% Extract the data from the gui and 
-olfactometerOdors = extractSlaveDataFromGui();
-olfactometerOdors = extractMixtureDataFromGui([],[],olfactometerOdors);
+
+% Check whether the gui still exists. If it has been closed by the user
+% don't try to extract
+if ishandle(handles.main) % 
+    olfactometerOdors = extractSlaveDataFromGui();
+    olfactometerOdors = extractMixtureDataFromGui([],[],olfactometerOdors);
+else 
+    olfactometerOdors = [];
+end
 
 %% Close the gui
-delete(handles.main)
+
+% Check whether the gui still exists. If it has been closed by the user
+% don't try to close it again
+if ishandle(handles.main)
+    delete(handles.main)
+end
 
 end
 
@@ -320,7 +332,6 @@ appdataManager('odorSelectionGui','set',handles)
 end
 
 function olfactometerOdors = extractSlaveDataFromGui(~,~)
-
 
 handles = appdataManager('odorSelectionGui','get','handles');
 

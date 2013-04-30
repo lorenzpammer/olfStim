@@ -20,7 +20,7 @@ global olfStimScriptMode
 if isempty(olfStimScriptMode)
     h = appdataManager('olfStimGui','get','h');
 else % if we're in scripting mode
-    h=[];
+    h = [];
 end
 
 
