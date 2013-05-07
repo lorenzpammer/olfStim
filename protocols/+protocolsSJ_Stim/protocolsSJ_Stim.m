@@ -9,9 +9,9 @@ function protocolsSJ_Stim
 %% Set up needed variables
 
 global smell
-global olfactometerOdors
 global trialNum
 
+olfactometerOdors = smell.olfactometerOdors;
 % Extract the gui handle structure from the appdata of the figure:
 h=appdataManager('olfStimGui','get','h');
 
@@ -38,7 +38,7 @@ stimProtocol = 'protocolsSJ';
 h = quitSession(h); % endSession is a function in the protocolUtilities package. Sets up a functional button to end the session, save the smell structure, disconnect from LASOM etc.
 
 % 2. Notes field
-[~,h] = sessionNotes(h,'setUp'); % sessionNotes is a function in the protocolUtilities package. Sets up a panel with possibilities for note taking
+h = notes.setupGui(h); % h = notes.setupGui(h,position);: position is an optional parameter.  sessionNotes is a function in the protocolUtilities package. Sets up a panel with possibilities for note taking
 
 % % 4. Start session button % not necessary for manualStim
 % h = startSession(h,'manualSessionProgrammingStim.startSessionCallback');
@@ -130,37 +130,37 @@ newStrings = {'Gating valve'; 'Final valve';'Suction valve';'Sniffing valve';'Hu
 set(h.olfactometerSettings.text,'Parent',h.olfactometerSettings.panel,'HorizontalAlignment','left');
 set(h.olfactometerSettings.edit(h.olfactometerSettings.edit>0),'Parent',h.olfactometerSettings.panel);
 set(h.olfactometerSettings.check(h.olfactometerSettings.check>0),'Parent',h.olfactometerSettings.panel);
-for i=1:5
-    set(h.olfactometerSettings.text(2*i),'Position',[5 newSize(2)-40-i*22 80 20]);
-    set(h.olfactometerSettings.text(2*i),'String',newStrings{i});
-    set(h.olfactometerSettings.edit(2*i),'Position',[90 newSize(2)-40-i*22 40 20]);
-    set(h.olfactometerSettings.edit(2*i+1),'Position',[135 newSize(2)-40-i*22 40 20]);
-    set(h.olfactometerSettings.check(2*i),'Position',[185 newSize(2)-40-i*22 20 20]);
-    set(h.olfactometerSettings.check(2*i),'BackgroundColor',get(h.olfactometerSettings.edit(2*i),'BackgroundColor'));
-    set(h.olfactometerSettings.edit(2*i:2*i+1),'BackgroundColor','w');
-    set(h.olfactometerSettings.text(2*i+1),'Visible','off')
+for i=2:6
+    set(h.olfactometerSettings.text(2*i-1),'Position',[5 newSize(2)-40-(i-1)*22 80 20]);
+    set(h.olfactometerSettings.text(2*i-1),'String',newStrings{i-1});
+    set(h.olfactometerSettings.edit(2*i-1),'Position',[90 newSize(2)-40-(i-1)*22 40 20]);
+    set(h.olfactometerSettings.edit(2*i),'Position',[135 newSize(2)-40-(i-1)*22 40 20]);
+    set(h.olfactometerSettings.check(2*i-1),'Position',[185 newSize(2)-40-(i-1)*22 20 20]);
+    set(h.olfactometerSettings.check(2*i-1),'BackgroundColor',get(h.olfactometerSettings.edit(2*i),'BackgroundColor'));
+    set(h.olfactometerSettings.edit(2*i-1:2*i),'BackgroundColor','w');
+    set(h.olfactometerSettings.text(2*i),'Visible','off')
 end
-set(h.olfactometerSettings.text(1),'Position',[5 newSize(2)-40-(i+2)*22 80 20], 'String','MFC Flow rate');  % MFC
-set(h.olfactometerSettings.edit(1),'Position',[90 newSize(2)-40-(i+2)*22 40 20]); % MFC
-set(h.olfactometerSettings.text(12),'Position',[135 newSize(2)-40-(i+2)*22 40 20]); % Purge
-set(h.olfactometerSettings.check(12),'Position',[185 newSize(2)-40-(i+2)*22 20 20]); % Purge
-set(h.olfactometerSettings.text(13),'Position',[5 newSize(2)-40-(i+1)*22 80 20]); % Clean nose
-set(h.olfactometerSettings.edit(13),'Position',[90 newSize(2)-40-(i+1)*22 40 20]); % Clean nose
-set(h.olfactometerSettings.check(13),'Position',[185 newSize(2)-40-(i+1)*22 20 20]); % Clean nose
+set(h.olfactometerSettings.text(1),'Position',[5 newSize(2)-40-(i+1)*22 80 20], 'String','MFC Flow rate');  % MFC
+set(h.olfactometerSettings.edit(1),'Position',[90 newSize(2)-40-(i+1)*22 40 20]); % MFC
+set(h.olfactometerSettings.text(2),'Position',[135 newSize(2)-40-(i+1)*22 40 20]); % Purge
+set(h.olfactometerSettings.check(2),'Position',[185 newSize(2)-40-(i+1)*22 20 20]); % Purge
+set(h.olfactometerSettings.text(13),'Position',[5 newSize(2)-40-(i)*22 80 20]); % Clean nose
+set(h.olfactometerSettings.edit(13),'Position',[90 newSize(2)-40-(i)*22 40 20]); % Clean nose
+set(h.olfactometerSettings.check(13),'Position',[185 newSize(2)-40-(i)*22 20 20]); % Clean nose
 set(h.olfactometerSettings.check(13),'BackgroundColor',get(h.olfactometerSettings.edit(13),'BackgroundColor')); % Clean nose
 set(h.olfactometerSettings.edit([1 13]),'BackgroundColor','w');
 
 % Add "wait after" (ie inter trial interval, originally belongs to session
 % settings)
-set(h.sessionSettings.text(3), 'String', 'Wait (ISI) [s]', 'Parent',h.olfactometerSettings.panel, 'Position',  [5 newSize(2)-40-(i+3)*22 80 20],'HorizontalAlignment','left');
-set(h.sessionSettings.edit(3), 'String', '0', 'Parent',h.olfactometerSettings.panel, 'Position',  [90 newSize(2)-40-(i+3)*22 40 20]);
+set(h.sessionSettings.text(3), 'String', 'Wait (ISI) [s]', 'Parent',h.olfactometerSettings.panel, 'Position',  [5 newSize(2)-40-(i+2)*22 80 20],'HorizontalAlignment','left');
+set(h.sessionSettings.edit(3), 'String', '0', 'Parent',h.olfactometerSettings.panel, 'Position',  [90 newSize(2)-40-(i+2)*22 40 20]);
 
 % Add trigger selection
-h.olfactometerSettings.text(14) = uicontrol('Style','Text','Parent',h.olfactometerSettings.panel, 'Position',[133 newSize(2)-40-(i+3)*22 48 20], 'String','Triggered','HorizontalAlignment','left');
-h.olfactometerSettings.check(14) = uicontrol('Style','checkbox','Parent',h.olfactometerSettings.panel,'Position',[185 newSize(2)-40-(i+3)*22 20 20], 'Value',0);
+h.olfactometerSettings.text(14) = uicontrol('Style','Text','Parent',h.olfactometerSettings.panel, 'Position',[133 newSize(2)-40-(i+2)*22 48 20], 'String','Triggered','HorizontalAlignment','left');
+h.olfactometerSettings.check(14) = uicontrol('Style','checkbox','Parent',h.olfactometerSettings.panel,'Position',[185 newSize(2)-40-(i+2)*22 20 20], 'Value',0);
 
 % Trial sequence button
-set(h.olfactometerSettings.trialSeqButton,'Parent',h.olfactometerSettings.panel, 'Position',[5 newSize(2)-40-(i+4)*22 195 20]);
+set(h.olfactometerSettings.trialSeqButton,'Parent',h.olfactometerSettings.panel, 'Position',[5 newSize(2)-40-(i+3)*22 195 20]);
 
 % Add odor selection controls
 % Calculate max possible concentration for odor #1 (which will be selected
@@ -169,14 +169,14 @@ settingNames = get(h.olfactometerSettings.text,'Tag');
 settingIndex = strcmp('mfcTotalFlow',settingNames);
 totalFlow = str2double(get(h.olfactometerSettings.edit(settingIndex),'String'));
 maximumPossibleConcentration = smell.olfactometerSettings.slave(1).maxFlowRateMfcNitrogen / totalFlow * smell.olfactometerOdors.slave(1).sessionOdors(1).odorantDilution;
-h.olfactometerSettings.odorTxt = uicontrol('Style','Text','Parent',h.olfactometerSettings.panel,'Position',[5 newSize(2)-47-(i+5)*22 40 20],'String','Odor','HorizontalAlignment','left');
-h.olfactometerSettings.odorPop = uicontrol('Style','popupmenu','Parent',h.olfactometerSettings.panel, 'Position',[50 newSize(2)-45-(i+5)*22 105 20],'String',{olfactometerOdors.sessionOdors.odorName},'Callback',@checkConcentration);
-h.olfactometerSettings.odorEdt = uicontrol('Style','Edit','Parent',h.olfactometerSettings.panel, 'Position',[160 newSize(2)-47-(i+5)*22 40 20], 'String',num2str(maximumPossibleConcentration,'%6.3f'), 'BackgroundColor','w','Callback',@checkConcentration);
+h.olfactometerSettings.odorTxt = uicontrol('Style','Text','Parent',h.olfactometerSettings.panel,'Position',[5 newSize(2)-47-(i+4)*22 40 20],'String','Odor','HorizontalAlignment','left');
+h.olfactometerSettings.odorPop = uicontrol('Style','popupmenu','Parent',h.olfactometerSettings.panel, 'Position',[50 newSize(2)-45-(i+4)*22 105 20],'String',{olfactometerOdors.sessionOdors.odorName},'Callback',@checkConcentration);
+h.olfactometerSettings.odorEdt = uicontrol('Style','Edit','Parent',h.olfactometerSettings.panel, 'Position',[160 newSize(2)-47-(i+4)*22 40 20], 'String',num2str(maximumPossibleConcentration,'%6.3f'), 'BackgroundColor','w','Callback',@checkConcentration);
 
 % Add Run controls
-h.runControls.runTrialFromSettings = uicontrol('Style','Pushbutton','Parent',h.olfactometerSettings.panel, 'Position',[5 newSize(2)-50-(i+6)*22 70 20], 'String','Run trial','FontWeight','Bold','Callback',@runTrial);
-h.protocolControls.addTrial2List = uicontrol('Style','Pushbutton','Parent',h.olfactometerSettings.panel, 'Position',[77 newSize(2)-50-(i+6)*22 70 20], 'String','Create trial','FontWeight','Bold', 'Callback', @newTrialDef);
-h.protocolControls.updateCurrTrial = uicontrol('Style','Pushbutton','Parent',h.olfactometerSettings.panel, 'Position',[149 newSize(2)-50-(i+6)*22 70 20], 'String','Update trial','FontWeight','Bold','Callback',@updateTrial);
+h.runControls.runTrialFromSettings = uicontrol('Style','Pushbutton','Parent',h.olfactometerSettings.panel, 'Position',[5 newSize(2)-50-(i+5)*22 70 20], 'String','Run trial','FontWeight','Bold','Callback',@runTrial);
+h.protocolControls.addTrial2List = uicontrol('Style','Pushbutton','Parent',h.olfactometerSettings.panel, 'Position',[77 newSize(2)-50-(i+5)*22 70 20], 'String','Create trial','FontWeight','Bold', 'Callback', @newTrialDef);
+h.protocolControls.updateCurrTrial = uicontrol('Style','Pushbutton','Parent',h.olfactometerSettings.panel, 'Position',[149 newSize(2)-50-(i+5)*22 70 20], 'String','Update trial','FontWeight','Bold','Callback',@updateTrial);
 
 set([h.progress.panel h.progress.figure], 'Visible','off');
 

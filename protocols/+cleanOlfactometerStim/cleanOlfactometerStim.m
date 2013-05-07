@@ -143,8 +143,8 @@ for i = 1 : numberOfSlavesToClean
     
     trialOdor = smell.olfactometerOdors.sessionOdors(1); %
     
-    buildSmell('update',trialOdor,stepIndex,'cleanOlfactometerStim')
-    buildSmell('update',trialOdor,stepIndex+1,'cleanOlfactometerStim')
+    buildSmell('update',[],trialOdor,stepIndex,'cleanOlfactometerStim')
+    buildSmell('update',[],trialOdor,stepIndex+1,'cleanOlfactometerStim')
     
     [smell.trial(stepIndex:stepIndex+1).slave] = deal(i); % which slave
     [smell.trial(stepIndex:stepIndex+1).vial] = deal([]); % no odor vial used, because only dealing with dummy valve.
@@ -212,7 +212,7 @@ for i = 1 : length(smell.olfactometerOdors.sessionOdors) % starting at 3 because
     
     % Update the smell structure through the buildSmell function.
     % oflactometerInstructions will be added in that function
-    buildSmell('update',smell.olfactometerOdors.sessionOdors(i),stepIndex,'cleanOlfactometerStim');
+    buildSmell('update',[],smell.olfactometerOdors.sessionOdors(i),stepIndex,'cleanOlfactometerStim');
     
     smell.trial(stepIndex).concentrationAtPresentation = 1;
     smell.trial(stepIndex).flowRateMfcAir = 0; % turn off when cleaning ethanol. Results in only ethanol being p
@@ -247,7 +247,7 @@ for i = 1 : length(smell.olfactometerOdors.sessionOdors)
     
     % Update the smell structure through the buildSmell function.
     % oflactometerInstructions will be added in that function
-    buildSmell('update',smell.olfactometerOdors.sessionOdors(i),stepIndex,'cleanOlfactometerStim');
+    buildSmell('update',[],smell.olfactometerOdors.sessionOdors(i),stepIndex,'cleanOlfactometerStim');
     
     % Manually update some fields in smell
     smell.trial(stepIndex).odorName = 'Air';

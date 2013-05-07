@@ -35,7 +35,8 @@ switch selection,
         
         % Now set up a fresh smell structure.
         selectedProtocol=appdataManager('olfStimGui','get','selectedProtocol');
-        buildSmell('setUp',[],[],selectedProtocol);
+        olfactometerOdors = appdataManager('olfStimGui','get','olfactometerOdors');
+        buildSmell('setUp',olfactometerOdors,[],[],selectedProtocol);
         
         % Clear progress panel
         delete(get(h.progress.figure,'Children'))

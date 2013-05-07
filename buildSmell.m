@@ -16,6 +16,7 @@ function  buildSmell(instruction,olfactometerOdors,trialOdor,trialNum,stimProtoc
 % structure.
 % 
 % Possible fields to update in 'updateFields' option:
+%     - 'trialOdor': will update all fields from the trial odor
 %     - 'maxFlowRateMfc': no property value necessary.
 %     - 'trialNum': no propertyValue necessary.
 %     - 'stimProtocol': no propertyValue necessary.
@@ -59,6 +60,7 @@ function  buildSmell(instruction,olfactometerOdors,trialOdor,trialNum,stimProtoc
 
 global smell 
 global olfactometerInstructions
+global olfStimScriptMode
 
 smellVersion = '0.1'; % version of smell structure
 
@@ -110,7 +112,7 @@ end
 %% Update a defined set of parameters in smell.
 
 if strcmp(instruction,'updateFields')
-     smell = updateFields(smell,trialNum,stimProtocol,protocolSpecificInfo,smellVersion,varargin);
+     smell = updateFields(smell,trialOdor,trialNum,stimProtocol,protocolSpecificInfo,smellVersion,varargin);
 end
 
 
@@ -199,7 +201,6 @@ end
 
 function smell = updateSmellStructure(smell,trialOdor,trialNum,stimProtocol,protocolSpecificInfo,smellVersion)
 
-%global olfactometerOdors
 global olfactometerInstructions
 
 % Extract the gui handle structure from the appdata of the figure:
@@ -230,7 +231,12 @@ smell.trial(trialNum).trialNum = trialNum;
 smell.trial(trialNum).stimProtocol = stimProtocol;
 smell.trial(trialNum).time = clock; % This only gives an approximate time, as the odor might be presented to the animal multiple seconds later.
 smell.trial(trialNum).protocolSpecificInfo = protocolSpecificInfo;
-smell.trial(trialNum).notes = protocolUtilities.notes.extract(h); % extract the notes
+
+% Only extract notes from gui if we're not in scripting mode:
+%if isempty(olfStimScriptMode)
+    smell.trial(trialNum).notes = protocolUtilities.notes.extract(h); % extract the notes
+%end
+
 if trialNum > 1
     % Extract the log messages for the last trial, because at the time of
     % calling update smell  the current trial hasn't even started yet.
@@ -259,7 +265,7 @@ smell.trial(trialNum).io = appdataManager('olfStimGui','get','io');
 
 end
 
-function smell = updateFields(smell,trialNum,stimProtocol,protocolSpecificInfo,smellVersion,fieldsToUpdate)
+function smell = updateFields(smell,trialOdor,trialNum,stimProtocol,protocolSpecificInfo,smellVersion,fieldsToUpdate)
 
 %global olfactometerOdors
 global olfactometerInstructions
@@ -278,6 +284,16 @@ smell.version = smellVersion;
 %% Update the fields specified in varargin
 % varargin includes the information in the form
 % 'PropertyName','PropertyValue'
+
+if any(strcmpi('trialOdor',fieldsToUpdate))
+    smell.trial(trialNum).odorName = []; % to set up a new struct array (1xtrialNum)
+    % Find out how to extract information which function called buildSmell
+    trialOdorFields = fields(trialOdor); % get name of fields in trialOdor (also present in smell
+    % update first couple of fields (same as in trialOdor) with the data for the current trial.
+    for i = 1 : length(trialOdorFields)
+        smell.trial(trialNum) = setfield(smell.trial(trialNum),trialOdorFields{i},getfield(trialOdor,trialOdorFields{i}));
+    end
+end
 
 if any(strcmpi('trialNum',fieldsToUpdate))
     smell.trial(trialNum).trialNum = trialNum;
