@@ -270,6 +270,7 @@ function smell = updateFields(smell,trialOdor,trialNum,stimProtocol,protocolSpec
 %global olfactometerOdors
 global olfactometerInstructions
 global olfStimTestMode
+global olfStimScriptMode
 
 % Extract the gui handle structure from the appdata of the figure:
 h=appdataManager('olfStimGui','get','h');
@@ -389,16 +390,19 @@ if any(strcmpi('olfactometerID',fieldsToUpdate))
     end
 end
 if any(strcmpi('io',fieldsToUpdate))
-    index = find(strcmp('io',fieldsToUpdate));
-    try
-        io = fieldsToUpdate{index+1};
-        if ~isstruct(io)
-            error('jump to catch')
+    if isempty(olfStimScriptMode)
+        index = find(strcmp('io',fieldsToUpdate));
+        try
+            io = fieldsToUpdate{index+1};
+            if ~isstruct(io)
+                error('jump to catch')
+            end
+        catch
+            io = appdataManager('olfStimGui','get','io');
         end
-    catch
-        io = appdataManager('olfStimGui','get','io');
+    else
+        io = olfStimConfiguration('io','structure');
     end
-    
     smell.trial(trialNum).io = io;
 end
     

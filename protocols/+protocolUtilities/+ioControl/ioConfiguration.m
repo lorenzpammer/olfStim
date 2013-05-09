@@ -23,17 +23,12 @@ if strcmp(instruction,'default')
     [label type value used time] = olfStimConfiguration('io');
     
     % Create the structure
-    io = struct('label',label,'type',type,'value',value,...
-        'used',used,'time',time);
+    io = olfStimConfiguration('io','structure');
 end
 
 if strcmp(instruction,'empty') 
     % Fetch the user's configuration settings:
-    [label type value used time] = olfStimConfiguration('io');
-    
-    % Create the structure
-    io = struct('label',label,'type',type,'value',value,...
-        'used',used,'time',time);
+    io = olfStimConfiguration('io','structure');
     [io.used] = deal(false);
 end
 

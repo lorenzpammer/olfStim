@@ -1,4 +1,4 @@
-function varargout = olfStimConfiguration(requestedConfiguration)
+function varargout = olfStimConfiguration(requestedConfiguration,varargin)
 % varargout = olfStimConfiguration(requestedConfiguration)
 %
 % - 'odorants'
@@ -6,6 +6,11 @@ function varargout = olfStimConfiguration(requestedConfiguration)
 % - 'io'
 %
 % lorenzpammer 2013/03
+
+%% 
+if nargin < 2
+    varargin = [];
+end
 
 %% Valves
 % Define the name of the valve actions you want to be able to use.
@@ -92,7 +97,15 @@ value = {1 2};
 % Time point after the start of the trial at which the action is triggered.
 time = {0 0};
 
-varargout = {label type value used time};
+if strcmp(varargin,'structure')
+    % if user gave the string 'structure' output the I/O information as the
+    % io structure
+    io = struct('label',label,'type',type,'value',value,'used',used,'time',time);
+    varargout = {io};
+else
+    % otherwise output the individual variables
+    varargout = {label type value used time};
+end
 end
 
 %% Odorants
