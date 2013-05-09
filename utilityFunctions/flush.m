@@ -25,6 +25,7 @@ clear classes
 clear functions
 % cleavars -global
 clear global
+close all
 
 
 end

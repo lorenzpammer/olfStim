@@ -308,12 +308,13 @@ if any(strcmpi('time',fieldsToUpdate))
 end
 
 if any(strcmpi('notes',fieldsToUpdate))
+    % Extract the notes from the gui
     smell.trial(trialNum).notes = protocolUtilities.notes.extract(h); % extract the notes
 end
 
 if any(strcmpi('log',fieldsToUpdate)) && trialNum > 1
-    % Extract the log messages for the last trial, because at the time of
-    % calling update smell  the current trial hasn't even started yet.
+    % Extract the log messages from the gui for the last trial, because at
+    % the time of calling update smell  the current trial hasn't even started yet.
     smell.trial(trialNum-1).log = protocolUtilities.logWindow.extract(1); 
 end
 
@@ -344,6 +345,7 @@ if any(strcmpi('scientist',fieldsToUpdate))
     % sessionInstructions structure is updated in the
     % sessionSettings function prior to calling build smell. Now write
     % the updated instructions into the smell structure.
+
     sessionSettings(h,'get'); % Create structure and write into appdata
     % Extract the sessionInstructions structure from the appdata of the figure:
     sessionInstructions=appdataManager('olfStimGui','get','sessionInstructions');
