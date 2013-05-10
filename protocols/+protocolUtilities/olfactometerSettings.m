@@ -1,28 +1,28 @@
-function h = olfactometerSettings(h,instruction,additionalSettings,panelPosition)
-% olfactometerInstructions(instruction)
+function h = olfactometerSettings(h,instruction,panelPosition,varargin)
+% h = olfactometerSettings(h,instruction,additionalSettings,panelPosition)
 % This function is private to the protocols and adds a panel to the bottom
 % of the gui where the settings specifying the olfactometer behavior are
 % defined. The code will add x settings options to the gui, which are
 % described below.
-% instruction is either 'setUp' - when building the gui at the beginning of
-% a session this option will add the panel and all the user defineable
-% settings to the gui.
-% 'setUpStructure' - only olfactometerSettingsStructure is set up.
-% or 'get' - which is called at the beginning of every trial from the
-% stimulation protocol functions, before calling buildSmell('update') and
-% commands are sent to the LASOM. The instruction 'get' will cause the
-% function to extract all values from the user defineable settings and
-% update the global olfactometerInstructions structure. Also it will
-% check whether the times defined by the user make sense and whether the
-% MFC flow rates are below the maximum flow rate.
+% instruction is either 
+% 'setUp' - when building the gui at the beginning of
+%       a session this option will add the panel and all the user
+%       defineable settings to the gui.
+% 'setUpStructure' - only olfactometerInstructions structure is set up.
+%       or 'get' - which is called at the beginning of every trial from the
+%       stimulation protocol functions, before calling buildSmell('update')
+%       and commands are sent to the LASOM. The instruction 'get' will
+%       cause the function to extract all values from the user defineable
+%       settings and update the global olfactometerInstructions structure.
+%       Also it will check whether the times defined by the user make sense
+%       and whether the MFC flow rates are below the maximum flow rate.
+% 'get' - 
 %
-% olfactometerInstructions(instruction, additionalSettings)
-% If you want to allow the user to define further settings, you have to
-% specify a cell array of strings with the name of each new settings per
-% cell. Then add a new subfunction which can set 'setUp' or extract 'get'
-% these settings.
+% 'updateStructure' - eg. protocolUtilities.olfactometerSettings([],'updateStructure',[],'powerFinalValve', {'value' [1 3]},{'used' 1})
+%       olfactometerSettings([],'updateStructure',[],instructionNameToUpdate,{fieldName value}, {fieldName value}, instructionNameToUpdate,{fieldName value})
+%       
 %
-% olfactometerInstructions(instruction, additionalSettings, panelPosition)
+% olfactometerInstructions(h,instruction, panelPosition)
 % If you do not want to use the default position for the panel - at the
 % bottom of the gui - you can specify a position [x y width height] where
 % the panel should be placed.
@@ -31,15 +31,7 @@ function h = olfactometerSettings(h,instruction,additionalSettings,panelPosition
 % Default settings:
 %
 % MFC total flow - default 1 liter/min
-% Odor concentration settling time - default 3s
-% Dead volume purge time - default 0.25 s
-% open sniffing valve time - default 0.25 s
-% odor presentation time - default 1s
 %
-% To do:
-% - Let user define how the digital timestamps are sent from the
-% olfactometer.
-% - Let user define new valves to be used. 
 %
 % lorenzpammer 2011/09
 
@@ -60,23 +52,21 @@ end
 if nargin < 3
     additionalSettings = []; % Set additional settings to empty. Only default settings will be set up and extracted.
     
-    if strncmp(instruction, 'setUp',5) || strncmp(instruction,'get',3) || strncmp(instruction,'setUpStructure',3)
+    if strncmp(instruction, 'setUp',5) || strncmp(instruction,'get',3) || strncmp(instruction,'setUpStructure',3) || strcmp(instruction,'updateStructure')
         % Fine
     else
-        error('First input to the function must be a string "setUp", "setUpStructure" or "get". See the help.')
+        error('Second input to the function must be a string "setUp", "setUpStructure" "updateStructure" or "get". See the help.')
     end
 end
 
 if nargin < 4
-    % if additional settings are specified but not correctly, give errors.
-    if nargin > 2 && ~iscell(additionalSettings)
-        error('Third input to function, "additionalSettings" must be a cell array of strings.')
-    end
+    varargin = [];
 end
 
 
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Set up panel and all settings
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 if strcmp(instruction,'setUp') || strcmp(instruction,'setUpStructure')
     
@@ -337,19 +327,86 @@ dependentOnSetting = [dependentOnSetting dependentOnSettingUser];
         end
         
         clear names; clear index1; clear index2; clear color
-        %%
-        % If additional settings are necessary for the particular protocol
-        if ~isempty(additionalSettings)
-            for i = 1 : length(additionalSettings)
-                fh = str2func(additionalSettings(i)); % make string of selected additional Setting to function handle
-                fh(instruction,olfactometerInstructions); % evaluate function handle, i.e. call function
+        
+    end
+end
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Update olfactometerInstructions adequately
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+if strcmp(instruction,'updateStructure')
+    
+    %% Input checking
+    % Check whether fields to update are part of olfactometerInstructions,
+    % otherwise give an error
+    for i = 1: length(varargin)
+        if isstr(varargin{i})
+            instructionsToUpdate(i) = true;
+        end
+    end
+    instructionsToUpdate = find(instructionsToUpdate);
+    
+    % Check whether the instruction and fields are defined correctly by the
+    % user
+    for i = 1:length(instructionsToUpdate)
+        instructionsIndex = strcmp(varargin(instructionsToUpdate(i)),{olfactometerInstructions.name});    
+        % The instruction exists in the olfactometerInstructions
+        % structure. Everything is fine. If the user provided instruction
+        % isn't found in the olfactometerInstructions structure give an
+        % error.
+        if ~any(instructionsIndex)
+            msg = sprintf('The user provided instruction %s is not part of the olfactometerInstructions structure.',varargin{instructionsToUpdate(i)});
+            error(msg)
+        end
+        
+        % Check whether the fields of the instruction are correctly defined
+        if i == length(instructionsToUpdate)
+            fieldsToUpdate = instructionsToUpdate(i)+1 : length(varargin);
+        else
+            fieldsToUpdate = instructionsToUpdate(i)+1 : instructionsToUpdate(i+1)-1;
+        end
+        for j = 1 : length(fieldsToUpdate)
+            temp = strcmp(varargin{fieldsToUpdate(j)}{1},fields(olfactometerInstructions));
+            if ~any(temp)
+                msg = sprintf('The user provided instruction field %s is not part of the olfactometerInstructions structure.',varargin{fieldsToUpdate(j)}{1});
+            error(msg)
+            end
+        end
+    end
+    
+        
+    %% Update the olfactometerInstructions structure
+    
+    for i = 1 : length(olfactometerInstructions)
+        if any(strcmpi(olfactometerInstructions(i).name,varargin))
+            index = find(strcmpi(olfactometerInstructions(i).name,varargin)); % Find the index of the current instruction
+            for j = 1 : length(varargin)
+                temp(j) = iscell(varargin{j});
+            end
+            
+            % Extract the fields and their values of the instruction
+            nextInstructionIndex = find(temp(index+1:end)==0);
+            if isempty(nextInstructionIndex)
+                currentInstructionValues = varargin(index+1:end);
+            else
+                currentInstructionValues = varargin(index+1:index+nextInstructionIndex - 1);
+            end
+            
+            % Update the values of the fields of the olfactometer instruction
+            for j = 1 : length(currentInstructionValues)
+               olfactometerInstructions(i).(currentInstructionValues{j}{1}) = currentInstructionValues{j}{2}; 
             end
         end
     end
 end
 
-%% 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Extract instructions from the GUI
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if strncmp(instruction,'get',3)
     % Get the information in the Gui prior to sending the commands to the
     % olfactometer.
