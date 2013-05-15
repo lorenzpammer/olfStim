@@ -4,11 +4,17 @@ function flush
 %
 % lorenzpammer 2011/11
 
-%% Get the handle for the gui
-% Extract the gui handle structure from the appdata of the figure:
-h=appdataManager('olfStimGui','get','h');
+global olfStimScriptMode
 
 %%
+
+%% Get the handle for the gui
+% Extract the gui handle structure from the appdata of the figure:
+if isempty(olfStimScriptMode)
+    h=appdataManager('olfStimGui','get','h');
+end
+
+%% Clean up everything
 
 if isstruct(h)
     delete(get(h.guiHandle,'Children'))

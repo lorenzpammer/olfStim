@@ -243,16 +243,8 @@ h=appdataManager('olfStimGui','get','h');
 import protocolUtilities.*
 
 %% First save the current smell file to the temp folder in case anything happens.
-callingFunctionName = 'initOlfStim.m'; % Define the name of the initalizing function
-olfStimPath = which(callingFunctionName);
-olfStimPath(length(olfStimPath)-length(callingFunctionName):length(olfStimPath))=[];
-olfStimPath=[olfStimPath filesep 'User Data' filesep 'temp' filesep];
-clear callingFunctionName
 
-defaultTitle = [datestr(date,'yyyy.mm.dd') '_smell_temp'];
-extendedPath = [olfStimPath defaultTitle '.mat'];
-save(extendedPath,'smell')
-clear olfStimPath defaultTitle
+saveTemporarySmell(smell)
 
 %% Now extract all the information for the trial, and write it into smell
 
