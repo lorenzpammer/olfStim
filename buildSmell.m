@@ -28,11 +28,18 @@ function  buildSmell(instruction,olfactometerOdors,trialOdor,trialNum,stimProtoc
 %     - 'olfactometerInstructions': no propertyValue necessary. Will
 %        extract instructions automatically from gui.
 %     - 'protocolSpecificInfo': no propertyValue necessary.
-%     - 'interTrialInterval': propertyValue necessary. Give intertrial
-%       interval in seconds.
-%     - 'sessionInstructions'
-%     - 'scientist'
-%     - 'animalName'
+%     - 'sessionInstructions' - Is extracted from the gui. If we're in
+%       olfStimSriptMode you have to provide the sessionInstructions
+%       structure after 'sessionInstructions' option
+%     - 'scientist' - Is extracted from the gui. If we're in
+%       olfStimSriptMode you have to provide the sessionInstructions
+%       structure after 'scientist' option
+%     - 'animalName' - Is extracted from the gui. If we're in
+%       olfStimSriptMode you have to provide the animalName
+%       structure after 'sessionInstructions' option
+%     - 'interTrialInterval' - Is extracted from the gui. If we're in
+%       olfStimSriptMode you have to provide the animalName
+%       structure after 'interTrialInterval' option
 %     - 'io' : If no property value is provided, this option will pull the
 %       current io variable from the appdata.
 %
@@ -327,42 +334,63 @@ if any(strcmpi('protocolSpecificInfo',fieldsToUpdate))
     smell.trial(trialNum).protocolSpecificInfo = protocolSpecificInfo;
 end
 
-if any(strcmpi('interTrialInterval',fieldsToUpdate))
-    index = find(strcmp('interTrialInterval',varargin)); % This should give an error. Why is nothing happening?
-    value = fieldsToUpdate{index+1};
-    smell.trial(trialNum).interTrialInterval = value;
-end
-
 if any(strcmpi('sessionInstructions',fieldsToUpdate))
-    % sessionInstructions structure is updated in the
-    % sessionSettings function prior to calling build smell. Now write
-    % the updated instructions into the smell structure.
-    sessionSettings(h,'get'); % Create structure and write into appdata
-    % Extract the sessionInstructions structure from the appdata of the figure:
-    sessionInstructions=appdataManager('olfStimGui','get','sessionInstructions');
+    if ~olfStimScriptMode
+        % sessionInstructions structure is updated in the
+        % sessionSettings function prior to calling build smell. Now write
+        % the updated instructions into the smell structure.
+        sessionSettings(h,'get'); % Create structure and write into appdata
+        % Extract the sessionInstructions structure from the appdata of the figure:
+        sessionInstructions=appdataManager('olfStimGui','get','sessionInstructions');
+    else
+        index = find(strcmp('sessionInstructions',fieldsToUpdate));
+        sessionInstructions=fieldsToUpdate{index+1};
+    end
     smell.trial(trialNum).sessionInstructions = sessionInstructions;
 end
 if any(strcmpi('scientist',fieldsToUpdate))
-    % sessionInstructions structure is updated in the
-    % sessionSettings function prior to calling build smell. Now write
-    % the updated instructions into the smell structure.
-
-    sessionSettings(h,'get'); % Create structure and write into appdata
-    % Extract the sessionInstructions structure from the appdata of the figure:
-    sessionInstructions=appdataManager('olfStimGui','get','sessionInstructions');
+    if ~olfStimScriptMode
+        % sessionInstructions structure is updated in the
+        % sessionSettings function prior to calling build smell. Now write
+        % the updated instructions into the smell structure.
+        sessionSettings(h,'get'); % Create structure and write into appdata
+        % Extract the sessionInstructions structure from the appdata of the figure:
+        sessionInstructions=appdataManager('olfStimGui','get','sessionInstructions');
+    else
+        index = find(strcmp('scientist',fieldsToUpdate));
+        sessionInstructions=fieldsToUpdate{index+1};
+    end
     index = strmatch('scientist', {sessionInstructions.name});
     smell.trial(trialNum).sessionInstructions(index).value = sessionInstructions(index).value;
 end
 if any(strcmpi('animalName',fieldsToUpdate))
-    % sessionInstructions structure is updated in the
-    % sessionSettings function prior to calling build smell. Now write
-    % the updated instructions into the smell structure.
-    sessionSettings(h,'get'); % Create structure and write into appdata
-    % Extract the sessionInstructions structure from the appdata of the figure:
-    sessionInstructions=appdataManager('olfStimGui','get','sessionInstructions');
+    if ~olfStimScriptMode
+        % sessionInstructions structure is updated in the
+        % sessionSettings function prior to calling build smell. Now write
+        % the updated instructions into the smell structure.
+        sessionSettings(h,'get'); % Create structure and write into appdata
+        % Extract the sessionInstructions structure from the appdata of the figure:
+        sessionInstructions=appdataManager('olfStimGui','get','sessionInstructions');
+    else
+        index = find(strcmp('animalName',fieldsToUpdate));
+        sessionInstructions=fieldsToUpdate{index+1};
+    end
     index = strmatch('animalName', {sessionInstructions.name});
     smell.trial(trialNum).sessionInstructions(index).value = sessionInstructions(index).value;
 end
+if any(strcmpi('interTrialInterval',fieldsToUpdate))
+    if ~olfStimScriptMode
+    sessionSettings(h,'get'); % Create structure and write into appdata
+    % Extract the sessionInstructions structure from the appdata of the figure:
+    sessionInstructions=appdataManager('olfStimGui','get','sessionInstructions');
+    else
+        index = find(strcmp('animalName',fieldsToUpdate)); % This should give an error. Why is nothing happening?
+        sessionInstructions=fieldsToUpdate{index+1};
+    end
+    index = strmatch('interTrialInterval', {sessionInstructions.name});
+    smell.trial(trialNum).sessionInstructions(index).value = sessionInstructions(index).value;
+end
+
 if any(strcmpi('maxFlowRateMfc',fieldsToUpdate))
     % Get the maximum flow rate of the mass flow controllers from the olfactometer
     % If more than two MFCs are conntected, this code has to be adapted:

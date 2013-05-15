@@ -9,8 +9,8 @@ function [h, sessionInstructions] = sessionSettings(h,instruction,usedSettingNam
 %       parameters are actually part of the sessionInstructions structure,
 %       and will then update the fields. Necessary to give information on
 %       what settings to update and what fields to update in varargin. 
-%       'updateStructure' - eg. protocolUtilities.sessionSettings([],'updateStructure',[],'interTrialInterval', {'value' 15},{'used' 1})
-%       sessionSettings([],'updateStructure',[],instructionNameToUpdate,{fieldName value}, {fieldName value}, instructionNameToUpdate,{fieldName value})
+%       'updateStructure' - eg. protocolUtilities.sessionSettings([],sessionInstructions,'updateStructure',[],'interTrialInterval', {'value' 15},{'used' 1})
+%       sessionSettings([],'updateStructure',[],sessionInstructions,instructionNameToUpdate,{fieldName value}, {fieldName value}, instructionNameToUpdate,{fieldName value})
 % 'get' - which is called at the beginning of every trial from the
 %        stimulation protocol functions, before calling
 %        buildSmell('update') and commands are sent to the LASOM. The
