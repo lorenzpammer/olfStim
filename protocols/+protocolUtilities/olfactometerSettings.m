@@ -375,9 +375,10 @@ if strcmp(instruction,'updateStructure')
             error(msg)
             end
         end
+        clear temp 
     end
     
-        
+
     %% Update the olfactometerInstructions structure
     
     for i = 1 : length(olfactometerInstructions)
@@ -400,6 +401,7 @@ if strcmp(instruction,'updateStructure')
                olfactometerInstructions(i).(currentInstructionValues{j}{1}) = currentInstructionValues{j}{2}; 
             end
         end
+        clear temp;
     end
 end
 

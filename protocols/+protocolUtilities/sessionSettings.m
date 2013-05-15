@@ -1,17 +1,24 @@
-function h = sessionSettings(h,instruction,usedSettingNames,varargin)
-%  [h,sessionInstructions] = sessionSettings(h,instruction,usedSettingNames)
+function [h, sessionInstructions] = sessionSettings(h,instruction,usedSettingNames,sessionInstructions,varargin)
+%  [h, sessionInstructions] = sessionSettings(h,instruction,usedSettingNames,varargin)
 %
-% instruction is either 'setUp' - when building the gui at the beginning of
-% a session this option will all the user defineable
-% settings to the gui.
+% instruction is either 
+% 'setUp' - when building the gui at the beginning of a session this option
+%       will all the user defineable settings to the gui.
 % 'setUpStructure' - only sessionInstructions structure is set up.
-% or 'get' - which is called at the beginning of every trial from the
-% stimulation protocol functions, before calling buildSmell('update') and
-% commands are sent to the LASOM. The instruction 'get' will cause the
-% function to extract all values from the user defineable settings and give
-% them as an output in the sessionInstructions structure. Also it will
-% check whether the times defined by the user make sense and whether the
-% MFC flow rates are below the maximum flow rate.
+% 'updateStructure' - will do a couple of checks whether all provided
+%       parameters are actually part of the sessionInstructions structure,
+%       and will then update the fields. Necessary to give information on
+%       what settings to update and what fields to update in varargin. 
+%       'updateStructure' - eg. protocolUtilities.sessionSettings([],'updateStructure',[],'interTrialInterval', {'value' 15},{'used' 1})
+%       sessionSettings([],'updateStructure',[],instructionNameToUpdate,{fieldName value}, {fieldName value}, instructionNameToUpdate,{fieldName value})
+% 'get' - which is called at the beginning of every trial from the
+%        stimulation protocol functions, before calling
+%        buildSmell('update') and commands are sent to the LASOM. The
+%        instruction 'get' will cause the  function to extract all values
+%        from the user defineable settings and give them as an output in
+%        the sessionInstructions structure. Also it will check whether the
+%        times defined by the user make sense and whether the MFC flow
+%        rates are below the maximum flow rate. 
 %
 % usedSettingNames - cell array of strings with the tags of possible
 % settings.
@@ -46,7 +53,11 @@ if nargin < 3
     end
 end
 
-if nargin < 4 && strcmp(instruction, 'setUp')
+if nargin < 5
+    varargin = [];
+end
+
+if nargin < 5 && strcmp(instruction, 'setUp')
     % if additional settings are specified but not correctly, give errors.
     if ~iscell(usedSettingNames)
         error('Third input to function, "usedSettingNames" must be a cell array of strings.')
@@ -57,7 +68,7 @@ end
 
 %% Set up
 
-if strcmp(instruction,'setUp') || strcmp(instruction,'setUpStructure')
+if strcmp(instruction,'setUpStructure') || strcmp(instruction,'setUp')
     % Check if there is still a session structure available in the gui
     % appdata:
     oldSessionInstructions = appdataManager('olfStimGui','get','sessionInstructions');
@@ -85,9 +96,12 @@ if strcmp(instruction,'setUp') || strcmp(instruction,'setUpStructure')
     dependentOnSetting = {0 0 0 0}; % on which setting (written as a string) a given setting (sequence) is dependent.
     callbackFunction = {'' '' '' 'protocolUtilities.ioControl.setUpGui'};
     
-    
     clear activeSettings;
     
+    
+    
+    
+    %%
     
     if strcmp(instruction,'setUp')
         
@@ -220,6 +234,80 @@ if strcmp(instruction,'get')
 end
 
 
+
+%% Update the structure
+
+
+if strcmp(instruction,'updateStructure')
+%% Input checking
+
+if isempty(sessionInstructions)
+    [~, sessionInstructions] = protocolUtilities.sessionSettings([],'setUpStructure')
+end
+
+    % Check whether fields to update are part of olfactometerInstructions,
+    % otherwise give an error
+    for i = 1: length(varargin)
+        if isstr(varargin{i})
+            settingsToUpdate(i) = true;
+        end
+    end
+    settingsToUpdate = find(settingsToUpdate);
+    
+    % Check whether the instruction and fields are defined correctly by the
+    % user
+    for i = 1:length(settingsToUpdate)
+        instructionsIndex = strcmp(varargin(settingsToUpdate(i)),{sessionInstructions.name});    
+        % The instruction exists in the olfactometerInstructions
+        % structure. Everything is fine. If the user provided instruction
+        % isn't found in the olfactometerInstructions structure give anda
+        % error.
+        if ~any(instructionsIndex)
+            msg = sprintf('The user provided instruction %s is not part of the olfactometerInstructions structure.',varargin{settingsToUpdate(i)});
+            error(msg)
+        end
+        
+        % Check whether the fields of the instruction are correctly defined
+        if i == length(settingsToUpdate)
+            fieldsToUpdate = settingsToUpdate(i)+1 : length(varargin);
+        else
+            fieldsToUpdate = settingsToUpdate(i)+1 : settingsToUpdate(i+1)-1;
+        end
+        for j = 1 : length(fieldsToUpdate)
+            temp = strcmp(varargin{fieldsToUpdate(j)}{1},fields(sessionInstructions));
+            if ~any(temp)
+                msg = sprintf('The user provided instruction field %s is not part of the olfactometerInstructions structure.',varargin{fieldsToUpdate(j)}{1});
+            error(msg)
+            end
+        end
+    end
+
+    clear temp;
+        
+    %% Update the olfactometerInstructions structure
+    
+    for i = 1 : length(sessionInstructions)
+        if any(strcmpi(sessionInstructions(i).name,varargin))
+            index = find(strcmpi(sessionInstructions(i).name,varargin)); % Find the index of the current instruction
+            for j = 1 : length(varargin)
+                temp(j) = iscell(varargin{j});
+            end
+            
+            % Extract the fields and their values of the instruction
+            nextInstructionIndex = find(temp(index+1:end)==0);
+            if isempty(nextInstructionIndex)
+                currentInstructionValues = varargin(index+1:end);
+            else
+                currentInstructionValues = varargin(index+1:index+nextInstructionIndex - 1);
+            end
+            
+            % Update the values of the fields of the olfactometer instruction
+            for j = 1 : length(currentInstructionValues)
+               sessionInstructions(i).(currentInstructionValues{j}{1}) = currentInstructionValues{j}{2}; 
+            end
+        end
+    end
+end
 
 %% Update sessionInstructions structure in the appdata
 % Write the structure h containing all handles for the figure as appdata:

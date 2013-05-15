@@ -72,7 +72,6 @@ varargout = {actionNames values used timestamps useEditField useCheckBox depende
 
 end
 
-
 %% I/O
 % Timestamps, triggers, etc.
 
