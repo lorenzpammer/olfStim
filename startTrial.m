@@ -295,6 +295,7 @@ end
             
             stop(readLasomStatusTimer) % will execute trialStarted subfunction.
             msg = sprintf('Started to execute trial #%d.\n',trialNum);
+            buildSmell('updateFields',[],[],trialNum,[],[],'time'); % enter time of actually starting the trial into smell.
             protocolUtilities.logWindow.issueLogMessage(msg);
            
         end
