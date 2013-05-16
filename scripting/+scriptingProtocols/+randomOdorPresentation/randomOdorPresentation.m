@@ -15,10 +15,11 @@ function randomOdorPresentation(numberOfTrials,sessionInstructions)
 
 global smell
 
-%%
+%% Define the name of the scripting protocol
 tmp = dbstack;
 currentFunctionName = tmp.name;
 protocolName = ['scripting.' currentFunctionName];
+
 
 %% Start the execution of trials
 
