@@ -23,7 +23,8 @@ olfStimTestMode = true;
 %% Load odorant configuration of the olfactometer
 % In order to define which odorants are present in which dilution in which
 % vial of the olfactometer, we have to load the olfactometerOdors
-% configuration file.https://www.youtube.com/watch?feature=player_embedded&v=c5NFoNwQxxU
+% configuration file.
+%
 % To create an olfactometerOdors file, use the gui. Execute 
 % >> odorSelectionGui
 % and save your configuration.
@@ -36,10 +37,12 @@ load(path)
 clear path
 
 %% Set up the basic smell structure
+% This will create the smell structure, guaranteeing the right fields, etc.
 
 buildSmell('setUp',olfactometerOdors);
 
 %% Set up the olfactometerInstructions structure
+% 
 
 protocolUtilities.olfactometerSettings([],'setUpStructure');
 
@@ -90,6 +93,13 @@ fh = str2func([currentProtocol '.' currentProtocol]); % use the input to the fun
 fh(numberOfTrials,sessionInstructions);
 
 clear fh
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% After the end of the stimulation 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Save the resulting smell structure
 

@@ -335,7 +335,7 @@ if any(strcmpi('protocolSpecificInfo',fieldsToUpdate))
 end
 
 if any(strcmpi('sessionInstructions',fieldsToUpdate))
-    if ~olfStimScriptMode
+    if isempty(olfStimScriptMode)
         % sessionInstructions structure is updated in the
         % sessionSettings function prior to calling build smell. Now write
         % the updated instructions into the smell structure.
@@ -349,46 +349,49 @@ if any(strcmpi('sessionInstructions',fieldsToUpdate))
     smell.trial(trialNum).sessionInstructions = sessionInstructions;
 end
 if any(strcmpi('scientist',fieldsToUpdate))
-    if ~olfStimScriptMode
+    if isempty(olfStimScriptMode)
         % sessionInstructions structure is updated in the
         % sessionSettings function prior to calling build smell. Now write
         % the updated instructions into the smell structure.
         sessionSettings(h,'get'); % Create structure and write into appdata
         % Extract the sessionInstructions structure from the appdata of the figure:
         sessionInstructions=appdataManager('olfStimGui','get','sessionInstructions');
+        index = strmatch('scientist', {sessionInstructions.name});
+        smell.trial(trialNum).sessionInstructions(index).value = sessionInstructions(index).value;
     else
         index = find(strcmp('scientist',fieldsToUpdate));
-        sessionInstructions=fieldsToUpdate{index+1};
+        smell.trial(trialNum).sessionInstructions(index).value = fieldsToUpdate{index+1};
     end
-    index = strmatch('scientist', {sessionInstructions.name});
-    smell.trial(trialNum).sessionInstructions(index).value = sessionInstructions(index).value;
+    
 end
 if any(strcmpi('animalName',fieldsToUpdate))
-    if ~olfStimScriptMode
+    if isempty(olfStimScriptMode)
         % sessionInstructions structure is updated in the
         % sessionSettings function prior to calling build smell. Now write
         % the updated instructions into the smell structure.
         sessionSettings(h,'get'); % Create structure and write into appdata
         % Extract the sessionInstructions structure from the appdata of the figure:
         sessionInstructions=appdataManager('olfStimGui','get','sessionInstructions');
+        index = strmatch('animalName', {sessionInstructions.name});
+        smell.trial(trialNum).sessionInstructions(index).value = sessionInstructions(index).value;
     else
         index = find(strcmp('animalName',fieldsToUpdate));
-        sessionInstructions=fieldsToUpdate{index+1};
+        smell.trial(trialNum).sessionInstructions(index).value = fieldsToUpdate{index+1};
     end
-    index = strmatch('animalName', {sessionInstructions.name});
-    smell.trial(trialNum).sessionInstructions(index).value = sessionInstructions(index).value;
+    
 end
 if any(strcmpi('interTrialInterval',fieldsToUpdate))
     if ~olfStimScriptMode
     sessionSettings(h,'get'); % Create structure and write into appdata
     % Extract the sessionInstructions structure from the appdata of the figure:
     sessionInstructions=appdataManager('olfStimGui','get','sessionInstructions');
-    else
-        index = find(strcmp('animalName',fieldsToUpdate)); % This should give an error. Why is nothing happening?
-        sessionInstructions=fieldsToUpdate{index+1};
-    end
     index = strmatch('interTrialInterval', {sessionInstructions.name});
     smell.trial(trialNum).sessionInstructions(index).value = sessionInstructions(index).value;
+    else
+        index = find(strcmp('animalName',fieldsToUpdate)); % This should give an error. Why is nothing happening?
+        smell.trial(trialNum).sessionInstructions(index).value = fieldsToUpdate{index+1};;
+    end
+    
 end
 
 if any(strcmpi('maxFlowRateMfc',fieldsToUpdate))
