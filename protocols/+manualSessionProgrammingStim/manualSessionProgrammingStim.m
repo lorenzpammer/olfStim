@@ -84,7 +84,7 @@ h.protocolSpecificHandles = [];
 
 % Set up the push buttons for triggering odorants and the edit fields for
 % specifying the concentration of the odorant.
-h = setUpPushButtons(h,smell,stimProtocol);
+h = setUpOdorPushButtons(h,smell,stimProtocol);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Mixtures fields
