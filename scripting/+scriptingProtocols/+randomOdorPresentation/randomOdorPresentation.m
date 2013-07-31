@@ -15,8 +15,15 @@ function randomOdorPresentation(numberOfTrials,sessionInstructions)
 
 global smell
 
+%% Set variables and paths
+
+import scriptingProtocols.* % Import the scripting protocols
+import scriptingProtocols.scriptingUtilityFunctions.* % Import common utility functions for all scripting protocols
+
 %% Define the name of the scripting protocol
-% Automati
+% All scripting protocols should start have names starting with
+% 'scripting.'.
+
 tmp = dbstack;
 currentFunctionName = tmp.name;
 protocolName = ['scripting.' currentFunctionName];
@@ -31,7 +38,7 @@ for trialNum = 1 : numberOfTrials
     randomIndex = ceil(rand*length(smell.olfactometerOdors.sessionOdors));
     trialOdor = smell.olfactometerOdors.sessionOdors(randomIndex);
     
-    % Update the smell structure
+    % Update the smell structure. Instruct which fields should be updated
     buildSmell('updateFields',[],trialOdor,trialNum,protocolName,[],...
         'trialOdor','trialNum','olfactometerInstructions','sessionInstructions',sessionInstructions,...
         'stimProtocol','time','maxFlowRateMfc','olfactometerID','io');

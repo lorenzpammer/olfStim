@@ -1,7 +1,10 @@
 function olfStimScripting(currentProtocol,numberOfTrials,scientistName,animalName,interTrialInterval)
 % olfStimScripting(currentProtocol,numberOfTrials,scientistName,animalName,interTrialInterval)
 % This script sets up all necessary variables, paths, etc. to allow
-% scripting olfStim without a gui. It has be edited before executing. 
+% scripting olfStim without a gui. It has to be adapted for one's needs
+% before executing. 
+% 
+% Go through the script and change the lines marked with '% < CHANGE!'
 %
 % lorenzpammer 2013/05
 
@@ -18,7 +21,7 @@ olfStimSetPath(); % Set the paths to all necessary functions
 import scriptingProtocols.* % Import the scripting protocols
 
 olfStimScriptMode = true;
-olfStimTestMode = true;
+olfStimTestMode = true; % < CHANGE! Depending whether you want to use olfStim in test mode ('true') or control the hardware ('false')
 
 %% Load odorant configuration of the olfactometer
 % In order to define which odorants are present in which dilution in which
@@ -31,27 +34,32 @@ olfStimTestMode = true;
 
 % Set the path of the file:
 path = ('/Users/lpammer/Documents/Wissenschaft/Dissertation/Code/olfStim/User Data/olfactometerOdors/defaultOdors.mat'); % < CHANGE!
-% Load the file
+% Load the file which is the olfactometerOdors structure
 load(path)
 
 clear path
 
 %% Set up the basic smell structure
-% This will create the smell structure, guaranteeing the right fields, etc.
+% This will create the smell structure in the correct way
 
 buildSmell('setUp',olfactometerOdors);
 
 %% Set up the olfactometerInstructions structure
-% 
+% The olfactometerInstructions structure contains the instructions when to
+% open and close valves, and flow rates of the mass flow controllers.
 
 protocolUtilities.olfactometerSettings([],'setUpStructure');
 
 %% Set up the sessionsInstructions structure
+% The sessionInstructions structure contains information regarding the
+% session and the I/O instructions.
 
 [~,sessionInstructions]=protocolUtilities.sessionSettings([],'setUpStructure');
 
-%% Set up session settings
-%In case these were not provided in the inputs to the function, fall back on the defaults
+%% Populate the session settings with data
+% The content for the sessionInstructions are provided as inputs to this
+% function.
+% In case they are not provided in the inputs, fall back on the defaults:
 
 if nargin < 3
     % The name of the scientist performing the experiment
@@ -63,7 +71,7 @@ else
         'scientist',{'value' scientistName});
 end
 if nargin < 4
-    % Set the scientist's name
+    % Set the identifier of the animal
     [~,sessionInstructions]=protocolUtilities.sessionSettings([],'updateStructure',[],sessionInstructions,...
         'animalName',{'value' 'A01'}); % < CHANGE!
 else
@@ -95,8 +103,6 @@ fh(numberOfTrials,sessionInstructions);
 clear fh
 
 
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% After the end of the stimulation 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -107,7 +113,7 @@ clear fh
 directoryName = protocolUtilities.getOlfStimRootDirectory;
 directoryName = [directoryName filesep 'User Data' fileSep 'data' filesep];  % < CHANGE!
 
-% Give a  title for the file
+% Define a  title for the file
 title = [datestr(date,'yyyy.mm.dd') '_smell'];  % < CHANGE!
 fn = [directoryName title '.mat'];
 

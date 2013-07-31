@@ -1,6 +1,7 @@
 ###########################################################################
-# This is the file telling git which files to exclude. There may be more 
-# files in the subdirectories of olfStim. See http://git-scm.com/book/en/Git-Basics-Recording-Changes-to-the-Repository
+# This file instructs git which files or folders to exclude. There may be 
+# more files in the subdirectories of olfStim. 
+# See http://git-scm.com/book/en/Git-Basics-Recording-Changes-to-the-Repository
 # Some examples
 #	# a comment - this is ignored
 #	*.a       # no .a files
