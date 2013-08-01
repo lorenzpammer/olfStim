@@ -10,7 +10,8 @@ function h = setUpOdorPushButtons(h,smell,stimProtocol)
 %%
 import protocolUtilities.*
 
-%%
+%% Buttons for triggering or defining odor presentation
+
 
 % Find which slaves are used
 mixtures = [smell.olfactometerOdors.sessionOdors.mixture]; % Find which session odors are mixtures
@@ -18,7 +19,17 @@ activeSlaves = {smell.olfactometerOdors.sessionOdors.slave}; % Find for every se
 activeSlaves = cell2mat(activeSlaves(~mixtures)); % Throw away the entries for the mixtures
 activeSlaves = unique(activeSlaves); % Find all unique slaves which are used
 
-% 2. Buttons for triggering odor presentation
+
+% Depending on the number of slaves enlarge the gui
+heightOfSlaveControl = (max(activeSlaves)-1) * 53;
+guiPos = get(h.guiHandle,'Position');
+% Expand the gui:
+set(h.guiHandle,'Position',guiPos+[0 0 0 heightOfSlaveControl])
+logPos = get(h.log.panel,'Position');
+set(h.log.panel,'Position',logPos + [0 heightOfSlaveControl 0 0])
+progressPos = get(h.progress.panel,'Position');
+set(h.progress.panel,'Position',progressPos + [0 heightOfSlaveControl 0 0])
+
 % Define positions:
 figurePosition = get(h.guiHandle,'Position');
 position = get(h.progress.panel,'Position');
@@ -31,6 +42,8 @@ pushButtonPosition = [pushButtonArea(1) pushButtonArea(2) NaN pushButtonHeight];
 textPosition = [pushButtonArea(1)-40, pushButtonPosition(2)+5, 35, 15];
 
 
+clear guiPos logPos progressPos
+
 % Set up gui controls for push buttons
 for j = 1 : length(activeSlaves)
     odorIndexCurrentSlave = j == [smell.olfactometerOdors.sessionOdors.slave];
@@ -38,13 +51,7 @@ for j = 1 : length(activeSlaves)
     pushButtonArea(3) = figurePosition(3)-pushButtonArea(1)-3; % Width of the area for the buttons
     pushButtonWidth = (pushButtonArea(3) - (8*spacing)) / numberOfOdorVials;
     pushButtonArea(4)= pushButtonHeight;
-    
     pushButtonPosition(3) = pushButtonWidth;
-    %
-    %
-    % h.protocolSpecificHandles.triggerOdorPanel = uipanel('Parent',h.guiHandle,'Title','Protocol Controls',...
-    %         'FontSize',12,'TitlePosition','centertop',...
-    %         'Units','pixels','Position',panelPosition); % 'Position',[x y width height]
     
     
     odorCounter=0;
