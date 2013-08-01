@@ -82,6 +82,7 @@ h.protocolSpecificHandles = [];
 %% Set up gui components for particular stimulation paradigm
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%% Set up push buttons for triggering odor presentation
 % Set up the push buttons for triggering odorants and the edit fields for
 % specifying the concentration of the odorant.
 h = setUpOdorPushButtons(h,smell,stimProtocol);
