@@ -21,7 +21,7 @@ function odorLibrary=odorLibraryGenerator
 % For every new odor add its common name to this list
 odorNames = {'Benzyl alcohol','Butanone','Camphor','Cineole','Citral', ...
     'Eugenol','Geranyl acetate','Hexanal','1-Hexanol','2-Hexanone','Isoamyl acetate', ...
-    'Vanillin','Turtle food','Paraffin oil','Mineral oil','Ethanol', 'Water','Empty','Pyridine'}; % Cell array of strings with names of odorants in Library
+    'Vanillin','Turtle food','Paraffin oil','Mineral oil','Ethanol', 'Water','Empty','Pyridine','Blabla'}; % Cell array of strings with names of odorants in Library
 
 
 %% B) Set up the property fields of each odor
@@ -380,6 +380,21 @@ for i = 1 : length(odorLibrary)
 end
 
 
+odor = 'Blabla'; % make sure the name is the same as specified in the 'odorNames' cell array above. Required.
+for i = 1 : length(odorLibrary)
+    if strcmp(odorLibrary(i).odorName, odor) % at the respective odor write the following properties to the structure:
+        odorLibrary(i).iupacName = 'string'; % the name of the molecule following IUPAC convention as a string. Not required.
+        odorLibrary(i).CASNumber = 'string'; % the CAS registry number identifying the molecule as a string. Not required.
+        odorLibrary(i).producingCompany = 'string'; % the name of the company that produced the odorant: 'Sigma', 'Roth', etc. Not required.
+        odorLibrary(i).odorantPurity = 1; % purity of the molecule given as a fraction, usually above 0.95: 0-1. Not required.
+        odorLibrary(i).state = 'string'; % string describing whether the state of the molecule is liquid or solid: 'liquid' or 'solid'
+        odorLibrary(i).odorantDilution = 0.1; % volume fraction (v(odorant)/v(dilutive solution)) of odorant in the vial after diluting it with water or oil: 0-1. Not required. If not defined here, you have to define it in the odorSelectionGui. Required if scripting.
+        odorLibrary(i).dilutedIn = 'string'; % in which solution the odor was diluted: 'Water' 'Paraffin oil' 'Mineral oil' or [] if no dilution. Not required.
+        odorLibrary(i).concentrationAtPresentation = 0.005; % concentration as volume fraction (v/v) of saturated headspace, which is presented to the animal: 0-1. Not required.
+        odorLibrary(i).inflectionPointResponseCurve = 0.005; % concentration (v/v, of saturated head space) of presented odorant at which the response curve as measured in olfactory nerve has its inflection point. Not required.
+        odorLibrary(i).vaporPressure = [10 25]; % vapor pressure in Pascal @ 25?C: [vaporPressurePascal] degreesCelsius]. For mixtures use Raoult's law. To convert mmHg into Pascal multiply by 133.322. Not required.
+    end
+end
 
 %% Paste new odors above this end:
 end

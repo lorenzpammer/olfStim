@@ -29,14 +29,14 @@ else
     olfStimTestMode = false;
 end
 
+%% Add olfStim folders to the matlab path
+
+olfStimSetPath();
+
 %% Check whether connection can be made to the olfactometer
 if ~olfStimTestMode
     olfactometerAccess.checkConnection;
 end
-
-%% Add olfStim folders to the matlab path
-
-olfStimSetPath();
 
 %% User has to define which odors are loaded into olfactometer
 % start by opening the odorSelectionGui. User has to define which odorants
