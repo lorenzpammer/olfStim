@@ -42,6 +42,8 @@ function  buildSmell(instruction,olfactometerOdors,trialOdor,trialNum,stimProtoc
 %       structure after 'interTrialInterval' option
 %     - 'io' : If no property value is provided, this option will pull the
 %       current io variable from the appdata.
+%     - 'olfactometerID': No property value necessary, will probe
+%       olfactometer.
 %
 % NOTICE: If you want to add a new field to smell, remember to check:
 % - If the new field will be populated during a trial with information
@@ -228,7 +230,7 @@ trialOdorFields = fields(trialOdor); % get name of fields in trialOdor (also pre
 for i = 1 : length(trialOdorFields)
     smell.trial(trialNum) = setfield(smell.trial(trialNum),trialOdorFields{i},getfield(trialOdor,trialOdorFields{i}));
 end
-if length(smell.trial(trialNum).odorName) > 1
+if iscell(smell.trial(trialNum).odorName) && length(smell.trial(trialNum).odorName) > 1
     smell.trial(trialNum).isSequence = true;
 else
     smell.trial(trialNum).isSequence = false;

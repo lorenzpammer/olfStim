@@ -25,16 +25,19 @@ olfStimTestMode = true; % < CHANGE! Depending whether you want to use olfStim in
 
 %% Load odorant configuration of the olfactometer
 % In order to define which odorants are present in which dilution in which
-% vial of the olfactometer, we have to load the olfactometerOdors
-% configuration file.
+% vial of the olfactometer, we have to first create and then load the
+% olfactometerOdors configuration file.
 %
-% To create an olfactometerOdors file, use the gui. Execute 
+% To create an olfactometerOdors file, use the gui. Execute the two
+% commands:
+% >> olfStimSetPath
 % >> odorSelectionGui
-% and save your configuration.
+% and save your configuration to a mat file.
 
-% Set the path of the file:
-path = ('/Users/lpammer/Documents/Wissenschaft/Dissertation/Code/olfStim/User Data/olfactometerOdors/defaultOdors.mat'); % < CHANGE!
-% Load the file which is the olfactometerOdors structure
+% Now the path to the file you created:
+directoryName = protocolUtilities.getOlfStimRootDirectory;
+path = ([directoryName '/User Data/olfactometerOdors/defaultOdors.mat']); % < CHANGE!
+% Load the file containing the olfactometerOdors structure
 load(path)
 
 clear path
@@ -58,34 +61,38 @@ protocolUtilities.olfactometerSettings([],'setUpStructure');
 
 %% Populate the session settings with data
 % The content for the sessionInstructions are provided as inputs to this
-% function.
+% script.
 % In case they are not provided in the inputs, fall back on the defaults:
 
 if nargin < 3
-    % The name of the scientist performing the experiment
+    % If not provided as input, default to the name of the scientist
+    % performing the experiment provided here:
     [~,sessionInstructions]=protocolUtilities.sessionSettings([],'updateStructure',[],sessionInstructions,...
-        'scientist',{'value' 'LP'}); % < CHANGE!
+        'scientist',{'value' 'GreatScientist'}); % < CHANGE!
 else
-    % The name of the scientist performing the experiment
+    % If provided as input to this script use the name of the scientist
+    % performing the experiment:
     [~,sessionInstructions]=protocolUtilities.sessionSettings([],'updateStructure',[],sessionInstructions,...
         'scientist',{'value' scientistName});
 end
 if nargin < 4
-    % Set the identifier of the animal
+    % If not provided as input, default to the identifier of the animal
+    % name provided here:
     [~,sessionInstructions]=protocolUtilities.sessionSettings([],'updateStructure',[],sessionInstructions,...
-        'animalName',{'value' 'A01'}); % < CHANGE!
+        'animalName',{'value' 'Undefined'}); % < CHANGE!
 else
-    % Set the scientist's name
+    % If provided as input to this script, set the identifier of the animal
     [~,sessionInstructions]=protocolUtilities.sessionSettings([],'updateStructure',[],sessionInstructions,...
         'animalName',{'value' animalName});
 end
 
 if nargin < 5
-    % Set the intertrial interval
+    % If not provided as input, default to the intertrial interval provided
+    % here: 
     [~,sessionInstructions]=protocolUtilities.sessionSettings([],'updateStructure',[],sessionInstructions,...
         'interTrialInterval', {'value' 5},{'used' 1}); % < CHANGE!
 else
-    % Set the intertrial interval
+    % If provided as input to this script, set the intertrial interval:
     [~,sessionInstructions]=protocolUtilities.sessionSettings([],'updateStructure',[],sessionInstructions,...
         'interTrialInterval', {'value' interTrialInterval},{'used' 1});
 end
@@ -95,7 +102,6 @@ end
 
 % Create function handle to the protocol
 fh = str2func([currentProtocol '.' currentProtocol]); % use the input to the function
-% fh = str2func('randomOdorPresentation'); % or just define the name of the scripting protocol  < CHANGE!
 
 % Execute the scripting protocol
 fh(numberOfTrials,sessionInstructions);
@@ -108,10 +114,14 @@ clear fh
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Save the resulting smell structure
+% By default the smell structure will be saved in:
+% olfStim/UserData/data/Today'sDate_smell.mat
+% If you want to save it to a different path and/or different filename
+% change the marked lines in this section.
 
 % Define the path to the directory where you want to save smell to
 directoryName = protocolUtilities.getOlfStimRootDirectory;
-directoryName = [directoryName filesep 'User Data' fileSep 'data' filesep];  % < CHANGE!
+directoryName = [directoryName filesep 'User Data' filesep 'data' filesep];  % < CHANGE!
 
 % Define a  title for the file
 title = [datestr(date,'yyyy.mm.dd') '_smell'];  % < CHANGE!

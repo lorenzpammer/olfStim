@@ -28,7 +28,7 @@ end
 
 %% Connect to Lasom and write LASOM handle into appdata
 
-olfactometerH = actxcontrol('LASOMX.LASOMXCtrl.1');
+olfactometerH = actxcontrol('LASOMX.LASOMXCtrl.1'); % Set up the activeX connetction to the olfactometer
 success = invoke(olfactometerH, 'DevOpen', 0, 0); % invoke(olfactometerH, 'DevOpen',???, show/notShow the debugWindow)
 if success ~= 0
     if debug

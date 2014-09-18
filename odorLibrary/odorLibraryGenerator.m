@@ -29,7 +29,8 @@ odorNames = {'Benzyl alcohol','Butanone','Camphor','Cineole','Citral', ...
 
 odorLibrary(1:length(odorNames)) = struct('odorName',[],'iupacName',[],'CASNumber',[],...
     'producingCompany',[], 'odorantPurity',[], 'state', [], 'odorantDilution', 0.1,...
-    'dilutedIn', [], 'concentrationAtPresentation', 0.005, 'inflectionPointResponseCurve',[]); % each property to characterize the odorant is added as a field.
+    'dilutedIn', [], 'concentrationAtPresentation', 0.005, 'inflectionPointResponseCurve',[], ...
+    'vaporPressure', []); % each property to characterize the odorant is added as a field.
 
 for i = 1 : length(odorNames)
     odorLibrary(i).odorName = odorNames{i}; % for every odor (odorLibrary(1:n(odors)) its name as specified in 'odorNames' is written into the odor specific structure
@@ -265,7 +266,7 @@ end
 odor = 'Turtle food';
 for i = 1 : length(odorLibrary)
     if strcmp(odorLibrary(i).odorName, odor) % at the respective odor write the following properties to the structure:
-        odorLibrary(i).iupacName = 'Schildkrötensticks Color'; % the name of the molecule following IUPAC convention as a string
+        odorLibrary(i).iupacName = 'Schildkr?tensticks Color'; % the name of the molecule following IUPAC convention as a string
         odorLibrary(i).CASNumber = ''; % the CAS registry number identifying the molecule as a string
         odorLibrary(i).producingCompany = 'MS-Tierbedarf'; % the name of the company that produced the odorant: 'Sigma', 'Roth', etc.
         odorLibrary(i).odorantPurity = 1; % purity of the molecule given as a fraction, usually above 0.95: 0-1

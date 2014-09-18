@@ -1,9 +1,12 @@
-; This is the core program for the LASOM2 controlled Olfactometer
-; This is the same for all subsequently assembled on top of the lines
-; of this file.
+; This is the core of the script sent to the LASOM2 sequencer for every trial.
+; It defines parameters such as which valves are connected to which 
+; connector on the LASOM board, and some hard coded digital triggers.
+; For every trial the section "Trial Sequence Definition" will get filled 
+; with the specific sequence and timing of all olfactometer events such as
+; valve opening times, behaviors to incoming triggers, outgoing triggers, etc.
 ;
 ; lorenzpammer October, 18th 2011
-;
+; 
 ;
 ; ------------------------------------------------------
 ; Trial Parameters

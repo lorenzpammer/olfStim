@@ -16,9 +16,12 @@ function initOlfStim(mode)
 %
 % lorenzpammer 2011/07
 %%
+% evalin('base','clear')
 
 global smell % smell is the data structure containing all information relevant to the session
 global olfStimTestMode
+
+smell = [];
 
 %% Set up relevant variables
 
