@@ -1,0 +1,4 @@
+;
+Odor, slaveIndex, odorValveIndex		; Odor will open the specified two odor valves and will automatically trigger the dummy vial valves and thereby close the two dummy valves.
+Output, $XLogicOut4, 1			;
+;

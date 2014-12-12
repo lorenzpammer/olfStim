@@ -1,0 +1,4 @@
+;
+UnGate, slaveIndex, 31      	; Closes the final valve.
+Output, $XLogicOut1, 0			;
+;

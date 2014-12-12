@@ -1,0 +1,4 @@
+;
+Gate, slaveIndex, 32            ; Opens the sniffing valve (connected to connector 32). The index is set in the core lsq file
+Output, $XLogicOut2, 1			;
+;

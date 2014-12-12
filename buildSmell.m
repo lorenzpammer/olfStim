@@ -196,9 +196,9 @@ smell.trial(1).sessionInstructions = sessionInstructions;
 % the trial:
 smell.trial(1).olfactometerEventLog.flowRateMfcAir = [];
 smell.trial(1).olfactometerEventLog.flowRateMfcN = [];
-% Field for storing the lsq file (lasom sequencer script) for each
+% Field for storing the osq file (olfactometer sequencer script) for each
 % trial:
-smell.trial(1).trialLsqFile = [];
+smell.trial(1).trialOsqFile = [];
 
 % Set up the structure containing information about I/O io (triggers, timestamps, etc.).
 smell.trial(1).io = ioControl.ioConfiguration;

@@ -50,23 +50,16 @@ if iscom(olfactometerH)
 end
 clear olfactometerH;
 
-%% Build the lsq file for the current trial
-% buildTrialLsq.m will create an lsq file taking into account the
+%% Build the osq file for the current trial
+% buildTrialOsq.m will create an osq file taking into account the
 % olfactometerInstructions for the current trial.
-trialLsq = buildTrialLsq(trialNum,smell);
+trialOsq = buildTrialOsq(trialNum,smell);
 
-% Add the lsq file for the current trial into the smell structure:
-smell.trial(trialNum).trialLsqFile = trialLsq;
-
-% callingFunctionName = 'startTrial.m'; % Define the name of the initalizing function
-% lsqPath = which(callingFunctionName);
-% lsqPath(length(lsqPath)-length(callingFunctionName):length(lsqPath))=[];
-% lsqPath=[lsqPath filesep 'lsq' filesep];
-% clear callingFunctionName
-% trialLsq = fileread([lsqPath 'test.lsq']);
+% Add the osq file for the current trial into the smell structure:
+smell.trial(trialNum).trialOsqFile = trialOsq;
 
 if debug
-    disp(trialLsq)
+    disp(trialOsq)
 end
 
 %% Connect to LASOM and set it up
@@ -85,18 +78,18 @@ if trialNum == 1 && ~olfStimTestMode
     smell.olfactometerSettings.olfactometerID = olfactometerAccess.getID(debug,olfactometerH);
 end
 
-%% Send lsq file of the current trial to the LASOM
+%% Send osq file of the current trial to the LASOM
 
 callingFunctionName = 'startTrial.m'; % Define the name of the initalizing function
-lsqPath = which(callingFunctionName);
-lsqPath(length(lsqPath)-length(callingFunctionName):length(lsqPath))=[];
+osqPath = which(callingFunctionName);
+osqPath(length(osqPath)-length(callingFunctionName):length(osqPath))=[];
 dd = filesep();
-lsqPath=[lsqPath dd 'lsq' dd];
+osqPath=[osqPath dd 'olfactometerUtilies/osq' dd];
 clear callingFunctionName
-pathTrialLsq = [lsqPath 'trial.lsq'];
+pathTrialOsq = [osqPath 'trial.osq'];
 
 % Clear old sequences, send new one to olfactometer and compile it.
-olfactometerAccess.sendSequence(debug,olfactometerH,pathTrialLsq);
+olfactometerAccess.sendSequence(debug,olfactometerH,pathTrialOsq);
 
 %% Set MFC flow rates
 
@@ -223,7 +216,7 @@ clear measurementPoints index olfactometerTimes timeOfLastAction measurementInte
 
 
 %% Read status messages coming from LASOM
-% Sequencer file (lsq) ends with the command 'EmitStatus' this results in
+% Sequencer file (osq) ends with the command 'EmitStatus' this results in
 % the sequencer queuing a status message to the USB host. Here the function
 % waits until receiving that message. Then continue.
 

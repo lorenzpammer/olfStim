@@ -1,0 +1,11 @@
+For every new protocol you want to add, do the following:
+1. Create a new folder in +scriptingProtocols and name it starting with a ‘+’ followed by the title of your protocol. Ie if your stimulation protocol is called “fineFragrance” add a folder called “+fineFragrance” 
+2. In this newly created folder add a matlab function with the name of your protocol. Following the example above the function would be called “fineFragrance.m” 
+
+In every protocol define the trial number with the variable trialNum. First trial = 1.
+
+In every new trial you have to call buildSmell either updating the entire smell structure (buildSmell(’update’,vars)) or defined fields (buildSmell(‘updateFields’,vars)). This will update the smell structure.
+
+Have a look at one of the existing scripting protocols such as ‘randomOdorPresentation’ or ‘presentPredefinedOdorList’.
+
+For details see the documentation in olfStim/Documentation/

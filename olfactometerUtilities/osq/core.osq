@@ -1,0 +1,56 @@
+; This is the core of the script sent to the LASOM2 sequencer for every trial.
+; It defines parameters such as which valves are connected to which 
+; connector on the LASOM board, and some hard coded digital triggers.
+; For every trial the section "Trial Sequence Definition" will get filled 
+; with the specific sequence and timing of all olfactometer events such as
+; valve opening times, behaviors to incoming triggers, outgoing triggers, etc.
+;
+; lorenzpammer October, 18th 2011
+; 
+;
+; ------------------------------------------------------
+; Trial Parameters
+; These parameter definitions provide default values.
+; They are usually overridden with external definitions.
+; ------------------------------------------------------
+;
+Param, odorValveIndex, 1 		; odorValveIndex specifies two gating odor valves to be opened (N & air stream). Specified for each valve from host computer. range 1:9
+Param, numberComponents, 1     ; number of components in the presented odorant. If only a single odor then equals 1.
+Param, trialNum, 1		; Number of the current trial
+Param, startTrialTrigger, $DigIn1 		; defines line which when high, will start the trial
+;
+; ------------------------------------------------------
+; Session Parameters
+; These parameter definitions provide default values.
+; They are usually overridden at the start of a session.
+; ------------------------------------------------------
+;
+Param, debug, 0				; in the debug mode the program will output several control signals.
+;
+; ------------------------------------------------------
+; Configuration Parameters
+; These parameter definitions relate to physical configuration.
+; They are usually not overridden.
+; ------------------------------------------------------
+;
+Param, slaveIndex, 1                         ; defines from which slave module the valves are driven
+;
+; ------------------------------------------------------
+; Setup Variables
+; These variables are set to a specific value and changed during the
+; sequence of actions, which allows the host computer to monitor progress.
+; ------------------------------------------------------
+;
+SetVar, $Var1, 0                        ; $Var1 indicates whether the sequencer started to execute the sequencer file
+SetVar, $Var2, 0                        ; $Var2 indicates the number of the current subtrial in a sequential trial
+;
+; ------------------------------------------------------
+; Trial Sequence Definition
+; ------------------------------------------------------
+;
+; bof
+; eof
+SetVar, $Var1, 0    ; Set $Var1 back to initial state indicating end of trial
+SetVar, $Var2, 0    ; Set $Var2 back to initial state indicating end of trial
+EmitStatus          ; Send the new status of $Var1 to the host
+Idle,0,0

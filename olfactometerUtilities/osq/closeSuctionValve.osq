@@ -1,0 +1,4 @@
+;
+gate, slaveIndex, 28     ; Closes the suction valve. The index is set in the core lsq file
+Output, $XLogicOut3, 1			;
+;

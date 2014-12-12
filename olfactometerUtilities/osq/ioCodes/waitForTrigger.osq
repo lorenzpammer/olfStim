@@ -1,0 +1,8 @@
+; 
+WhileAlways
+IfIn, $DigIn1, @startTrial ; Check whether the input line $DigIn1 is high. If so end the loop and jump to the label @startTrial
+EndWhile
+;
+label, @startTrial
+; bof
+;
