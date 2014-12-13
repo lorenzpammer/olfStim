@@ -1,3 +1,0 @@
-;
-Gate, slaveIndex, 27           	; Opens the humidity valve. The index is set in the core lsq file
-;

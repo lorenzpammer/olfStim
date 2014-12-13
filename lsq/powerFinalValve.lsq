@@ -1,4 +1,0 @@
-;
-Gate, slaveIndex, 31        	; Triggers the final valve.
-Output, $XLogicOut1, 1			;
-;

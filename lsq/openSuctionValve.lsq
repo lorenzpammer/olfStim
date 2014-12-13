@@ -1,4 +1,0 @@
-;
-Ungate, slaveIndex, 28          ; Opens the suction valve. The index is set in the core lsq file
-Output, $XLogicOut3, 0			;
-;
