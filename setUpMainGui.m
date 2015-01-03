@@ -32,7 +32,7 @@ function myCloseFcn(~,~)
       'Yes','No','Yes'); 
    switch selection, 
       case 'Yes',
-         flush
+         olfStimFlush
       case 'No'
       return 
    end

@@ -134,6 +134,6 @@ clear directoryName title fn
 
 %% Clean up everything
 
-flush
+olfStimFlush
 
 end

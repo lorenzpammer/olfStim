@@ -44,7 +44,7 @@ if ischar(filename) && ischar(pathname) % only if filename and path specified
     extendedPath = [pathname filename];
     save(extendedPath,'smell')
     
-    flush
+    olfStimFlush
 else
     disp('To save the session data please select a filename and path.')
 end

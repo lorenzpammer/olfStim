@@ -1,5 +1,5 @@
-function flush
-% Typing flush in the command window clears all data from the olfStim
+function olfStimFlush
+% Typing olfStimFlush in the command window clears all data from the olfStim
 % paradigm.
 %
 % lorenzpammer 2011/11
