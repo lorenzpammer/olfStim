@@ -1,0 +1,19 @@
+###########################################################################
+# This file instructs git which files or folders to exclude. There may be 
+# more files in the subdirectories of olfStim. 
+# See http://git-scm.com/book/en/Git-Basics-Recording-Changes-to-the-Repository
+# Some examples
+#	# a comment - this is ignored
+#	*.a       # no .a files
+#	!lib.a    # but do track lib.a, even though you're ignoring .a files above
+#	/TODO     # only ignore the root TODO file, not subdir/TODO
+#	build/    # ignore all files in the build/ directory
+#	doc/*.txt # ignore doc/notes.txt, but not doc/server/arch.txt
+###########################################################################
+# Ignore all files
+*
+
+# Except the two default config files (and the gitignore itself)
+!.gitignore
+!olfStimConfiguration_Default.m
+!olfStimConfiguration.m

@@ -41,6 +41,9 @@ if ~olfStimTestMode
     olfactometerAccess.checkConnection;
 end
 
+%% Decide which configuration file to use
+olfStimChooseConfigFile;
+
 %% User has to define which odors are loaded into olfactometer
 % start by opening the odorSelectionGui. User has to define which odorants
 % are loaded in which concentration to which vial and which odors he want
@@ -48,7 +51,7 @@ end
 
 olfactometerOdors = odorSelectionGui;
 
-%% Set up basic gui
+%% Set up the basic gui
 setUpMainGui;
 
 appdataManager('olfStimGui','set',olfactometerOdors);

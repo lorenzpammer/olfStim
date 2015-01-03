@@ -84,7 +84,7 @@ callingFunctionName = 'olfStimStartTrial.m'; % Define the name of the initalizin
 osqPath = which(callingFunctionName);
 osqPath(length(osqPath)-length(callingFunctionName):length(osqPath))=[];
 dd = filesep();
-osqPath=[osqPath dd 'olfactometerUtilies/osq' dd];
+osqPath=[osqPath dd 'olfactometerUtilies' dd 'osq' dd];
 clear callingFunctionName
 pathTrialOsq = [osqPath 'trial.osq'];
 
