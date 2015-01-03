@@ -11,7 +11,7 @@ function trialOsq = buildTrialOsq(trialNum,smell)
 % sequencer file for the current trial using instructions from the smell
 % structure.
 %
-% This function is called from startTrial.m
+% This function is called from olfStimStartTrial.m
 %
 % TO DO:
 % - Fix how the digital outputs are triggered on LASOM. For now I hacked
@@ -22,10 +22,10 @@ function trialOsq = buildTrialOsq(trialNum,smell)
 
 %% Build the osq file for this trial
 
-callingFunctionName = 'startTrial.m'; % Define the name of the initalizing function
+callingFunctionName = 'olfStimStartTrial.m'; % Define the name of the initalizing function
 osqPath = which(callingFunctionName);
 osqPath(length(osqPath)-length(callingFunctionName):length(osqPath))=[];
-osqPath=[osqPath filesep 'olfactometerUtilities/osq' filesep];
+osqPath=[osqPath filesep 'olfactometerUtilities' filesep 'osq' filesep];
 ioOsqPath=[osqPath filesep 'ioCodes' filesep];
 clear callingFunctionName
 

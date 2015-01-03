@@ -117,7 +117,7 @@ if get(h.startSession,'Value') == 1 % if the startSessionButton is pressed
         % 5. start the new trial
         %   This will build the lsq file for the current trial, send the
         %   instructions to the olfactometer and trigger the trial.
-        smell = startTrial(trialNum, smell);
+        smell = olfStimStartTrial(trialNum, smell);
         
         % % Wait for a time period, defined in interTrialInterval until
         % doing the next loop iteration.

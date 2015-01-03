@@ -1,5 +1,5 @@
-function smell = startTrial(trialNum, smell)
-% smell = startTrial(trialNum, smell)
+function smell = olfStimStartTrial(trialNum, smell)
+% smell = olfStimStartTrial(trialNum, smell)
 % This function assumes all information for the current trial are present
 % in smell and that these values are correct. From here on no more checking
 % whether numbers make sense or not. Will just result in errors or
@@ -80,7 +80,7 @@ end
 
 %% Send osq file of the current trial to the LASOM
 
-callingFunctionName = 'startTrial.m'; % Define the name of the initalizing function
+callingFunctionName = 'olfStimStartTrial.m'; % Define the name of the initalizing function
 osqPath = which(callingFunctionName);
 osqPath(length(osqPath)-length(callingFunctionName):length(osqPath))=[];
 dd = filesep();

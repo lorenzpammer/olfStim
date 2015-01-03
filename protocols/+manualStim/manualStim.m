@@ -34,32 +34,32 @@ stimProtocol = 'manualStim';
 % placement of the components is relative to other components.
 
 
-% 3. End session button
+% 1. End session button
 h = quitSession(h); % endSession is a function in the protocolUtilities package. Sets up a functional button to end the session, save the smell structure, disconnect from LASOM etc.
 
 % 2. Notes field
 h = notes.setupGui(h); % setupGui is a function in the protocolUtilities.notes package. Sets up a new figure and panel with possibilities for note taking
 
-% % 4. Start session button % not necessary for manualStim
+% % 3. Start session button % not necessary for manualStim
 % h = startSession(h,'manualSessionProgrammingStim.startSessionCallback');
 
-% 5. Olfactometer Settings
+% 4. Olfactometer Settings
 h = olfactometerSettings(h,'setUp'); % sets up all controls the user has over the olfactometer (valve times, MFC flow rates)
 
-% 6. Session Settings
+% 5. Session Settings
 % All controls a user has over session parameters (inter trial interval etc)
 h = sessionSettingsPanel(h,0); % sessionSettingsPanel(h,guiEnlarge). 
 usedSettingNames = {'scientist' 'animalName' 'I/O'};
 h = sessionSettings(h,'setUp',usedSettingNames);
 clear usedSettingNames;
 
-% 7. Progress panel
+% 6. Progress panel
 h = progressPanel(h,'setUp'); % progressPanel is a function in the protocolUtilities package
 
-% 8. Pause session button % not necessary for manualStim
+% 7. Pause session button % not necessary for manualStim
 % pauseSession; % pauseSession is a function in the protocolUtilities package. Sets up a functional button to pause the session
 
-% 9. Put a log window on top of the gui
+% 8. Put a log window on top of the gui
 h = logWindow.setup(h,h.guiHandle); % Add a log window on top of the gui.
 
 % Add protocol specific handles"

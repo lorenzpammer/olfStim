@@ -351,7 +351,7 @@ protocolUtilities.logWindow.issueLogMessage('Ready to go!')
 %             end
         end
         %         try
-        smell = startTrial(sentTrialIdx, smell);
+        smell = olfStimStartTrial(sentTrialIdx, smell);
         %         catch me
         %             flag = 0;
         %             warndlg({['Error during trial execution: ' me.message];'Error message sent to base workspace (errorMessage).'});

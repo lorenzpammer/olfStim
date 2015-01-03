@@ -38,6 +38,6 @@ trialOdor.concentrationAtPresentation = str2num(get(h.protocolSpecificHandles.co
 % 5. Start the new trial
 %   This will build the lsq file for the current trial, send the
 %   instructions to the olfactometer and trigger the trial.
-smell = startTrial(trialNum, smell);
+smell = olfStimStartTrial(trialNum, smell);
 
 end

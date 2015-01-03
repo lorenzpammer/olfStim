@@ -44,7 +44,7 @@ for trialNum = 1 : numberOfTrials
         'stimProtocol','time','maxFlowRateMfc','olfactometerID','io');
     
     % Start to execute the trial
-    smell = startTrial(trialNum,smell);
+    smell = olfStimStartTrial(trialNum,smell);
     
     % Wait for the provided inter trial interval before jumping to the next
     % loop iteration.

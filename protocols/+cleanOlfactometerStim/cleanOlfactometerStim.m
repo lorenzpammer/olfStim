@@ -284,7 +284,7 @@ for i = 1 : length(smell.trial)
     disp(message)
     
     % Start the trial:
-    smell = startTrial(i,smell);
+    smell = olfStimStartTrial(i,smell);
     
 end
 
