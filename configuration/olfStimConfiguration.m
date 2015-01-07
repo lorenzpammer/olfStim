@@ -12,6 +12,12 @@ if nargin < 2
     varargin = [];
 end
 
+%% General information
+if strmatch(requestedConfiguration,'generalInformation')
+    userName = 'Lorenz';
+    varargout={userName};
+end
+
 %% Valves
 % Define the name of the valve actions you want to be able to use.
 % Define the default time values in seconds, when they should be triggered.
@@ -112,7 +118,7 @@ end
 
 if strmatch(requestedConfiguration,'odorSelectionGui')
 % The number of odor vials used in all slaves. The default value can be set here.
-numberOfVialsPerSlave = 12;
+numberOfVialsPerSlave = 10;
 
 % Number of slaves that should be shown in the odorSelectionGui by default.
 numberOfSlavesTables = 1;

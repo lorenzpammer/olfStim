@@ -1,6 +1,18 @@
-function initOlfStim(mode)
+function initOlfStim(mode,olfStimUser)
 % olfStim is the wrapper function calling the all necessary steps for odor
 % stimulation. The action goes on in the called functions.
+%
+% mode - when left empty, olfStim is run in normal mode, interacting with
+%           the olfactometer. 
+%        optional one can provide 'test' or 'testing' as inputs, which will
+%           start olfStim in the testing mode, without interaction with the
+%           olfactometer. This is useful when playing around or developing
+%           olfStim without an olfactometer connected.
+%
+% olfStimUser - optional. Supply your username, which will result in
+%        olfStim looking for your personal configuration file in
+%        olfStim/configuration/ Your username has to be suffixed to the
+%        configuration file (eg olfStimConfiguration_lorenz).
 % 
 % To Do:
 % - Check whether MFCs are connected to LASOM board.
@@ -32,6 +44,11 @@ else
     olfStimTestMode = false;
 end
 
+% If no user is provided
+if nargin < 2
+    olfStimUser=[];
+end
+
 %% Add olfStim folders to the matlab path
 
 olfStimSetPath();
@@ -42,7 +59,7 @@ if ~olfStimTestMode
 end
 
 %% Decide which configuration file to use
-olfStimChooseConfigFile;
+olfStimChooseConfigFile(olfStimUser);
 
 %% User has to define which odors are loaded into olfactometer
 % start by opening the odorSelectionGui. User has to define which odorants

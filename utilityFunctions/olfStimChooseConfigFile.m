@@ -1,4 +1,4 @@
-function olfStimChooseConfigFile
+function olfStimChooseConfigFile(olfStimUser)
 %
 %
 % lorenzpammer 2015/01
@@ -42,6 +42,32 @@ personalConfig = files(index); % remove all irrelevant files
 temp = strcmp('olfStimConfiguration_Default.m',personalConfig); % find default again
 personalConfig(temp) = []; % delete default name
 
+%% If a username was provided to olfStim use this user's configuration file
+
+if ~isempty(olfStimUser)
+    
+    selectedConfig = ['olfStimConfiguration_' olfStimUser '.m'];
+    index = strcmp(files,selectedConfig);
+    
+    % See if this user's configuration file actually exists
+    if any(index) % if it exists
+        % load the user's config file
+        configFile = fileread([configPath filesep  selectedConfig]);
+        % write the user's config file as the config file to use
+        fid = fopen([configPath filesep  'olfStimConfiguration.m'],'w');
+        fprintf(fid,'%s',configFile);
+        fclose(fid);
+        clear fid;
+        % exit this function
+        return
+    
+    else % if there is no olfStimConfiguration file suffixed with the name of the user
+        olfStimFlush
+        errormsg = sprintf('If you provide a username, you have to create a corresponding config file.\nCreate a config file suffixed with your username in the folder olfStim/configuration/.\nSee documentation for details.');
+        error(errormsg)
+    end
+end
+    
 
 %% Choose which config file to use
 % If there are personal config files in the folder let the user choose
@@ -119,10 +145,10 @@ if ~isempty(personalConfig)
         % If the user wants to remember the selection write this into the local
         % file
         if rememberSelection
-        fid = fopen([configPath filesep  'userDefault.txt'],'w');
-        fprintf(fid,'%s',selectedConfig);
-        fclose(fid);
-        clear fid;
+            fid = fopen([configPath filesep  'userDefault.txt'],'w');
+            fprintf(fid,'%s',selectedConfig);
+            fclose(fid);
+            clear fid;
         end
     end
     
@@ -139,6 +165,7 @@ end
 
 
 %% Save olfStimConfiguration file:
+
 fid = fopen([configPath filesep  'olfStimConfiguration.m'],'w');
 fprintf(fid,'%s',configFile);
 fclose(fid);
