@@ -118,7 +118,7 @@ end
 
 if strmatch(requestedConfiguration,'odorSelectionGui')
 % The number of odor vials used in all slaves. The default value can be set here.
-numberOfVialsPerSlave = 10;
+numberOfVialsPerSlave = 14;
 
 % Number of slaves that should be shown in the odorSelectionGui by default.
 numberOfSlavesTables = 1;

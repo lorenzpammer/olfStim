@@ -2,6 +2,8 @@ function setUpGui(~,~,~)
 % ioControl.setUpGui(h)
 % This function sets up an additional gui next to the main olfStim gui. In
 % this gui input and output triggers can be set.
+%
+% lorenzpammer
 
 
 %% 
