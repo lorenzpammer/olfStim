@@ -62,7 +62,7 @@ else
 end
 
 
-% Give warning, if the Nitrogen Mfc is set to less than 1% of its maximal
+% Give warning, if the Nitrogen Mfc is set to less than 2% of its maximal
 % flow rate, as it becomes inaccurate around that point
 if flowRateMfcN < smell.olfactometerSettings.slave(1).maxFlowRateMfcNitrogen/50
     if strmatch(errorType,'error')

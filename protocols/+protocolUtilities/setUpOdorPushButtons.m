@@ -1,8 +1,16 @@
 function h = setUpOdorPushButtons(h,smell,stimProtocol)
 % h = setUpOdorPushButtons(h,smell,stimProtocol)
+%
 % The function adds a push button and concentration edit field for every
 % odorant loaded into the olfactometer and returns the updated gui handle h
 % containing the handles to these new gui elements.
+% If setUpOdorPusButtons is used as a gui component of a stimulation
+% protocol, a trial triggering function has to be localized in the +folder
+% of the stimulation protocol. The function has to be adapted, depending on
+% what you want to do once an odor's pushbutton has been clicked. For
+% example in the manualStim it will start the trial. In the
+% manualProgrammingStim on the other hand it will only add a new trial to
+% the smell structure, update the progress panel etc. but not start a trial.
 %
 % lorenzpammer july 2013
 

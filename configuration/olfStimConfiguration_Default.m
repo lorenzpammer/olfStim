@@ -1,6 +1,7 @@
 function varargout = olfStimConfiguration(requestedConfiguration,varargin)
 % varargout = olfStimConfiguration(requestedConfiguration)
 %
+% - 'generalInformation'
 % - 'odorants'
 % - 'valves'
 % - 'io'
@@ -13,12 +14,15 @@ if nargin < 2
 end
 
 %% General information
+% This option will only return the general information in the
+% olfStimConfigurations file, such as the name of the experimenter (user).
+
 if strmatch(requestedConfiguration,'generalInformation')
     userName = '';
     varargout={userName};
 end
 
-%% Valves
+%% Valves Options
 % Define the name of the valve actions you want to be able to use.
 % Define the default time values in seconds, when they should be triggered.
 % Define whether they should be active by default (you can change this from
@@ -78,7 +82,7 @@ varargout = {actionNames values used timestamps useEditField useCheckBox depende
 
 end
 
-%% I/O
+%% I/O Options
 % Timestamps, triggers, etc.
 
 if strmatch(requestedConfiguration,'io')
@@ -113,7 +117,7 @@ else
 end
 end
 
-%% Odorants
+%% Odor Selection Options
 % Define the default values for the odorSelectionGui.
 
 if strmatch(requestedConfiguration,'odorSelectionGui')

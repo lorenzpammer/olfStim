@@ -16,7 +16,7 @@ function h = olfactometerSettings(h,instruction,panelPosition,varargin)
 %       settings and update the global olfactometerInstructions structure.
 %       Also it will check whether the times defined by the user make sense
 %       and whether the MFC flow rates are below the maximum flow rate.
-% 'get' - 
+% 'get' - extract the values in the gui fields and 
 %
 % 'updateStructure' - eg. protocolUtilities.olfactometerSettings([],'updateStructure',[],'powerFinalValve', {'value' [1 3]},{'used' 1})
 %       olfactometerSettings([],'updateStructure',[],instructionNameToUpdate,{fieldName value}, {fieldName value}, instructionNameToUpdate,{fieldName value})

@@ -1,5 +1,23 @@
 function manualStim
-% To do:
+%
+% The manualStim stimulation protocol is simple and a good starting point
+% to test the olfactometer but also for exploratory experiments. It allows
+% setting the concentration of the odor presentation, control the total
+% flow rate and the opening and closing times of all relevant valves. Every
+% odor that has been defined in the odorSelectionGui will show up in form
+% of a button, where vial numbers ascend from left to right. Beneath every
+% odor button a concentration field is present. In the concentration field
+% one can set the concentration at which the odor will be presented. If you
+% have set the dilution of the odorant in the vial correctly in the Odorant
+% Library or the odorSelectionGui, olfStim will automatically adjust the
+% flow rates accordingly to reach the desired concentration. Pressing the
+% odor button will start the trial. Executed trials are shown in the
+% progress panel and during the trials users can enter notes which will be
+% saved to the smell structure.
+% 
+% It can also serve as a template for creating your own simple protocol.
+% 
+% To do: 
 % - Add possibility to change concentration for each trial.
 % - At the beginning of session set MFC flow rate, and close MFCs at the
 % end of session.
@@ -40,7 +58,7 @@ h = quitSession(h); % endSession is a function in the protocolUtilities package.
 % 2. Notes field
 h = notes.setupGui(h); % setupGui is a function in the protocolUtilities.notes package. Sets up a new figure and panel with possibilities for note taking
 
-% % 3. Start session button % not necessary for manualStim
+% % 3. Start session button % not necessary for manualStim this is used in manualProgrammingStim for instance.
 % h = startSession(h,'manualSessionProgrammingStim.startSessionCallback');
 
 % 4. Olfactometer Settings

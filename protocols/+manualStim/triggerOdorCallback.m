@@ -1,6 +1,14 @@
 function triggerOdorCallback(~,~,trialOdor,stimProtocol)
 % This trial triggering function should be used in all stimulation
-% protocols.
+% protocols, which use the setUpOdorPushButtons.m function to create odor
+% pushbuttons on the gui. 
+% The function has to be localized in the +folder of the stimulation
+% protocol. The function has to be adapted, depending on what you want to
+% do once an odor's pushbutton has been clicked. For example in the
+% manualStim it will start the trial. In the manualProgrammingStim on the
+% other hand it will only add a new trial to the smell structure, update
+% the progress panel etc. but not start a trial.
+%%
 
 global trialNum
 global smell
