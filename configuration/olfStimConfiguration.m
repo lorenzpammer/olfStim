@@ -1,6 +1,7 @@
 function varargout = olfStimConfiguration(requestedConfiguration,varargin)
 % varargout = olfStimConfiguration(requestedConfiguration)
 %
+% - 'generalInformation'
 % - 'odorants'
 % - 'valves'
 % - 'io'
@@ -13,12 +14,15 @@ if nargin < 2
 end
 
 %% General information
+% This option will only return the general information in the
+% olfStimConfigurations file, such as the name of the experimenter (user).
+
 if strmatch(requestedConfiguration,'generalInformation')
-    userName = 'Lorenz';
+    userName = '';
     varargout={userName};
 end
 
-%% Valves
+%% Valves Options
 % Define the name of the valve actions you want to be able to use.
 % Define the default time values in seconds, when they should be triggered.
 % Define whether they should be active by default (you can change this from
@@ -78,7 +82,7 @@ varargout = {actionNames values used timestamps useEditField useCheckBox depende
 
 end
 
-%% I/O
+%% I/O Options
 % Timestamps, triggers, etc.
 
 if strmatch(requestedConfiguration,'io')
@@ -88,23 +92,23 @@ if strmatch(requestedConfiguration,'io')
 % filename as the names defined in the cell array below. Therefore if you
 % add a new action or change the name of the action, you have to add or change the
 % name of a sequencer code snippet in the olfStim/lsq/io/ folder.
-label = {'waitForTrigger' 'sendTimestamp'};
+label = {'waitForTrigger' 'DigOut1High' 'DigOut1Low'}; % CHANGE FOR NEW I/O ACTION
 
 % Define which type of I/O this is.
-type = {'input' 'output'};
+type = {'input' 'output' 'output'}; % CHANGE FOR NEW I/O ACTION
 
 % Should the I/O action be used by default?
-used = {true false};
+used = {true true true}; % CHANGE FOR NEW I/O ACTION
 
 % This is currently not used. 
-value = {1 2};
+value = {1 1 0}; % CHANGE FOR NEW I/O ACTION
 
 % Time point after the start of the trial at which the action is triggered.
-time = {0 0};
+time = {0 0 3}; % CHANGE FOR NEW I/O ACTION
 
 if strcmp(varargin,'structure')
-    % if user gave the string 'structure' output the I/O information as the
-    % io structure
+    % if 'structure' is requested in the inputs, output the I/O information
+    % as the io structure
     io = struct('label',label,'type',type,'value',value,'used',used,'time',time);
     varargout = {io};
 else
@@ -113,12 +117,12 @@ else
 end
 end
 
-%% Odorants
+%% Odor Selection Options
 % Define the default values for the odorSelectionGui.
 
 if strmatch(requestedConfiguration,'odorSelectionGui')
 % The number of odor vials used in all slaves. The default value can be set here.
-numberOfVialsPerSlave = 14;
+numberOfVialsPerSlave = 10;
 
 % Number of slaves that should be shown in the odorSelectionGui by default.
 numberOfSlavesTables = 1;

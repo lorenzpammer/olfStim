@@ -14,9 +14,9 @@
 ; They are usually overridden with external definitions.
 ; ------------------------------------------------------
 ;
-Param, odorValveIndex, 10 		; odorValveIndex specifies two gating odor valves to be opened (N & air stream). Specified for each valve from host computer. range 1:9
+Param, odorValveIndex, 2 		; odorValveIndex specifies two gating odor valves to be opened (N & air stream). Specified for each valve from host computer. range 1:9
 Param, numberComponents, 1     ; number of components in the presented odorant. If only a single odor then equals 1.
-Param, trialNum, 20		; Number of the current trial
+Param, trialNum, 9		; Number of the current trial
 Param, startTrialTrigger, $DigIn1 		; defines line which when high, will start the trial
 ;
 ; ------------------------------------------------------
@@ -57,42 +57,100 @@ EmitStatus          ; Causes the sequencer to emit the updated status to the hos
 ;
 ; ;
 wait, 0 
+; ATTENTION, NOT FINISHED PROGRAMMING
+Output, $DigOut1, 1 		; outputs the defined time stamp (P2) to the hardware output defined in (P1)
+;
+;
+WhileAlways 			; enter an indefinite loop. 
+SinceTimer, 2, 3        ; Find relative time since start of timer
+CheckLapse, 3, 0	; Check whether the timer >= P2
+IfLapse, 3, @lapsedOut2		; If that's the case jump to the label indicated in P2.
+EndWhile
+;
+label, @lapsedOut2
 ;
 Odor, slaveIndex, odorValveIndex		; Odor will open the specified two odor valves and will automatically trigger the dummy vial valves and thereby close the two dummy valves.
 Output, $XLogicOut4, 1			;
 ;;
 WhileAlways 			; enter an indefinite loop. 
 SinceTimer, 2, 3        ; Find relative time since start of timer
-CheckLapse, 3, 900000	; Check whether the timer >= P2
-IfLapse, 3, @lapsedOut2		; If that's the case jump to the label indicated in P2.
+CheckLapse, 3, 3000	; Check whether the timer >= P2
+IfLapse, 3, @lapsedOut3		; If that's the case jump to the label indicated in P2.
 EndWhile
 ;
-label, @lapsedOut2
+label, @lapsedOut3
+; ATTENTION, NOT FINISHED PROGRAMMING
+Output, $DigOut1, 0		; outputs the defined time stamp (P2) to the hardware output defined in (P1)
+;
+;
+WhileAlways 			; enter an indefinite loop. 
+SinceTimer, 2, 3        ; Find relative time since start of timer
+CheckLapse, 3, 3000	; Check whether the timer >= P2
+IfLapse, 3, @lapsedOut4		; If that's the case jump to the label indicated in P2.
+EndWhile
+;
+label, @lapsedOut4
 ;
 Gate, slaveIndex, 31        	; Triggers the final valve.
 Output, $XLogicOut1, 1			;
 ;;
 WhileAlways 			; enter an indefinite loop. 
 SinceTimer, 2, 3        ; Find relative time since start of timer
-CheckLapse, 3, 1800000	; Check whether the timer >= P2
-IfLapse, 3, @lapsedOut3		; If that's the case jump to the label indicated in P2.
+CheckLapse, 3, 3500	; Check whether the timer >= P2
+IfLapse, 3, @lapsedOut5		; If that's the case jump to the label indicated in P2.
 EndWhile
 ;
-label, @lapsedOut3
+label, @lapsedOut5
+;
+Gate, slaveIndex, 32            ; Opens the sniffing valve (connected to connector 32). The index is set in the core lsq file
+Output, $XLogicOut2, 1			;
+;;
+WhileAlways 			; enter an indefinite loop. 
+SinceTimer, 2, 3        ; Find relative time since start of timer
+CheckLapse, 3, 5000	; Check whether the timer >= P2
+IfLapse, 3, @lapsedOut6		; If that's the case jump to the label indicated in P2.
+EndWhile
+;
+label, @lapsedOut6
 ;
 Dummy, slaveIndex           ; Dummy will open the dummy valve and close all odor valves
 Output, $XLogicOut4, 0			;
 ;;
 WhileAlways 			; enter an indefinite loop. 
 SinceTimer, 2, 3        ; Find relative time since start of timer
-CheckLapse, 3, 1800000	; Check whether the timer >= P2
-IfLapse, 3, @lapsedOut4		; If that's the case jump to the label indicated in P2.
+CheckLapse, 3, 5000	; Check whether the timer >= P2
+IfLapse, 3, @lapsedOut7		; If that's the case jump to the label indicated in P2.
 EndWhile
 ;
-label, @lapsedOut4
+label, @lapsedOut7
 ;
 UnGate, slaveIndex, 31      	; Closes the final valve.
 Output, $XLogicOut1, 0			;
+;;
+WhileAlways 			; enter an indefinite loop. 
+SinceTimer, 2, 3        ; Find relative time since start of timer
+CheckLapse, 3, 5000	; Check whether the timer >= P2
+IfLapse, 3, @lapsedOut8		; If that's the case jump to the label indicated in P2.
+EndWhile
+;
+label, @lapsedOut8
+;
+UnGate, slaveIndex, 32           ; Closes the sniffing valve. The index is set in the core lsq file
+Output, $XLogicOut2, 0			;
+;;
+WhileAlways 			; enter an indefinite loop. 
+SinceTimer, 2, 3        ; Find relative time since start of timer
+CheckLapse, 3, 10000	; Check whether the timer >= P2
+IfLapse, 3, @lapsedOut9		; If that's the case jump to the label indicated in P2.
+EndWhile
+;
+label, @lapsedOut9
+; Cleaning the nose:
+Gate, slaveIndex, 32     ; Opens the sniffing valve (connected to connector 32). The index is set in the core lsq file
+;
+Wait, 2000				; Wait for 2000ms
+;
+UnGate, slaveIndex, 32     ; Closes the sniffing valve (connected to connector 32). The index is set in the core lsq file
 ;
 SetVar, $Var1, 0    ; Set $Var1 back to initial state indicating end of trial
 SetVar, $Var2, 0    ; Set $Var2 back to initial state indicating end of trial
