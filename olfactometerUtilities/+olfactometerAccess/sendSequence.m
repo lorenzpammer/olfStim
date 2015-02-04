@@ -27,6 +27,13 @@ if olfStimTestMode
     return
 end
 
+% %% Rename the osq file into an lsq file for LASOM
+% 
+% fid = fopen([osqPath 'trial.osq'],'w');
+% fprintf(fid,'%s',trialOsq);
+% fclose(fid);
+% clear fid;
+
 %% Send sequencer file (lsq) to Lasom and compile
 
 if isempty(pathToTrialLsq) || isempty(olfactometerH)
