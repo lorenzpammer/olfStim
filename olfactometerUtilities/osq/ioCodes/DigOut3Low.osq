@@ -1,0 +1,3 @@
+; ATTENTION, NOT FINISHED PROGRAMMING
+Output, $DigOut3 0		; outputs the defined time stamp (P2) to the hardware output defined in (P1)
+;

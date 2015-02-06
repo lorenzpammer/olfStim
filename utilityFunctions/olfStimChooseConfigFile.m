@@ -63,7 +63,7 @@ if ~isempty(olfStimUser)
     
     else % if there is no olfStimConfiguration file suffixed with the name of the user
         olfStimFlush
-        errormsg = sprintf('If you provide a username, you have to create a corresponding config file.\nCreate a config file suffixed with your username in the folder olfStim/configuration/.\nSee documentation for details.');
+        errormsg = sprintf('If you provide a username, you have to create a corresponding config file.\nCreate a config file suffixed with _username (eg olfStimConfiguration_Lorenz) in the folder olfStim/configuration/.\nSee documentation for details.');
         error(errormsg)
     end
 end

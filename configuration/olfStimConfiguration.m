@@ -18,7 +18,7 @@ end
 % olfStimConfigurations file, such as the name of the experimenter (user).
 
 if strmatch(requestedConfiguration,'generalInformation')
-    userName = '';
+    userName = 'Lorenz';
     varargout={userName};
 end
 
@@ -92,19 +92,19 @@ if strmatch(requestedConfiguration,'io')
 % filename as the names defined in the cell array below. Therefore if you
 % add a new action or change the name of the action, you have to add or change the
 % name of a sequencer code snippet in the olfStim/lsq/io/ folder.
-label = {'waitForTrigger' 'DigOut1High' 'DigOut1Low' 'DigOut2High' 'DigOut2Low'}; % CHANGE FOR NEW I/O ACTION
+label = {'waitForTrigger' 'DigOut1High' 'DigOut1Low' 'DigOut2High' 'DigOut2Low' 'DigOut3High' 'DigOut3Low'}; % CHANGE FOR NEW I/O ACTION
 
 % Define which type of I/O this is.
-type = {'input' 'output' 'output' 'output' 'output'}; % CHANGE FOR NEW I/O ACTION
+type = {'input' 'output' 'output' 'output' 'output' 'output' 'output'}; % CHANGE FOR NEW I/O ACTION
 
 % Should the I/O action be used by default?
-used = {true true true false false}; % CHANGE FOR NEW I/O ACTION
+used = {false true true false false false false}; % CHANGE FOR NEW I/O ACTION
 
 % This is currently not used. 
-value = {1 1 0 1 0}; % CHANGE FOR NEW I/O ACTION
+value = {1 1 0 1 0 1 0}; % CHANGE FOR NEW I/O ACTION
 
 % Time point after the start of the trial at which the action is triggered.
-time = {0 0 3 3 5}; % CHANGE FOR NEW I/O ACTION
+time = {0 0 3 3 5 3 5}; % CHANGE FOR NEW I/O ACTION
 
 if strcmp(varargin,'structure')
     % if 'structure' is requested in the inputs, output the I/O information
