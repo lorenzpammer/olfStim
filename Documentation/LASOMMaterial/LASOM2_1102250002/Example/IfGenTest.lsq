@@ -1,0 +1,17 @@
+; This is a comment
+; IfGenTest.lsq
+;
+Param,OuterLevel,1
+Param,InnerLevel,1
+;
+IfGen OuterLevel
+	Output	$XLogicOut1,1
+	EmitStatus
+	IfGen InnerLevel
+		Output	$XLogicOut2,1
+		EmitStatus
+	EndGen
+EndGen
+;;EndGen
+
+Idle

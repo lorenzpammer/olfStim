@@ -1,0 +1,34 @@
+LASOM J53 - XLogic
+
+Reference designator J53 appears near pin 1.
+
+Pin layout:
+
+J53 1    2
+    3    4
+    5    6
+    7    8
+    9    10
+    11   12
+    13   14
+
+Pin assignments (Warning - these are unprotected signals direct to the Master FPGA)
+
+1	XLogic 1 - LVTTL input (0 to 3.3V)
+2	XLogic 2 - LVTTL input (0 to 3.3V)
+3	XLogic 3 - LVTTL input (0 to 3.3V)
+4	XLogic 4 - LVTTL input (0 to 3.3V)
+
+5	XLogic 5 - LVTTL output (0 to 3.3V)
+6	XLogic 6 - LVTTL output (0 to 3.3V)
+7	XLogic 7 - LVTTL output (0 to 3.3V)
+8	XLogic 8 - LVTTL output (0 to 3.3V)
+
+9	XLogic 9 - LVTTL output (0 to 3.3V)
+10	XLogic 10 - LVTTL output (0 to 3.3V)
+11	XLogic 11 - LVTTL output (0 to 3.3V)
+
+12	3.3V
+13	5V
+14	Ground
+

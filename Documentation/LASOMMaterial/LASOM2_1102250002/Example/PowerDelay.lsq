@@ -1,0 +1,108 @@
+; This is a comment
+; PowerDelay.lsq
+;
+; **********************************
+; Sequence file syntax
+; **********************************
+; Action Param1 Param2
+;
+; Wait Delay(ms)
+; Odor Slave OdorValveIndex
+; Dummy Slave
+; Gate Slave GateValveIndex
+; UnGate Slave GateValveIndex
+; Select Slave GateValveIndex
+; Arm Slave
+; Clear Slave
+; Strobe Mask
+; Param ParamName DefaultValue
+; Monitor Input Output
+; IfGen NonZero
+; EndGen
+; LoopGen RepeatCount
+; Output BitNum Activate
+; While Duration(ms)
+; EndWhile
+; Label LabelSymbol
+; IfNotIn BitNum LabelSymbol
+; IfIn BitNum LabelSymbol
+;
+Param,Slave1,1
+;
+; ******************************************************
+; Alternate between odor 1 and 2 for power-of-2 delays:
+; 1 ms, then 2, 4, 8, ...
+; ******************************************************
+; 
+Strobe,0,0
+;
+Odor,Slave1,1
+Wait,1
+Odor,Slave1,2
+Wait,1
+EmitStatus
+;
+Odor,Slave1,1
+Wait,2
+Odor,Slave1,2
+Wait,2
+EmitStatus
+;
+;
+Odor,Slave1,1
+Wait,4
+Odor,Slave1,2
+Wait,4
+EmitStatus
+;
+Odor,Slave1,1
+Wait,8
+Odor,Slave1,2
+Wait,8
+EmitStatus
+;
+Odor,Slave1,1
+Wait,16
+Odor,Slave1,2
+Wait,16
+EmitStatus
+;
+Odor,Slave1,1
+Wait,32
+Odor,Slave1,2
+Wait,32
+EmitStatus
+;
+Odor,Slave1,1
+Wait,64
+Odor,Slave1,2
+Wait,64
+EmitStatus
+;
+Odor,Slave1,1
+Wait,128
+Odor,Slave1,2
+Wait,128
+EmitStatus
+;
+Odor,Slave1,1
+Wait,256
+Odor,Slave1,2
+Wait,256
+EmitStatus
+;
+Odor,Slave1,1
+Wait,512
+Odor,Slave1,2
+Wait,512
+EmitStatus
+;
+Odor,Slave1,1
+Wait,1024
+Odor,Slave1,2
+Wait,1024
+EmitStatus
+;
+Dummy,Slave1
+;
+Idle,0,0

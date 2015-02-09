@@ -1,0 +1,85 @@
+;
+; Odor delivery example
+; Deliver.lsq
+;
+Param	Slave	1		; assume which cassette
+Param	FinalValve	32	; gate valve
+Param	OdorDuration	2000	; milliseconds, duration (after final valve activation)
+Param	OdorSetupDelay	1000	; ms, delay from odor activation for final valve activation
+Param	DefaultOdor	2	; initial odor variable value
+Param	TrialDelay	20000	; wait after trial before starting next one
+Param	var4Odor	$Var1	; host sets to select odor
+Param	var4Control	$Var2	; host sets nonzero to start trial
+;
+; Host will control the trial with variable var4Control.
+; When the variable is zero, this program just waits, with everthing idle.
+; The timed events start when the variable becomes non zero.
+;
+
+;
+; Return here after any trial.
+; Start here before the first trial.
+; First/next trial actually begins on host signal
+
+Label	@ReStartTrial
+SetVar,var4Odor,DefaultOdor	; assume this odor, but host will usually set variable as needed
+SetVar,var4Control,0			; init to pre trial hold
+;
+Dummy,Slave
+UnGate,Slave,FinalValve
+
+EmitStatus	; let the host know where we are
+
+WhileAlways
+; Host should set MFC to desired flow rate
+; Host should set var4Odor to select odor
+; Host should set var4Control nonzero to start timed sequence
+; Host can set var4Control zero at any time to end the trial early
+IfVar,var4Control,@StartTrial
+EndWhile
+
+;
+; The host signaled the trial to start
+;
+label	@StartTrial
+EmitStatus	; let the host know where we are
+
+; turn on the odor, final valve is set to dump to exhaust
+Odor,Slave,var4Odor
+
+While,OdorSetupDelay
+CompareVar,var4Control,0
+IfWasEQ,@ReStartTrial	; abort the trial
+EndWhile
+
+; Odor has stabalized (we hope)
+; Switch the final valve
+Gate,Slave,FinalValve
+EmitStatus	; let the host know where we are
+;
+; Deliver the odor
+;
+While,OdorDuration
+CompareVar,var4Control,0
+IfWasEQ,@ReStartTrial	; abort the trial
+EndWhile
+
+;
+; Turn off the odor
+UnGate,Slave,FinalValve
+Dummy,Slave
+
+;
+; Wait a while before next trial
+;
+While,TrialDelay
+CompareVar,var4Control,0
+IfWasEQ,@ReStartTrial	; abort the wait
+EndWhile
+
+goto @ReStartTrial
+
+;
+; We never get here, but do it anyway
+Idle
+
