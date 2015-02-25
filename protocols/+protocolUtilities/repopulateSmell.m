@@ -99,6 +99,7 @@ for trialNum = 1 : length(smell.trial)
             protocolUtilities.clearSessionDataCallback([],[],false);
             return
         end
+
         
     end
 end

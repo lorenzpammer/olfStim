@@ -50,7 +50,7 @@ h.sessionNotes.textField = uicontrol('Style','text',...
     'Units','pixels','Position',notesFieldPosition,'Fontsize',7);
 
 % Create new figure for note taking.
-h.sessionNotes.notesFigure = figure('Visible','off','NumberTitle','off','Name','NotePad','Tag','NotePad','Position',[158,560,200,300]);
+h.sessionNotes.notesFigure = figure('Visible','off','NumberTitle','off','MenuBar','none','Name','NotePad','Tag','NotePad','Position',[158,560,200,300]);
 position = get(h.sessionNotes.notesFigure,'Position');
 notesFieldPosition(1) = 3;
 notesFieldPosition(2) = 3;

@@ -34,7 +34,7 @@ elseif nargin<4
     position = get(h.guiHandle,'Position'); % get position of main gui window
     panelWidth=position(3)-10; panelHeight = 100; % set the width and height of the progress panel
     panelPosition =[5 position(4)-panelHeight panelWidth panelHeight]; % set the position vector for the progress panel
-    color =  [1.0000    0.8000    0.2000];
+    color =  [1.0000    0.8000    0.2000]; % orange color
 end
 
 % Extract the property names and values, provided as input by the user.

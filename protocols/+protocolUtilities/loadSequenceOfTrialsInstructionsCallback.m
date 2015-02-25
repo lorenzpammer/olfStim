@@ -43,4 +43,10 @@ smell = protocolUtilities.removeHistoricalTrialDataFromSmell(smell);
 
 protocolUtilities.repopulateSmell();
 
+%% Update the gui
+
+for i = 1 : length(smell.trial)
+    protocolUtilities.progressPanel(h,'update',smell.trial(i),i,'Color',[0.5 0.5 0.5]);
+end
+
 end

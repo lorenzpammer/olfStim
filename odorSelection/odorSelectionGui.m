@@ -690,7 +690,7 @@ callingFunctionName = 'initOlfStim.m'; % Define the name of the initalizing func
 olfStimPath = which(callingFunctionName);
 olfStimPath(length(olfStimPath)-length(callingFunctionName):length(olfStimPath))=[];
 extendedPath = [olfStimPath filesep 'User Data' filesep 'olfactometerOdors' filesep]
-[filename,pathname]=uiputfile('.mat','Save olfactometer odors',[extendedPath defaultTitle]);
+[filename,pathname]=uiputfile('*.mat','Save olfactometer odors',[extendedPath defaultTitle]);
 if ischar(filename) && ischar(pathname) % only if filename and path specified
     extendedPath = [pathname filename];
     save(extendedPath,'olfactometerOdors')
