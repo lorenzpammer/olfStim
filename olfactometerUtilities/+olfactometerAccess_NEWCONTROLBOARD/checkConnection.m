@@ -1,0 +1,3 @@
+function success = checkConnection()
+
+end
