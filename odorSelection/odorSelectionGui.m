@@ -8,7 +8,7 @@ function olfactometerOdors = odorSelectionGui()
 
 figurePosition = [300 200 400 500];
 handles.main = figure('Visible','on','Position',figurePosition,'NumberTitle','off',...
-    'Name','odorSelectionGui', 'Tag', 'odorSelectionGui'); %'CloseRequestFcn',@myCloseFcn
+    'Name','odorSelectionGui', 'Tag', 'odorSelectionGui','MenuBar','none'); %'CloseRequestFcn',@myCloseFcn
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Set up the gui components

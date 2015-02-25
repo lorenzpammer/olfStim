@@ -14,7 +14,7 @@ end
 
 % Give the gui the tag olfStimGui, which can be used in other functions to
 % search for the handle of this figure:
-h.guiHandle = figure('Visible','on','Position',position,'NumberTitle','off',...
+h.guiHandle = figure('Visible','on','Position',position,'NumberTitle','off','MenuBar','none',...
     'Name','OlfStim', 'Tag', 'olfStimGui','CloseRequestFcn',@myCloseFcn);
 
 
