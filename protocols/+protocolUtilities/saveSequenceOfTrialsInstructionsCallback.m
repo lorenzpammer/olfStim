@@ -23,9 +23,7 @@ cleanedSmell = protocolUtilities.removeHistoricalTrialDataFromSmell(smell);
 %% Prompt user to open the smell structure for
 
 % Get the path to the olfStim main directory
-callingFunctionName = 'initOlfStim.m'; % Define the name of the initalizing function
-olfStimPath = which(callingFunctionName);
-olfStimPath(length(olfStimPath)-length(callingFunctionName):length(olfStimPath))=[];
+olfStimPath = protocolUtilities.getOlfStimRootDirectory;
 
 defaultTitle = [datestr(date,'yyyy.mm.dd') '_olfStimTrialSeq.mat'];
 defaultPath = [olfStimPath filesep 'User Data' filesep 'sequenceOfTrialsInstruction'];

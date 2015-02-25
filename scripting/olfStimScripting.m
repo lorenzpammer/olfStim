@@ -79,7 +79,7 @@ if nargin < 4
     % If not provided as input, default to the identifier of the animal
     % name provided here:
     [~,sessionInstructions]=protocolUtilities.sessionSettings([],'updateStructure',[],sessionInstructions,...
-        'animalName',{'value' 'Undefined'}); % < CHANGE!
+        'animalName',{'value' 'Unknown'}); % < CHANGE!
 else
     % If provided as input to this script, set the identifier of the animal
     [~,sessionInstructions]=protocolUtilities.sessionSettings([],'updateStructure',[],sessionInstructions,...
@@ -90,7 +90,7 @@ if nargin < 5
     % If not provided as input, default to the intertrial interval provided
     % here: 
     [~,sessionInstructions]=protocolUtilities.sessionSettings([],'updateStructure',[],sessionInstructions,...
-        'interTrialInterval', {'value' 5},{'used' 1}); % < CHANGE!
+        'interTrialInterval', {'value' 10},{'used' 1}); % < CHANGE!
 else
     % If provided as input to this script, set the intertrial interval:
     [~,sessionInstructions]=protocolUtilities.sessionSettings([],'updateStructure',[],sessionInstructions,...
@@ -101,13 +101,12 @@ end
 %% Now transfer control to the scripting protocol
 
 % Create function handle to the protocol
-fh = str2func([currentProtocol '.' currentProtocol]); % use the input to the function
+fh = str2func(['scriptingProtocols.' currentProtocol '.' currentProtocol]); % use the input to the function
 
 % Execute the scripting protocol
 fh(numberOfTrials,sessionInstructions);
 
 clear fh
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% After the end of the stimulation 

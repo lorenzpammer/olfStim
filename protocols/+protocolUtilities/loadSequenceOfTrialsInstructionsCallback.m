@@ -19,9 +19,7 @@ h=appdataManager('olfStimGui','get','h');
 %% Prompt user to open the smell structure for
 
 % Get the path to the olfStim main directory
-callingFunctionName = 'initOlfStim.m'; % Define the name of the initalizing function
-olfStimPath = which(callingFunctionName);
-olfStimPath(length(olfStimPath)-length(callingFunctionName):length(olfStimPath))=[];
+olfStimPath = protocolUtilities.getOlfStimRootDirectory;
 
 [fileName,pathName,filterIndex] = uigetfile([olfStimPath filesep '*.mat'],'Select a smell.mat or olfStimTrialSeq.mat, specifying the sequence of trials for a session.');
 if fileName == 0

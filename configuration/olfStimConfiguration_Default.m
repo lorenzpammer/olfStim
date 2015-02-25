@@ -59,7 +59,7 @@ values = {0 5 3 5 3.25 5 3.5 5 9 12 10};
 % Define below whether an action should be used in a trial by default. Set
 % 1 for use. Set 0 for not used. The order of values has to match the order
 % of names defined above.
-used = {1 1 1 1 0 0 1 1 0 0 1};
+used = {1 1 1 1 0 0 1 1 0 0 0};
 
 % whether (1) or not (0) an editing field should be added to the gui for
 % the respective setting:

@@ -15,10 +15,11 @@ if isempty(olfStimScriptMode)
 end
 
 %% Clean up everything
-
-if isstruct(h)
-    delete(get(h.guiHandle,'Children'))
-    delete(h.guiHandle)
+if isempty(olfStimScriptMode)
+    if isstruct(h)
+        delete(get(h.guiHandle,'Children'))
+        delete(h.guiHandle)
+    end
 end
 % close all;
 if ~isempty(timerfindall)
