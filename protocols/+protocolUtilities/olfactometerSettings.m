@@ -317,7 +317,8 @@ dependentOnSetting = [dependentOnSetting dependentOnSettingUser];
             end
         end
 %         
-        color = hsv(length(index1));
+        color = hot(length(index1)+1);
+        color(1,:) = [];
         
         for i = 1 : length(color(:,1))
             set(h.olfactometerSettings.edit(index1(i)),'BackgroundColor',color(i,:));
