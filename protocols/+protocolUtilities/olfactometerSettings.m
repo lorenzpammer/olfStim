@@ -519,7 +519,7 @@ catch
     % value
     
     
-    % Define which of the gui fields should be colorized (this is
+    % Define which of the gui fields should be colored (this is
     % needed to show the sequence of trials):
     for i = 1 : length(guiFieldNames)
         % Change the dependentOnSetting cell array, so it can be used
@@ -529,7 +529,7 @@ catch
         end
         
         % If the setting doesn't have an edit field or is a setting
-        % that should not be plotted, index it in the colorize variable:
+        % that should not be plotted, index it in the coloring variable:
         if ~isempty(strmatch(guiFieldNames{i},{'purge','mfcTotalFlow'},'exact')) || h.olfactometerSettings.edit(i) == 0
             plotSetting(i) = false;
         else
